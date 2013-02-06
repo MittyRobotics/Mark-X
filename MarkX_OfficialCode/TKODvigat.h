@@ -12,6 +12,7 @@ public:
 	~TKODvigat();
 	void JukeL();
 	void JukeR();
+	void TKODrive();
 	Timer timer;
 private:
 	DriverStation *ds;

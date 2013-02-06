@@ -1,7 +1,7 @@
 SimpleTemplate_partialImage/Debug/Objects/MarkX_OfficialCode/TKODvigat.o:  \
- C:/Users/Vadim/repos/mark-ix/MarkX_OfficialCode/TKODvigat.cpp \
-  C:/Users/Vadim/repos/mark-ix/MarkX_OfficialCode/TKODvigat.h \
-  C:/Users/Vadim/repos/mark-ix/MarkX_OfficialCode/Definitions.h \
+ C:/Users/Vadim/repos/mark-x/MarkX_OfficialCode/TKODvigat.cpp \
+  C:/Users/Vadim/repos/mark-x/MarkX_OfficialCode/TKODvigat.h \
+  C:/Users/Vadim/repos/mark-x/MarkX_OfficialCode/Definitions.h \
   C:/WindRiver/vxworks-6.3/target/h/WPILib/WPILib.h \
   C:/WindRiver/vxworks-6.3/target/h/string.h \
   C:/WindRiver/vxworks-6.3/target/h/types/vxANSI.h \
@@ -381,15 +381,15 @@ SimpleTemplate_partialImage/Debug/Objects/MarkX_OfficialCode/TKODvigat.o:  \
   C:/WindRiver/vxworks-6.3/target/h/WPILib/WPIErrors.h \
   C:/WindRiver/vxworks-6.3/target/h/WPILib/Vision/RGBImage.h \
   C:/WindRiver/vxworks-6.3/target/h/Math.h \
-  C:/Users/Vadim/repos/mark-ix/MarkX_OfficialCode/TKOGyro.h \
+  C:/Users/Vadim/repos/mark-x/MarkX_OfficialCode/TKOGyro.h \
   C:/WindRiver/vxworks-6.3/target/h/WPILib/Gyro.h \
   C:/WindRiver/vxworks-6.3/target/h/Math.h \
   c:/windriver/gnu/3.4.4-vxworks-6.3/x86-win32/lib/gcc/../../../x86-win32/include/c++/3.4.4/cmath \
   C:/WindRiver/vxworks-6.3/target/h/math.h
 
-C:/Users/Vadim/repos/mark-ix/MarkX_OfficialCode/TKODvigat.h:
+C:/Users/Vadim/repos/mark-x/MarkX_OfficialCode/TKODvigat.h:
 
-C:/Users/Vadim/repos/mark-ix/MarkX_OfficialCode/Definitions.h:
+C:/Users/Vadim/repos/mark-x/MarkX_OfficialCode/Definitions.h:
 
 C:/WindRiver/vxworks-6.3/target/h/WPILib/WPILib.h:
 
@@ -1149,7 +1149,7 @@ C:/WindRiver/vxworks-6.3/target/h/WPILib/Vision/RGBImage.h:
 
 C:/WindRiver/vxworks-6.3/target/h/Math.h:
 
-C:/Users/Vadim/repos/mark-ix/MarkX_OfficialCode/TKOGyro.h:
+C:/Users/Vadim/repos/mark-x/MarkX_OfficialCode/TKOGyro.h:
 
 C:/WindRiver/vxworks-6.3/target/h/WPILib/Gyro.h:
 
