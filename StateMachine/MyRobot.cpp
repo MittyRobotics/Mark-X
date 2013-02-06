@@ -43,15 +43,15 @@ public:
 	
 	void Decide(int s)
 	{
-	/*	timer.start;
-		if(button.Get();)
-			return s;
-		if(time.Get() > 5)
+		timer.reset();
+		//if(button.Get();)
+			//return s;
+		while(time.Get() < 5)
 		{
-			timer.stop;
-			return 13;
+			/*if(button.Get()){
+				return s;
+			}*/
 		}
-		*/
 		return 13;
 	}
 	void Run()
@@ -69,7 +69,7 @@ public:
 				if(!hookLeft.Get() || !hookRight.Get()){Decide(state);}  ///if either hook jumps off bar, E2 state
 				if(pot.GetVoltage() < bottomOfBar){state = 3;}  ///if PID says hooks are at bottom of bar
 				if(armBottom.Get()){state = 13;}  ///If hooks hit bottom limit switch without PID telling it to stop, its too late to remove ratchet.
-				if(time.Get() > 15000){Decide(state);}  ///if hooks take 15 seconds to reach bottom
+				if(time.Get() > 15000){state = Decide(state);}  ///if hooks take 15 seconds to reach bottom
 			}
 			
 			else if(state == 3){  ///retract ratchet
@@ -128,24 +128,24 @@ public:
 					wait(.5);
 					state = 6;
 					}
-				//if PID says hooks reached bottom
+				if(pot.GetVoltage() < bottomOfBar){
 					//move arm back
-					//wait(.5);
-					//state = 6
+					wait(.5);
+					state = 6;
 			}
 			
-			else if(state == 9){///push down ratchet
+			else if(state == 9){  ///push down ratchet
 				//push down ratchet
-				//timer.reset();
-				//if(timer.get() > 1){
-					//state = 13;
-				//}
+				time.reset();
+				if(time.Get() > 1000){  ///if ratchet does not hit bottom in 1 second
+					state = 13;  
+				}
 				if(ratchet.Get()){
 					state = 10;
 				}
 			}
 			
-			else if(state == 10){///retract clips
+			else if(state == 10){  ///retract clips
 				time.reset();
 				if(time.get() > 2000 && (clipLeft.Get() || clipRight.Get())){
 					state  = 13;
