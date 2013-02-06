@@ -31,7 +31,7 @@ else
 MODE_DIR := NonDebug
 endif
 OBJ_DIR := .
-WS_ROOT_DIR := C:/Users/Vadim/repos/mark-ix
+WS_ROOT_DIR := C:/Users/Vadim/repos/mark-x
 PRJ_ROOT_DIR := $(WS_ROOT_DIR)/MarkX_OfficialCode
 
 
