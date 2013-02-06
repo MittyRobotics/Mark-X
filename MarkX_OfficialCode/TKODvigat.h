@@ -15,7 +15,6 @@ public:
 	void TKODrive();
 	Timer timer;
 private:
-	DriverStation *ds;
 	CANJaguar drive1, drive2, drive3, drive4;
 };
 #endif

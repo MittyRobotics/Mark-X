@@ -7,7 +7,6 @@ TKODvigat::TKODvigat(int port1, int port2, int port3, int port4) :
 	drive4(port4, CANJaguar::kPercentVbus) // initialize motor 4 < second right drive motor
 
 {
-	ds = DriverStation::GetInstance(); // Pulls driver station information 
 	drive1.SetSpeedReference(CANJaguar::kSpeedRef_QuadEncoder);
 	drive1.ConfigEncoderCodesPerRev(250);
 	drive1.SetPID(.2, .004, .0);
