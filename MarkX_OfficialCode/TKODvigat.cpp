@@ -1,5 +1,4 @@
 #include "TKODvigat.h"
-
 TKODvigat::TKODvigat(int port1, int port2, int port3, int port4) :
 	drive1(port1, CANJaguar::kSpeed), // initialize motor 1 < first left drive motor
 	drive2(port2, CANJaguar::kPercentVbus), // initialize motor 2 < second left drive motor

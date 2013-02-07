@@ -1,0 +1,248 @@
+#include "TKODvigat.h"
+
+TKODvigat::TKODvigat(int port1, int port2, int port3, int port4) :
+	drive1(port1, CANJaguar::kSpeed), // initialize motor 1 < first left drive motor
+	drive2(port2, CANJaguar::kPercentVbus), // initialize motor 2 < second left drive motor
+	drive3(port3, CANJaguar::kSpeed), // initialize motor 3 < first right drive motor
+	drive4(port4, CANJaguar::kPercentVbus) // initialize motor 4 < second right drive motor
+
+{
+	drive1.SetSpeedReference(CANJaguar::kSpeedRef_QuadEncoder);
+	drive1.ConfigEncoderCodesPerRev(250);
+	drive1.SetPID(.2, .004, .0);
+	drive1.SetSafetyEnabled(true);
+	drive2.SetSafetyEnabled(drive1.IsSafetyEnabled());
+	drive3.SetSpeedReference(CANJaguar::kSpeedRef_QuadEncoder);
+	drive3.ConfigEncoderCodesPerRev(250);
+	drive3.SetPID(.2, .004, .0);
+	drive3.SetSafetyEnabled(true);
+	drive4.SetSafetyEnabled(drive3.IsSafetyEnabled());
+}
+void TKODrive::TKODrive()
+{
+	double left_joystick_y;
+	double right_joystick_y;
+	if (!stick2.GetTrigger())
+	{
+		left_joystick_y = stick1.GetY();
+		right_joystick_y = stick2.GetY();
+	}
+	else
+	{
+		left_joystick_y = stick2.GetY();
+		right_joystick_y = stick1.GetY();
+	}
+	double final_velocity_left;
+	double final_velocity_right;
+	if (fabs(left_joystick_y) > deadzone)
+	{
+		if ((left_joystick_y > deadzone and right_joystick_y < deadzone) or (right_joystick_y > deadzone and left_joystick_y < deadzone))
+		{
+			final_velocity_left = left_joystick_y * kMAX_DRIVE_RPM * kDRIVE_ROTATION;
+		}
+		else
+		{
+			final_velocity_left = left_joystick_y * kMAX_DRIVE_RPM * kDRIVE_STRAIGHT;
+		}
+	}
+
+	else
+	{
+		final_velocity_left = 0;
+	}
+	if (fabs(right_joystick_y) > deadzone)
+	{
+		if ((left_joystick_y > deadzone and right_joystick_y < deadzone) or (right_joystick_y > deadzone and left_joystick_y < deadzone))
+		{
+			final_velocity_right = right_joystick_y * kMAX_DRIVE_RPM * kDRIVE_ROTATION;
+		}
+		else
+		{
+			final_velocity_right = right_joystick_y * kMAX_DRIVE_RPM * kDRIVE_STRAIGHT;
+		}
+	}
+	else
+	{
+		final_velocity_right = 0;
+	}
+	if ((right_joystick_y >= 0 and left_joystick_y >= 0) or (right_joystick_y <= 0 and left_joystick_y <= 0))
+	{
+		if (fabs(fabs(left_joystick_y) - fabs(right_joystick_y)) < .1)
+		{
+			if (final_velocity_right < final_velocity_left)
+			{
+				final_velocity_left = final_velocity_right;
+			}
+			else
+			{
+				final_velocity_right = final_velocity_left;
+			}
+		}
+	}
+
+	if ((final_velocity_left - drive3.GetSpeed()) > 1000)
+	{
+		burnoutIndexLeft++;
+	}
+	else
+	{
+		burnoutIndexLeft = 0;
+	}
+
+	if ((final_velocity_right - drive1.GetSpeed()) > 1000)
+	{
+		burnoutIndexRight++;
+	}
+	else
+	{
+		burnoutIndexRight = 0;
+	}
+
+	if (burnoutIndexLeft > 100)
+	{
+		final_velocity_left = 0;
+		printf("Burnout Left");
+		DSLog(5, "Burnout Left");
+	}
+
+	if (burnoutIndexRight > 100)
+	{
+		final_velocity_right = 0;
+		printf("Burnout Right");
+		DSLog(5, "Burnout Right");
+	}
+	float speedLeft = drive1.GetSpeed() * 3.14159 * 6/*wheel size*// 12
+	/*inches in feet*// 60;
+	float speedRight = drive3.GetSpeed() * 3.14159 * 6 / 12 / 60;
+	DSLog(1, "Speed fps: %f", ((speedLeft + speedRight) / 2));
+
+	// implement processing for left_joystick_x, left_joystick_y, right_joystick_x, and right_joystick_y to account for PID and other factors
+	// then we pass these values to the SetLeftRightMotorsOutput() function of TKODrive
+	drive1.Set(final_velocity_left);
+	drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+	drive3.Set(final_velocity_right);
+	drive4.Set(-drive3.GetOutputVoltage() / drive3.GetBusVoltage());
+
+}
+
+void TKODvigat::JukeR(void)
+{
+	printf("Juke manuever started\n");
+	timer.Start();
+	while (true)
+	{
+		if (timer.Get() < 0.6)
+		{
+			drive1.Set(-kMAX_DRIVE_RPM);
+			drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+			drive3.Set(-kMAX_DRIVE_RPM);
+			drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+		}
+		else if (timer.Get() < 0.6 + 0.65)
+		{
+			drive1.Set(-kMAX_DRIVE_RPM);
+			drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+		}
+		else if (timer.Get() < 0.6 + 0.65 + 0.3)
+		{
+			drive1.Set(-kMAX_DRIVE_RPM);
+			drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+			drive3.Set(-kMAX_DRIVE_RPM);
+			drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+		}
+		else if (timer.Get() < 0.6 + 0.65 + 0.3 + 0.6)
+		{
+			drive1.Set(kMAX_DRIVE_RPM);
+			drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+			drive3.Set(kMAX_DRIVE_RPM);
+			drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+		}
+		else if (timer.Get() < 0.6 + 0.65 + 0.3 + 0.6 + 1)
+		{
+			drive3.Set(kMAX_DRIVE_RPM);
+			drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+		}
+		else if (timer.Get() < 0.6 + 0.65 + 0.3 + 0.6 + 1 + 0.15)
+		{
+			drive1.Set(kMAX_DRIVE_RPM);
+			drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+			drive3.Set(kMAX_DRIVE_RPM);
+			drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+		}
+		else if (timer.Get() < 0.6 + 0.65 + 0.3 + 0.6 + 1 + 0.15 + 1.2)
+		{
+			drive1.Set(kMAX_DRIVE_RPM);
+			drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+			drive3.Set(-kMAX_DRIVE_RPM);
+			drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+		}
+		timer.Stop();
+	}
+}
+
+void TKODvigat::JukeL(void)
+{
+	printf("Juke manuever started\n");
+	timer.Start();
+	timer.Reset();
+	while (timer.Get() < .6)
+	{
+		drive1.Set(-kMAX_DRIVE_RPM);
+		drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+		drive3.Set(-kMAX_DRIVE_RPM);
+		drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+	}
+	timer.Reset();
+	while (timer.Get() < .65)
+	{
+		drive3.Set(-kMAX_DRIVE_RPM);
+		drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+	}
+	timer.Reset();
+	while (timer.Get() < .3)
+	{
+		drive1.Set(-kMAX_DRIVE_RPM);
+		drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+		drive3.Set(-kMAX_DRIVE_RPM);
+		drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+	}
+	timer.Reset();
+	while (timer.Get() < .6)
+	{
+		drive1.Set(kMAX_DRIVE_RPM);
+		drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+		drive3.Set(kMAX_DRIVE_RPM);
+		drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+	}
+	timer.Reset();
+	while (timer.Get() < 1)
+	{
+		drive1.Set(kMAX_DRIVE_RPM);
+		drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+	}
+	timer.Reset();
+	while (timer.Get() < .15)
+	{
+		drive1.Set(kMAX_DRIVE_RPM);
+		drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+		drive3.Set(kMAX_DRIVE_RPM);
+		drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+	}
+	timer.Reset();
+	while (timer.Get() < 1.2)
+	{
+		drive1.Set(kMAX_DRIVE_RPM);
+		drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+		drive3.Set(-kMAX_DRIVE_RPM);
+		drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+	}
+	timer.Reset();
+
+	timer.Stop();
+}
+
+///Destructor for the TKODvigat class
+TKODvigat::~TKODvigat()
+{
+}
+
