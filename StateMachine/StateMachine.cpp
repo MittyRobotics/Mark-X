@@ -196,7 +196,38 @@ class StateMachine: public SimpleRobot
                 { ///deploying clips
 					//hook motor stops moving
 					//deploy clips
-					if (time.Get() > 1000 && !clipLeft.Get() || !clipRight.Get())
+
+                    if (clipLeft.Get() && clipRight.Get() && clipPosition.Get())  ///if clips engage and are down, move on to state 5
+                    {
+                        time.Reset();
+                        state = MOVE_HOOKS_UP;
+                    }
+
+                    if (clipLeft.Get() and clipRight.Get() and not clipPosition.Get())  ///if both clips clip on, but the clip Position says clips are up, WTF
+                    {
+                        state = OH_SHIT;
+                    }
+
+                    if(not hookLeft.Get() or not hookRight.Get()) ///if either hook hops off, emergency
+                    {
+                        state = OH_SHIT;
+                    }
+
+                    if(armTop.Get() || armBottom.Get())  ///if top or bottom limit switches are triggered, limit switch doesn't work
+                    {
+                        state = OH_SHIT;
+                    }
+
+                    if(ratchet.Get())
+                    {
+                        //TKOLift.RetractRatchet();
+                        if(ratchet.Get())
+                        {
+                            state = OH_SHIT;
+                        }
+                    }
+
+					if (time.Get() > 1000 and !clipLeft.Get() || !clipRight.Get())
 					{ ///if either clip does not engage in 1 second
 						//retract clips*/
 						Wait(.5);
@@ -205,11 +236,6 @@ class StateMachine: public SimpleRobot
 						{ ///if still not clipped on
 							state = OH_SHIT;
 						}
-					}
-					if (clipLeft.Get() && clipRight.Get())
-					{
-					    time.Reset();
-						state = MOVE_HOOKS_UP;
 					}
 				}
 
