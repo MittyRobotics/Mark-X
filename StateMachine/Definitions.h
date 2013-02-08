@@ -22,8 +22,8 @@ const int DEPLOYING_RATCHET = 9;
 const int RETRACTING_CLIPS = 10;
 const int OH_SHIT = 13;
 const int SETPOINT_RATCHET_RETRACT = 4;
-const int SETPOINT_BOTTOM = .3;
-const int SETPOINT_TOP = 4.5;
+const double SETPOINT_BOTTOM = .3;
+const double SETPOINT_TOP = 4.5;
 
 
 #endif

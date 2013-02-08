@@ -23,26 +23,27 @@ class StateMachine: public SimpleRobot
 
 	public:
 		StateMachine(void) :
-            myRobot(1, 2), // these must be initialized in the same order
-            stick(1), // as they are declared above.
-			hookLeft(1), hookRight(2), clipLeft(3), clipRight(4), armTop(5), armBottom(6), ratchet(7), clipPosition(8), pot(1)
+			myRobot(1, 2), // these must be initialized in the same order
+			        stick(1), // as they are declared above.
+			        hookLeft(1), hookRight(2), clipLeft(3), clipRight(4), armTop(5), armBottom(6), ratchet(7), clipPosition(8), pot(1)
 		{
-			myRobot.SetExpiration(0.1);
 			state = 1;
-        }
+		}
 
 		void Autonomous(void)
 		{
-			//myRobot.SetSafetyEnabled(false);
 		}
 
 		int Decide(int s)
 		{
-            time.Reset();
-            while(time.Get() < 5000){}
-                if(stick.GetRawButton(5)){  ///if you press a button to continue climbing
-                    return s;
-                }
+			time.Reset();
+			while (time.Get() < 5000)
+			{
+			}
+			if (stick.GetRawButton(5))
+			{ ///if you press a button to continue climbing
+				return s;
+			}
 			return OH_SHIT;
 		}
 
@@ -111,8 +112,8 @@ class StateMachine: public SimpleRobot
 					}
 				}
 
-                else if (state == DEPLOY_CLIPS)
-                { ///deploying clips
+				else if (state == DEPLOY_CLIPS)
+				{ ///deploying clips
 					time.Reset();
 					//hook motor stops moving
 					//deploy clips
@@ -132,17 +133,18 @@ class StateMachine: public SimpleRobot
 					}
 				}
 
-                else if (state == MOVE_HOOKS_UP)
+				else if (state == MOVE_HOOKS_UP)
 				{ ///Hooks begin moving up
-				    time.Reset();
+					time.Reset();
 					if (armTop.Get())
 					{
 						//reset PID
 						//stop motors
 						printf("You hit the top");
 					}
-					if (time.Get() > 10000){
-					    state = Decide(state);
+					if (time.Get() > 10000)
+					{
+						state = Decide(state);
 					}
 
 					if (pot.GetVoltage() > SETPOINT_TOP)
@@ -161,7 +163,7 @@ class StateMachine: public SimpleRobot
 
 				else if (state == MOVE_HOOKS_DOWN)
 				{ ///move hooks down
-				    time.Reset();
+					time.Reset();
 					if (hookLeft.Get() && hookRight.Get())
 					{
 						state = DEPLOYING_RATCHET;
@@ -175,12 +177,13 @@ class StateMachine: public SimpleRobot
 					}
 					if (pot.GetVoltage() <= SETPOINT_BOTTOM)
 					{
-					    //move arm back
-                        Wait(.5);
-                        state = MOVE_HOOKS_UP;  ///STAGE 6
+						//move arm back
+						Wait(.5);
+						state = MOVE_HOOKS_UP; ///STAGE 6
 					}
-					if(time.Get() > 5000){
-					    state = OH_SHIT;
+					if (time.Get() > 5000)
+					{
+						state = OH_SHIT;
 					}
 
 					//move arm back
@@ -192,8 +195,9 @@ class StateMachine: public SimpleRobot
 				{///push down ratchet
 					//push down ratchet
 					time.Reset();
-					if(time.Get() > 1000){
-                        state = OH_SHIT;
+					if (time.Get() > 1000)
+					{
+						state = OH_SHIT;
 					}
 					if (ratchet.Get())
 					{
@@ -211,18 +215,18 @@ class StateMachine: public SimpleRobot
 					}
 					if (!clipLeft.Get() && !clipRight.Get())
 					{
-					    level++;
+						level++;
 						state = ROBOT_PULLED_UP;
 					}
-                }
-
-					while (state == OH_SHIT)
-					{
-						//engages ratchet
-						//EMERGENCY
-
-					}
 				}
+
+				while (state == OH_SHIT)
+				{
+					//engages ratchet
+					//EMERGENCY
+
+				}
+			}
 			printf("HookLeft %d", hookLeft.Get());
 			printf("\n");
 			printf("HookRight %d", hookRight.Get());
@@ -260,6 +264,6 @@ class StateMachine: public SimpleRobot
 		}
 };
 
-START_ROBOT_CLASS(RobotDemo)
+START_ROBOT_CLASS(StateMachine)
 ;
 
