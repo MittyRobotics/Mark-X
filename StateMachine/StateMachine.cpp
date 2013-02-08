@@ -1,5 +1,5 @@
 #include "WPILib.h"
-#include "DefinitionsSS.h"
+#include "Definitions.h"
 
 /*
  * This is a demo program showing the use of the RobotBase class.
@@ -22,10 +22,10 @@ class StateMachine: public SimpleRobot
 		float bottomOfBar;
 
 	public:
-		RobotDemo(void) :
-			myRobot(1, 2), // these must be initialized in the same order
-			        stick(1), // as they are declared above.
-			        hookLeft(1), hookRight(2), clipLeft(3), clipRight(4), armTop(5), armBottom(6), ratchet(7), clipPosition(8), pot(1)
+		StateMachine(void) :
+            myRobot(1, 2), // these must be initialized in the same order
+            stick(1), // as they are declared above.
+			hookLeft(1), hookRight(2), clipLeft(3), clipRight(4), armTop(5), armBottom(6), ratchet(7), clipPosition(8), pot(1)
 		{
 			myRobot.SetExpiration(0.1);
 			state = 1;
@@ -33,12 +33,12 @@ class StateMachine: public SimpleRobot
 
 		void Autonomous(void)
 		{
-			myRobot.SetSafetyEnabled(false);
+			//myRobot.SetSafetyEnabled(false);
 		}
 
 		int Decide(int s)
 		{
-            time.reset();
+            time.Reset();
             while(time.Get() < 5000){}
                 if(stick.GetRawButton(5)){  ///if you press a button to continue climbing
                     return s;
@@ -50,7 +50,7 @@ class StateMachine: public SimpleRobot
 		{
 			time.Start();
 			state = ROBOT_PULLED_UP;
-			int i = 0;
+			int level = 0;
 			while (level < 3)
 			{
 				if (state == ROBOT_PULLED_UP)
@@ -134,7 +134,7 @@ class StateMachine: public SimpleRobot
 
                 else if (state == MOVE_HOOKS_UP)
 				{ ///Hooks begin moving up
-				    time.reset();
+				    time.Reset();
 					if (armTop.Get())
 					{
 						//reset PID
@@ -161,7 +161,7 @@ class StateMachine: public SimpleRobot
 
 				else if (state == MOVE_HOOKS_DOWN)
 				{ ///move hooks down
-				    time.reset();
+				    time.Reset();
 					if (hookLeft.Get() && hookRight.Get())
 					{
 						state = DEPLOYING_RATCHET;
@@ -176,8 +176,8 @@ class StateMachine: public SimpleRobot
 					if (pot.GetVoltage() <= SETPOINT_BOTTOM)
 					{
 					    //move arm back
-                        wait(.5);
-                        state = MOVE_HOOKS_UP  ///STAGE 6
+                        Wait(.5);
+                        state = MOVE_HOOKS_UP;  ///STAGE 6
 					}
 					if(time.Get() > 5000){
 					    state = OH_SHIT;
@@ -191,8 +191,8 @@ class StateMachine: public SimpleRobot
 				else if (state == DEPLOYING_RATCHET)
 				{///push down ratchet
 					//push down ratchet
-					time.reset();
-					if(time.get() > 1000){
+					time.Reset();
+					if(time.Get() > 1000){
                         state = OH_SHIT;
 					}
 					if (ratchet.Get())
