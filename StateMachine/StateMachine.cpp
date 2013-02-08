@@ -12,7 +12,7 @@ class StateMachine: public SimpleRobot
 {
 		RobotDrive myRobot; // robot drive system
 		Joystick stick; // only joystick
-		DigitalInput hookLeft, hookRight, clipLeft, clipRight, armTop, armBottom, ratchet, clipPosition;
+		DigitalInput hookLeft, hookRight, clipLeft, clipRight, armTop, armBottom, ratchet, clipPositionIn, clipPositionOut;
 		AnalogChannel pot;
 		Timer time;
 
@@ -25,7 +25,7 @@ class StateMachine: public SimpleRobot
 		StateMachine(void) :
 			myRobot(1, 2), // these must be initialized in the same order
 			        stick(1), // as they are declared above.
-			        hookLeft(1), hookRight(2), clipLeft(3), clipRight(4), armTop(5), armBottom(6), ratchet(7), clipPosition(8), pot(1) ///clipPosition true means clips are out
+			        hookLeft(1), hookRight(2), clipLeft(3), clipRight(4), armTop(5), armBottom(6), ratchet(7), clipPositionIn(8), clipPositionOut(9), pot(1) ///clipPosition true means clips are out
 		{
 			state = 1;
 		}
@@ -87,11 +87,11 @@ class StateMachine: public SimpleRobot
 						state = OH_SHIT;
 					}
 
-					if(clipPosition.Get())  ///if clips are out, stop robot -
+					if(not clipPositionIn.Get())  ///if clips are not in
 					{
 					    //retract clips
 					    Wait(.5);
-					    if(clipPosition.Get()){
+					    if(not clipPositionIn.Get()){
 					        state = OH_SHIT;
 					    }
 					}
@@ -127,12 +127,12 @@ class StateMachine: public SimpleRobot
 					    state = OH_SHIT;
                     }
 
-					if(clipPosition.Get())  ///if clips are out, stop robot -
+					if(clipPositionIn.Get())  ///if clips are not in, stop robot -
 					{
 					    //stop motors
 					    //retract clips
 					    Wait(.5);
-					    if(clipPosition.Get()){
+					    if(clipPositionIn.Get()){
 					        state = OH_SHIT;
 					    }
 					}
@@ -175,12 +175,12 @@ class StateMachine: public SimpleRobot
 					    state = RETRACTING_RATCHET;
 					}
 
-					if(clipPosition.Get())  ///if clips are out, stop robot -
+					if(clipPositionIn.Get())  ///if clips are not in, stop robot -
 					{
 					    //stop motors
 					    //retract clips
 					    Wait(.5);
-					    if(clipPosition.Get()){
+					    if(clipPositionIn.Get()){
 					        state = OH_SHIT;
 					    }
 					}
@@ -197,15 +197,21 @@ class StateMachine: public SimpleRobot
 					//hook motor stops moving
 					//deploy clips
 
-                    if (clipLeft.Get() && clipRight.Get() && clipPosition.Get())  ///if clips engage and are down, move on to state 5
+                    if (clipLeft.Get() && clipRight.Get() && clipPositionOut.Get())  ///if clips engage and are down, move on to state 5
                     {
                         time.Reset();
                         state = MOVE_HOOKS_UP;
                     }
 
-                    if (clipLeft.Get() and clipRight.Get() and not clipPosition.Get())  ///if both clips clip on, but the clip Position says clips are up, WTF
+                    if (clipLeft.Get() and clipRight.Get() and clipPositionIn.Get())  ///if both clips clip on, but the clip Position says clips are up, WTF
                     {
                         state = OH_SHIT;
+                    }
+
+                    if (clipLeft.Get() and clipRight.Get() and not clipPositionIn.Get() and not clipPositionOut.Get()) ///clips are somewhere in between, but they're also attached to bar. wtf
+                    {
+                        printf("Your hooks arent all the way down. we're gonna keep climbing. #YOLO");
+                        state = MOVE_HOOKS_UP;
                     }
 
                     if(not hookLeft.Get() or not hookRight.Get()) ///if either hook hops off, emergency
@@ -353,7 +359,9 @@ class StateMachine: public SimpleRobot
 			printf("\n");
 			printf("Ratchet %d", ratchet.Get());
 			printf("\n");
-			printf("Clip Position %d", clipPosition.Get());
+			printf("Clip Position %d", clipPositionIn.Get());
+			printf("\n");
+			printf("Clip Position Out", clipPositionOut.Get());
 			printf("\n");
 			printf("State %d", state);
 			printf("\n");
