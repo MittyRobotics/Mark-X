@@ -141,14 +141,15 @@ class StateMachine: public SimpleRobot
 
 				else if (state == CHANGE_SETPOINT_MOVE_HOOKS_DOWN)  ///state 3
 				{ ///change setpoint to very bottom, keep moving hooks
+                    if (pot.GetVoltage() <= SETPOINT_BOTTOM)
+					{
+					    time.Reset();
+						state = DEPLOY_CLIPS;
+					} ///if PID says hook reaches bottom of its movement
 					if (pot.GetVoltage() > SETPOINT_BOTTOM && !armBottom.Get() && time.Get() > 3000)
 					{
 						state = OH_SHIT;
 					} ///if hook has not hit bottom and time is greater than 3s
-					if (pot.GetVoltage() < SETPOINT_BOTTOM)
-					{
-						state = DEPLOY_CLIPS;
-					} ///if PID says hook reaches bottom of its movement
 					if (armBottom.Get())
 					{ ///if hook hit the bottom of the bar
 						//reset PID Values
@@ -156,7 +157,7 @@ class StateMachine: public SimpleRobot
 					}
 				}
 
-                else if (state == DEPLOY_CLIPS)
+                else if (state == DEPLOY_CLIPS)  ///state 4
                 { ///deploying clips
 					//hook motor stops moving
 					//deploy clips
@@ -172,11 +173,12 @@ class StateMachine: public SimpleRobot
 					}
 					if (clipLeft.Get() && clipRight.Get())
 					{
+					    time.Reset();
 						state = MOVE_HOOKS_UP;
 					}
 				}
 
-                else if (state == MOVE_HOOKS_UP)
+                else if (state == MOVE_HOOKS_UP)  ///state 5
 				{ ///Hooks begin moving up
 					if (armTop.Get())
 					{
@@ -191,50 +193,24 @@ class StateMachine: public SimpleRobot
 
 					if (pot.GetVoltage() > SETPOINT_TOP)
 					{
+					    time.Reset();
 						state = MOVE_ARM_FORWARD;
 					}
 				}
 
-				else if (state == MOVE_ARM_FORWARD)
+				else if (state == MOVE_ARM_FORWARD)  ///state 6
 				{ ///move arm forward
 					//move arm forward
 					Wait(.5);
 					state = MOVE_HOOKS_DOWN;
 				}
 
-				else if (state == MOVE_HOOKS_DOWN)
-				{ ///move hooks down
-					if (hookLeft.Get() && hookRight.Get())
-					{
-						state = DEPLOYING_RATCHET;
-					}
-					if (armBottom.Get())
-					{
-						//reset PID
-						//move arm back
-						Wait(.5);
-						state = MOVE_HOOKS_UP;
-					}
-
-					if (pot.GetVoltage() > SETPOINT_TOP)
-					{
-						state = MOVE_ARM_FORWARD;
-					}
-				}
-
-				else if (state == MOVE_ARM_FORWARD)
-				{ ///move arm forward
-					time.Reset();
-					//move arm forward
-					Wait(.5);
-					state = MOVE_HOOKS_DOWN;
-				}
-
-				else if (state == MOVE_HOOKS_DOWN)
+				else if (state == MOVE_HOOKS_DOWN)  ///state 7
 				{ ///move hooks down
 					time.Reset();
-					if (hookLeft.Get() && hookRight.Get())
+					if (hookLeft.Get() && hookRight.Get())  ///both hooks clip on
 					{
+					    time.Reset();
 						state = DEPLOYING_RATCHET;
 					}
 					if (armBottom.Get())
@@ -260,7 +236,7 @@ class StateMachine: public SimpleRobot
 					//state = 6
 				}
 
-				else if (state == DEPLOYING_RATCHET)
+				else if (state == DEPLOYING_RATCHET)  ///state 8
 				{///push down ratchet
 					//push down ratchet
 					time.Reset();
@@ -270,7 +246,7 @@ class StateMachine: public SimpleRobot
 					}
 					if (ratchet.Get())
 					{
-
+                        time.Reset();
 						state = RETRACTING_CLIPS;
 					}
 
@@ -280,29 +256,7 @@ class StateMachine: public SimpleRobot
 					//state = 6
 				}
 
-				else if (state == DEPLOYING_RATCHET)
-				{///push down ratchet
-					//push down ratchet
-					if(time.Get() > 1000){
-                        state = OH_SHIT;
-					}
-					if (ratchet.Get())
-					{
-
-						state = RETRACTING_CLIPS;
-					}
-				}
-
-				else if (state == RETRACTING_CLIPS)
-				{///retract clips
-					if (time.Get() > 2000 && (clipLeft.Get() || clipRight.Get()))
-					{
-						state = OH_SHIT;
-					}
-					//if (!clipLeft.Get() && !clipRight.Get())
-				}
-
-				else if (state == RETRACTING_CLIPS)
+				else if (state == RETRACTING_CLIPS)  ///state 9
 				{///retract clips
 					time.Reset();
 					if (time.Get() > 2000 && (clipLeft.Get() || clipRight.Get()))
@@ -312,6 +266,7 @@ class StateMachine: public SimpleRobot
 					if (!clipLeft.Get() && !clipRight.Get())
 					{
 						level++;
+						time.Reset();
 						state = ROBOT_PULLED_UP;
 					}
 				}
