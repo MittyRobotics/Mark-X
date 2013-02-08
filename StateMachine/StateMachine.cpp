@@ -53,49 +53,93 @@ class StateMachine: public SimpleRobot
 			int level = 0;
 			while (level < 3)
 			{
-				if (state == ROBOT_PULLED_UP)
+				if (state == ROBOT_PULLED_UP)  ///state 1
 				{ ///begin pulling up robot
-					time.Reset();
-					//set ratchet*/
-					//release arm pressure*/
-					//begin moving hooks down*/
-					if (!ratchet.Get())
+				    //engage ratchet
+				    //arm de-pressure
+				    //run hook motors down
+				    //clips retracted
+                    if (pot.GetVoltage() <= SETPOINT_RATCHET_RETRACT)  ///if PID says hooks are at their setpoint
 					{
-						state = OH_SHIT;
-					} ///If ratchet is disabled, E1 state
-					if (!hookLeft.Get() || !hookRight.Get())
+					    time.Reset();
+						state = RETRACTING_RATCHET;
+					}
+
+					if(clipLeft.Get() or clipRight.Get())
+					{
+					    state = Decide(state);
+					}
+
+					if (not hookLeft.Get() or not hookRight.Get())  ///if either hook jumps off bar, E2 state
 					{
 						state = Decide(state);
-					} ///if either hook jumps off bar, E2 state
-					if (pot.GetVoltage() <= SETPOINT_RATCHET_RETRACT)
+					}
+
+
+					if (armTop.Get() or armBottom.Get()) ///if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 					{
-						state = RETRACTING_RATCHET;
-					} ///if PID says hooks are at their setpoint
-					if (armBottom.Get())
+					    state = OH_SHIT;
+					}
+
+                    if (not ratchet.Get())  ///If ratchet is disabled, E1 state
 					{
 						state = OH_SHIT;
-					} ///If hooks hit bottom limit switch without PID telling it to stop, its too late to remove ratchet.
-					if (time.Get() > 15000)
+					}
+
+					if(clipPosition.Get())  ///if clips are out, stop robot -
+					{
+					    //retract clips
+					    Wait(.5);
+					    if(clipPosition.Get()){
+					        state = OH_SHIT;
+					    }
+					}
+
+					if (time.Get() > 15000)   ///if hooks take 15 seconds to reach bottom
 					{
 						Decide(state);
-					} ///if hooks take 15 seconds to reach bottom
+					}
 				}
 
-				else if (state == RETRACTING_RATCHET)
+				else if (state == RETRACTING_RATCHET)  ///state 2
 				{ ///retract ratchet
-					time.Reset();
-					if (ratchet.Get() and time.Get() > 1000)
-						state = OH_SHIT;
+				    //stop hook motors
+				    //run ratchet motor
+                    if (not ratchet.Get()) ///if ratchet retracts, move on
+					{
+					    time.Reset();
+						state = CHANGE_SETPOINT_MOVE_HOOKS_DOWN;
+					}
 
-					///if ratchet does not retract in a second, oh shit
-					if (!ratchet.Get())
-						state = CHANGE_SETPOINT_MOVE_HOOKS_DOWN; ///ratchet retracts, move on
+					if (not hookLeft.Get() or not hookRight.Get())  ///if either hook comes off, then go to emergency state
+					{
+					    state = OH_SHIT;
+					}
+
+					if(clipLeft.Get() or clipRight.Get()) ///if either clip senses a bar, then sensor broke, go to emergency state
+					{
+					    state = OH_SHIT;
+					}
+
+					if(armTop.Get() or armBottom.Get())   ///if top or bottom limit switch senses something, then WTF
+					{
+					    state = OH_SHIT;
+                    }
+
+                    if(clipPosition.Get())   ///if clips are down
+                    {
+                        state = OH_SHIT;
+                    }
+
+                    if (time.Get() > 1000)  ///if the ratchet does not go down in 1 second
+					{
+						state = OH_SHIT;
+					}
 
 				}
 
-				else if (state == CHANGE_SETPOINT_MOVE_HOOKS_DOWN)
+				else if (state == CHANGE_SETPOINT_MOVE_HOOKS_DOWN)  ///state 3
 				{ ///change setpoint to very bottom, keep moving hooks
-					time.Reset();
 					if (pot.GetVoltage() > SETPOINT_BOTTOM && !armBottom.Get() && time.Get() > 3000)
 					{
 						state = OH_SHIT;
@@ -113,7 +157,6 @@ class StateMachine: public SimpleRobot
 
                 else if (state == DEPLOY_CLIPS)
                 { ///deploying clips
-					time.Reset();
 					//hook motor stops moving
 					//deploy clips
 					if (time.Get() > 1000 && !clipLeft.Get() || !clipRight.Get())
@@ -134,7 +177,6 @@ class StateMachine: public SimpleRobot
 
                 else if (state == MOVE_HOOKS_UP)
 				{ ///Hooks begin moving up
-				    time.Reset();
 					if (armTop.Get())
 					{
 						//reset PID
@@ -153,7 +195,6 @@ class StateMachine: public SimpleRobot
 
 				else if (state == MOVE_ARM_FORWARD)
 				{ ///move arm forward
-					time.Reset();
 					//move arm forward
 					Wait(.5);
 					state = MOVE_HOOKS_DOWN;
@@ -161,7 +202,6 @@ class StateMachine: public SimpleRobot
 
 				else if (state == MOVE_HOOKS_DOWN)
 				{ ///move hooks down
-				    time.Reset();
 					if (hookLeft.Get() && hookRight.Get())
 					{
 						state = DEPLOYING_RATCHET;
@@ -191,7 +231,6 @@ class StateMachine: public SimpleRobot
 				else if (state == DEPLOYING_RATCHET)
 				{///push down ratchet
 					//push down ratchet
-					time.Reset();
 					if(time.Get() > 1000){
                         state = OH_SHIT;
 					}
@@ -204,7 +243,6 @@ class StateMachine: public SimpleRobot
 
 				else if (state == RETRACTING_CLIPS)
 				{///retract clips
-					time.Reset();
 					if (time.Get() > 2000 && (clipLeft.Get() || clipRight.Get()))
 					{
 						state = OH_SHIT;
