@@ -25,7 +25,7 @@ class StateMachine: public SimpleRobot
 		StateMachine(void) :
 			myRobot(1, 2), // these must be initialized in the same order
 			        stick(1), // as they are declared above.
-			        hookLeft(1), hookRight(2), clipLeft(3), clipRight(4), armTop(5), armBottom(6), ratchet(7), clipPosition(8), pot(1)
+			        hookLeft(1), hookRight(2), clipLeft(3), clipRight(4), armTop(5), armBottom(6), ratchet(7), clipPosition(8), pot(1) ///clipPosition true means clips are out
 		{
 			state = 1;
 		}
@@ -127,10 +127,15 @@ class StateMachine: public SimpleRobot
 					    state = OH_SHIT;
                     }
 
-                    if(clipPosition.Get())   ///if clips are down
-                    {
-                        state = OH_SHIT;
-                    }
+					if(clipPosition.Get())  ///if clips are out, stop robot -
+					{
+					    //stop motors
+					    //retract clips
+					    Wait(.5);
+					    if(clipPosition.Get()){
+					        state = OH_SHIT;
+					    }
+					}
 
                     if (time.Get() > 1000)  ///if the ratchet does not go down in 1 second
 					{
@@ -141,20 +146,50 @@ class StateMachine: public SimpleRobot
 
 				else if (state == CHANGE_SETPOINT_MOVE_HOOKS_DOWN)  ///state 3
 				{ ///change setpoint to very bottom, keep moving hooks
-                    if (pot.GetVoltage() <= SETPOINT_BOTTOM)
+                    if (pot.GetVoltage() <= SETPOINT_BOTTOM)   ///if PID says hook reaches bottom of its movement
 					{
 					    time.Reset();
 						state = DEPLOY_CLIPS;
-					} ///if PID says hook reaches bottom of its movement
-					if (pot.GetVoltage() > SETPOINT_BOTTOM && !armBottom.Get() && time.Get() > 3000)
+					}
+
+					if (not hookLeft.Get() or not hookRight.Get())  ///if either hook comes off at any point in time
 					{
-						state = OH_SHIT;
-					} ///if hook has not hit bottom and time is greater than 3s
+					    state = OH_SHIT;
+					}
+
+                    if (clipLeft.Get() || clipRight.Get())  ///if either clip is engaged, WTF
+                    {
+                        state = OH_SHIT;
+                    }
+
 					if (armBottom.Get())
 					{ ///if hook hit the bottom of the bar
 						//reset PID Values
+						time.Reset();
 						state = DEPLOY_CLIPS;
 					}
+
+					if (ratchet.Get())  ///if ratchet is engaged
+					{
+					    time.Reset();
+					    state = RETRACTING_RATCHET;
+					}
+
+					if(clipPosition.Get())  ///if clips are out, stop robot -
+					{
+					    //stop motors
+					    //retract clips
+					    Wait(.5);
+					    if(clipPosition.Get()){
+					        state = OH_SHIT;
+					    }
+					}
+
+					if (pot.GetVoltage() > SETPOINT_BOTTOM && !armBottom.Get() && time.Get() > 3000)  ///if hook has not hit bottom and time is greater than 3s
+					{
+						state = OH_SHIT;
+					}
+
 				}
 
                 else if (state == DEPLOY_CLIPS)  ///state 4
