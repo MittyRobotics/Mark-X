@@ -67,7 +67,7 @@ class StateMachine: public SimpleRobot
 				    time.Reset();
                     if (pot.GetVoltage() <= SETPOINT_RATCHET_RETRACT)  ///if PID says hooks are at their setpoint
 					{
-					    printf("---------------MOVED TO STATE 3----------------- \n");
+					    printf("---------------REACHED SETPOINT, MOVE TO RATCHET RETRACTING. YOU HAVE 1 SECOND. GO.----------------- \n");
 						state = RETRACTING_RATCHET;
 					}
 
@@ -122,27 +122,30 @@ class StateMachine: public SimpleRobot
 
 				else if (state == RETRACTING_RATCHET)  ///state 2
 				{ ///retract ratchet
-				    //stop hook motors
+				    //slow down hook motors
 				    //run ratchet motor
 				    time.Reset();
                     if (not ratchet.Get()) ///if ratchet retracts, move on
 					{
-
+                        printf("----------RETRACTED RATCHET, MOVING ON TO NEXT STATE ------------- \n");
 						state = CHANGE_SETPOINT_MOVE_HOOKS_DOWN;
 					}
 
 					if (not hookLeft.Get() or not hookRight.Get())  ///if either hook comes off, then go to emergency state
 					{
+					    printf("---------------ONE OF THE HOOKS CAME OFF. oh shit----------------- \n");
 					    state = OH_SHIT;
 					}
 
 					if(clipLeft.Get() or clipRight.Get()) ///if either clip senses a bar, then sensor broke, go to emergency state
 					{
+					    printf("---------------A CLIP SENSED THE BAR. oh shit----------------- \n");
 					    state = OH_SHIT;
 					}
 
-					if(armTop.Get() or armBottom.Get())   ///if top or bottom limit switch senses something, then WTF
+					if(armTop.Get())   ///if top switch senses something, then WTF
 					{
+					    printf("---------------------------- \n");
 					    state = OH_SHIT;
                     }
 
