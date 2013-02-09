@@ -67,31 +67,37 @@ class StateMachine: public SimpleRobot
 				    time.Reset();
                     if (pot.GetVoltage() <= SETPOINT_RATCHET_RETRACT)  ///if PID says hooks are at their setpoint
 					{
+					    printf("---------------MOVED TO STATE 3----------------- \n");
 						state = RETRACTING_RATCHET;
 					}
 
 					if(clipLeft.Get() or clipRight.Get())
 					{
+					    printf("---------------CLIPS ARENT ON, DECIDE----------------- \n");
 					    state = Decide(state);
 					}
 
 					if (not hookLeft.Get() or not hookRight.Get())  ///if either hook jumps off bar, E2 state
 					{
-						state = Decide(state);
+					    printf("---------------ONE OF THE HOOKS JUMPED OFF, oh shit----------------- \n");
+						state = OH_SHIT;
 					}
 
 
 					if (armTop.Get() or armBottom.Get()) ///if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 					{
+                        printf("---------------HOOKS REACHED BOTTOM, oh shit----------------- \n");
 					    state = OH_SHIT;
 					}
 
                     if (not ratchet.Get())  ///If ratchet is disabled
 					{
 						//push down ratchet
+						printf("---------------RATCHET IS DISABLED. WAITING HALF SECOND----------------- \n");
 						Wait(.5);
 						if (not ratchet.Get())
 						{
+						    printf("---------------RATCHET IS STILL DISABLED, oh shit----------------- \n");
 						    state = OH_SHIT;
 						}
 					}
@@ -99,14 +105,17 @@ class StateMachine: public SimpleRobot
 					if(not clipPositionIn.Get())  ///if clips are not in
 					{
 					    //retract clips
+					    printf("---------------CLIPS ARE NOT IN, WAITING HALF SECOND----------------- \n");
 					    Wait(.5);
 					    if(not clipPositionIn.Get()){
+					        printf("---------------CLIPS ARE STILL NOT IN, oh shit----------------- \n");
 					        state = OH_SHIT;
 					    }
 					}
 
 					if (time.Get() > 15000)   ///if hooks take 15 seconds to reach bottom
 					{
+					    printf("---------------HOOKS ARE TAKING TOO LONG. DECIDE----------------- \n");
 						Decide(state);
 					}
 				}
