@@ -1,43 +1,61 @@
 //Last edited by Vadim Korolik
 //on 02/05/2013
 #include "WPILib.h"
-#include "MarkX.h"
 #include "Definitions.h"
 #include "TKOAutonomous.h"
 #include "TKODvigat.h"
 
-MarkX::MarkX() :
-	stick1(STICK_1_PORT), // initialize joystick 1 < first drive joystick 
-	        stick2(STICK_2_PORT), // initialize joystick 2 < second drive joystick
-	        stick3(STICK_3_PORT), // initialize joystick 3 < first EVOM joystick
-	        stick4(STICK_4_PORT), // initialize joystick 4 < first EVOM joystick
-
-	        drive1(DRIVE_L1_ID, CANJaguar::kSpeed), // initialize motor 1 < first left drive motor
-	        drive2(DRIVE_L2_ID, CANJaguar::kPercentVbus), // initialize motor 2 < second left drive motor
-	        drive3(DRIVE_R1_ID, CANJaguar::kSpeed), // initialize motor 3 < first right drive motor
-	        drive4(DRIVE_R2_ID, CANJaguar::kPercentVbus), // initialize motor 4 < second right drive motor
-
-	        auton(DRIVE_L1_ID, DRIVE_L2_ID, DRIVE_R1_ID, DRIVE_R2_ID),
-
-	        dvigat(DRIVE_L1_ID, DRIVE_L2_ID, DRIVE_R1_ID, DRIVE_R2_ID),
-
-	        /*TKODrive(&drive1, &drive2 Initialize drive system 
-	         , &drive3, &drive4),  already initialized drive motors */
-	        gyro(1)
-
+class MarkX: public SimpleRobot
 {
-	ds = DriverStation::GetInstance(); // Pulls driver station information 
-	drive1.SetSpeedReference(CANJaguar::kSpeedRef_QuadEncoder);
-	drive1.ConfigEncoderCodesPerRev(250);
-	drive1.SetPID(.2, .004, .0);
-	drive1.SetSafetyEnabled(true);
-	drive2.SetSafetyEnabled(drive1.IsSafetyEnabled());
-	drive3.SetSpeedReference(CANJaguar::kSpeedRef_QuadEncoder);
-	drive3.ConfigEncoderCodesPerRev(250);
-	drive3.SetPID(.2, .004, .0);
-	drive3.SetSafetyEnabled(true);
-	drive4.SetSafetyEnabled(drive3.IsSafetyEnabled());
-}
+	public:
+		int burnoutIndexLeft;
+		int burnoutIndexRight;
+		float kDRIVE_STRAIGHT, kDRIVE_ROTATION;
+		float left_joystick_y, right_joystick_y;
+		float final_velocity_left, final_velocity_right;
+		Joystick stick1, stick2, stick3, stick4; // define joysticks
+		CANJaguar drive1, drive2, drive3, drive4; // define motors
+		DriverStation *ds; // define driver station object
+		TKOAutonomous auton;
+		TKODvigat dvigat;
+		Gyro gyro;
+		Timer timer;
+		void Disabled();
+		void Autonomous();
+		void OperatorControl();
+		void Operator();
+		void TKODrive();
+
+	MarkX() :
+		stick1(STICK_1_PORT), // initialize joystick 1 < first drive joystick 
+		stick2(STICK_2_PORT), // initialize joystick 2 < second drive joystick
+		stick3(STICK_3_PORT), // initialize joystick 3 < first EVOM joystick
+		stick4(STICK_4_PORT), // initialize joystick 4 < first EVOM joystick
+
+		drive1(DRIVE_L1_ID, CANJaguar::kSpeed), // initialize motor 1 < first left drive motor
+		drive2(DRIVE_L2_ID, CANJaguar::kPercentVbus), // initialize motor 2 < second left drive motor
+		drive3(DRIVE_R1_ID, CANJaguar::kSpeed), // initialize motor 3 < first right drive motor
+		drive4(DRIVE_R2_ID, CANJaguar::kPercentVbus), // initialize motor 4 < second right drive motor
+
+		auton(DRIVE_L1_ID, DRIVE_L2_ID, DRIVE_R1_ID, DRIVE_R2_ID), dvigat(DRIVE_L1_ID, DRIVE_L2_ID, DRIVE_R1_ID, DRIVE_R2_ID), gyro(1)
+
+		{
+			ds = DriverStation::GetInstance(); // Pulls driver station information 
+
+			drive1.SetSpeedReference(JAG_SPEEDREF);
+			drive1.ConfigEncoderCodesPerRev(ENCODER_REVS);
+			drive1.SetPID(DRIVE_kP, DRIVE_kI, DRIVE_kD);
+			drive1.SetSafetyEnabled(JAG_SAFETY);
+			drive2.SetSafetyEnabled(JAG_SAFETY);
+			drive3.SetSpeedReference(JAG_SPEEDREF);
+			drive3.ConfigEncoderCodesPerRev(ENCODER_REVS);
+			drive3.SetPID(DRIVE_kP, DRIVE_kI, DRIVE_kD);
+			drive3.SetSafetyEnabled(JAG_SAFETY);
+			drive4.SetSafetyEnabled(JAG_SAFETY);
+		}
+
+};
+START_ROBOT_CLASS(MarkX);
 
 //! Notifies driver if robot is disabled. Prints "Robot Died!" to console if it is disabled
 /*!
@@ -75,7 +93,6 @@ void MarkX::Autonomous(void) //Choose autonomous mode between 4 options though D
 
 void MarkX::OperatorControl()
 {
-	driveToggle = 1; //1 for new tank, 2 for old tank, 3 for old arcade
 	Timer loopTimer;
 	float startLoopT, endLoopT, loopTime;
 	loopTimer.Start();
@@ -85,8 +102,7 @@ void MarkX::OperatorControl()
 		DSClear();
 
 		Operator();
-		if (driveToggle == 1)
-			TKODrive();
+		TKODrive();
 
 		endLoopT = loopTimer.Get();
 		loopTime = startLoopT - endLoopT;
@@ -97,10 +113,54 @@ void MarkX::OperatorControl()
 //! Driving and EVOM code
 /*!
  */
+void MarkX::Operator()
+{
+	if (stick1.GetRawButton(10))
+		dvigat.JukeR();
+	if (stick1.GetRawButton(7))
+		dvigat.JukeL();
+
+	if (stick1.GetTrigger())
+	{
+		kDRIVE_STRAIGHT = 0.4;
+		kDRIVE_ROTATION = 0.2;
+	}
+	else
+	{
+		kDRIVE_STRAIGHT = 1;
+		kDRIVE_ROTATION = 0.6;
+	}
+
+	if (stick2.GetTrigger())
+	{
+		kDRIVE_STRAIGHT = -kDRIVE_STRAIGHT;
+		kDRIVE_ROTATION = -kDRIVE_ROTATION;
+	}
+	else
+	{
+		kDRIVE_STRAIGHT = fabs(kDRIVE_STRAIGHT);
+		kDRIVE_ROTATION = fabs(kDRIVE_ROTATION);
+	}
+
+	if (stick3.GetRawButton(4))
+	{
+		//TKOShooter.shoot(-stick3.GetY());
+		DSLog(6, "Manual shoot pow: %f", -stick3.GetY());
+	}
+	if (stick4.GetRawButton(6))
+	{
+		//TKOShooter.autoShoot();
+		DSLog(6, "Autoshoot");
+	}
+	if (stick3.GetRawButton(9) and stick4.GetRawButton(9))
+	{
+		//TKOClimber.autoClimb();
+		DSLog(6, "Autoclimbing");
+	}
+}
+
 void MarkX::TKODrive()
 {
-	double left_joystick_y;
-	double right_joystick_y;
 	if (!stick2.GetTrigger())
 	{
 		left_joystick_y = stick1.GetY();
@@ -111,8 +171,6 @@ void MarkX::TKODrive()
 		left_joystick_y = stick2.GetY();
 		right_joystick_y = stick1.GetY();
 	}
-	double final_velocity_left;
-	double final_velocity_right;
 	if (fabs(left_joystick_y) > deadzone)
 	{
 		if ((left_joystick_y > deadzone and right_joystick_y < deadzone) or (right_joystick_y > deadzone and left_joystick_y < deadzone))
@@ -159,7 +217,7 @@ void MarkX::TKODrive()
 		}
 	}
 
-	if ((final_velocity_left - drive3.GetSpeed()) > 1000)
+	if ((final_velocity_left - drive3.GetSpeed()) > kBURNOUT)
 	{
 		burnoutIndexLeft++;
 	}
@@ -168,7 +226,7 @@ void MarkX::TKODrive()
 		burnoutIndexLeft = 0;
 	}
 
-	if ((final_velocity_right - drive1.GetSpeed()) > 1000)
+	if ((final_velocity_right - drive1.GetSpeed()) > kBURNOUT)
 	{
 		burnoutIndexRight++;
 	}
@@ -203,54 +261,3 @@ void MarkX::TKODrive()
 	drive4.Set(-drive3.GetOutputVoltage() / drive3.GetBusVoltage());
 
 }
-void MarkX::Operator()
-{
-	if (stick2.GetRawButton(7))
-		driveToggle = 1;
-	if (stick2.GetRawButton(8))
-		driveToggle = 2;
-	if (stick2.GetRawButton(9))
-		driveToggle = 3;
-	if (stick1.GetRawButton(10))
-		dvigat.JukeR();
-	if (stick1.GetRawButton(7))
-		dvigat.JukeL();
-	if (stick1.GetTrigger())
-	{
-		kDRIVE_STRAIGHT = 0.4;
-		kDRIVE_ROTATION = 0.2;
-		DSLog(5, "Slow mode");
-	}
-	else
-	{
-		kDRIVE_STRAIGHT = 1;
-		kDRIVE_ROTATION = 0.6;
-	}
-	if (stick2.GetTrigger())
-	{
-		kDRIVE_STRAIGHT = -kDRIVE_STRAIGHT;
-		kDRIVE_ROTATION = -kDRIVE_ROTATION;
-		DSLog(5, "Reverse mode");
-	}
-	else
-	{
-		kDRIVE_STRAIGHT = fabs(kDRIVE_STRAIGHT);
-		kDRIVE_ROTATION = fabs(kDRIVE_ROTATION);
-	}
-	if (stick3.GetRawButton(4))
-	{
-		//TKOShooter.shoot(-stick3.GetY());
-		DSLog(6, "Manual shoot pow: %f", -stick3.GetY());
-	}
-	if (stick4.GetRawButton(6))
-	{
-		//TKOShooter.autoShoot();
-		DSLog(6, "Autoshoot");
-	}
-	if (stick3.GetRawButton(9) and stick4.GetRawButton(9))
-	{
-		//TKOClimber.autoClimb();
-		DSLog(6, "Autoclimbing");
-	}
-}
-

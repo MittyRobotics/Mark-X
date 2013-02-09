@@ -2,28 +2,30 @@
 #define __DEFINITIONS_H
 
 /*! \file Definitions.h
- \brief Defines constants and macros used by the other files in the project.
- */
+	\brief Defines constants and macros used by the other files in the project.
+*/
 #include "WPILib.h"
 #include "Vision/RGBImage.h"
 #include "Math.h"
-#include "TKOGyro.h"
-#include "stdlib.h"
+#include "Atom.h"
+#include "Molecule.h"
+#include "Universe.h"
 
 /*!
- \def DSClear()
- Clears the Driver Station LCD of all text.
- */
+  \def DSClear()
+  Clears the Driver Station LCD of all text.
+*/
 /*!
- \def DSLog(line, msg, ...)
- Formatted printing of msg to the specified line on the Driver Station LCD.
- */
+  \def DSLog(line, msg, ...)
+  Formatted printing of msg to the specified line on the Driver Station LCD.
+*/
 #define DSClear()				DriverStationLCD::GetInstance()->Clear(); \
 								DriverStationLCD::GetInstance()->UpdateLCD();
 #define DSLog(line, msg, ...)	DriverStationLCD::GetInstance()->Printf(DriverStationLCD::GetInstance()->kUser_Line##line, 1, msg, ##__VA_ARGS__); \
 								DriverStationLCD::GetInstance()->UpdateLCD();
+#define gg ;
 
-#define GO_AWAY NULL;
+
 
 /*! \mainpage Welcome to TKO 1351's MarkIX's Code Documentation!
  *
@@ -72,24 +74,22 @@ const float MID_FENDER = 0.425;
 const float TOP_FENDER = 0.585;
 
 //PID constants
-const float SPINNER_kP = 0.2; //working P: 0.20, working I: .0034
+const float SPINNER_kP = 0.2;		//working P: 0.20, working I: .0034
 const float SPINNER_kI = 0.004;
 const float SPINNER_kD = 0.0;
-const float DRIVE_kP = 0.2; //working P: 0.20, working I: .0034
+const float DRIVE_kP = 0.2;		//working P: 0.20, working I: .0034
 const float DRIVE_kI = 0.004;
 const float DRIVE_kD = 0.0;
 const float REVS_PER_METER = 2.51;
-const int ENCODER_REVS = 250;
-const bool JAG_SAFETY = true;
-const CANJaguar::SpeedReference JAG_SPEEDREF = CANJaguar::kSpeedRef_QuadEncoder;
 
 //Drive constants
-const float kMAX_DRIVE_RPM = 700;
-const float deadzone = 0.1;
-const int kBURNOUT = 1000;
+const float kDRIVE_STRAIGHT = .5;
+const float kDRIVE_ROTATION = .1;
+const int kDRIVE_MULT = 5310;
+const double deadzone = 0.2;
 
 //Hoop heights
-const float HOOP_BOT = 23;
+const float HOOP_BOT = 23; 
 const float HOOP_TOP = 93;
 const float HOOP_MID = 58;
 
@@ -99,16 +99,23 @@ const int BORDER_SIZE = 3;
 const float PI = 3.14159265;
 const float DEGREES_PER_RADIAN = 180 / PI;
 
+
+// A constant of proportionality between ticks and feet
+#define TICKS_PER_FT    66
+#define TICKS_SK_REVOLUTION 100			//TODO: determine true value
+
 //Autonomous Constants
 const float RAMP_RATE = 0.005;
 const float RAMP_RATE_2 = 0.0005;
 
+int feet_to_tick(float ft);
+const float GYRO_TICKS_PER_DEG =	13/36.;
 const float TANGENT_VERTICAL_CAMERA_ANGLE = tan(19 / DEGREES_PER_RADIAN);
-const float TANGENT_HORIZONTAL_CAMERA_ANGLE = tan(27. / DEGREES_PER_RADIAN); // TODO: Find this
+const float TANGENT_HORIZONTAL_CAMERA_ANGLE = tan(27. / DEGREES_PER_RADIAN);	// TODO: Find this
 const int SCREEN_WIDTH_PIXELS = 320;
 const int SCREEN_HEIGHT_PIXELS = 240;
 const float TARGET_HEIGHT = 17.;
-const float TARGET_WIDTH = 24.; // In inches
+const float TARGET_WIDTH = 24.;													// In inches
 const float HOOP_DIAMETER = 18.;
 const float BACKBOARD_TO_HOOP_RIM = 6.;
 
