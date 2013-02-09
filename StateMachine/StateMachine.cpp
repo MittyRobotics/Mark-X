@@ -316,8 +316,41 @@ class StateMachine: public SimpleRobot
 
 				else if (state == MOVE_ARM_FORWARD)  ///state 6
 				{ ///move arm forward
-					//move arm forward
-					Wait(.5);
+				    while(time.Get() < 500)
+				    {
+                        if(hookLeft.Get() or hookRight.Get())
+                        {
+                            state = WTF;
+                        }
+                        if(not clipLeft.Get() or not clipRight.Get())
+                        {
+                            state = OH_SHIT;
+                        }
+                        if(armTop.Get() or armBottom.Get())
+                        {
+                            state = WTF;
+                        }
+                        if (ratchet.Get())
+                        {
+                            //motor stop
+                            //retract ratchet
+                            Wait(.5);
+                            if(ratchet.Get())
+                            {
+                                state = OH_SHIT;
+                            }
+                        }
+                        if (clipPositionOut.Get())
+                        {
+                            //retract clips
+                            Wait(.5);
+                            if (clipPositionOut.Get())
+                            {
+                                state = Decide(state);
+                            }
+                        }
+				    }
+					time.Reset();
 					state = MOVE_HOOKS_DOWN;
 				}
 
