@@ -1,3 +1,5 @@
+//Last edited by Vadim Korolik
+//on 02/09/2013
 #ifndef __TKODVIGAT_H
 #define __TKODVIGAT_H
 

@@ -1,3 +1,5 @@
+//Last edited by Andrew Light
+//on 02/01/2013
 #ifndef __TKOGYRO_H
 #define __TKOGYRO_H
 

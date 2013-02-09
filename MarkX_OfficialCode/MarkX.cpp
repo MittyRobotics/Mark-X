@@ -1,9 +1,14 @@
 //Last edited by Vadim Korolik
-//on 02/05/2013
+//on 02/09/2013
 #include "WPILib.h"
 #include "Definitions.h"
 #include "TKOAutonomous.h"
 #include "TKODvigat.h"
+
+/*---------------MarkX-Thing-to-Do---------------------
+ * 
+ * 
+ */
 
 class MarkX: public SimpleRobot
 {

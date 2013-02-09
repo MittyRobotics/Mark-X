@@ -1,3 +1,5 @@
+//Last edited by Vadim Korolik
+//on 02/09/2013
 #ifndef __DEFINITIONS_H
 #define __DEFINITIONS_H
 
