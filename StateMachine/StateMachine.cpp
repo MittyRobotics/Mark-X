@@ -1,12 +1,7 @@
 #include "WPILib.h"
 #include "Definitions.h"
 
-/*
- * This is a demo program showing the use of the RobotBase class.
- * The SimpleRobot class is the base of a robot application that will automatically call your
- * Autonomous and OperatorControl methods at the right time as controlled by the switches on
- * the driver station or the field controls.
- */
+//TODO: ADD CONTINUES TO EVERY CONTINGENCY
 
 class StateMachine: public SimpleRobot
 {
@@ -15,6 +10,7 @@ class StateMachine: public SimpleRobot
 		DigitalInput hookLeft, hookRight, clipLeft, clipRight, armTop, armBottom, ratchet, clipPositionIn, clipPositionOut;
 		AnalogChannel pot;
 		Timer time;
+		Timer time2;
 
 	private:
 		int state;
@@ -56,6 +52,7 @@ class StateMachine: public SimpleRobot
 			time.Start();
 			state = ROBOT_PULLED_UP;
 			int level = 0;
+			int baseTime = 0;
 			while (level < 3)
 			{
 				if (state == ROBOT_PULLED_UP)  ///state 1
@@ -356,12 +353,49 @@ class StateMachine: public SimpleRobot
 
 				else if (state == MOVE_HOOKS_DOWN)  ///state 7
 				{ ///move hooks down
-					time.Reset();
-					if (hookLeft.Get() && hookRight.Get())  ///both hooks clip on
+					if (hookLeft.Get() && hookRight.Get() && not ratchet.Get())  ///both hooks clip on
 					{
 					    time.Reset();
 						state = DEPLOYING_RATCHET;
 					}
+
+					if (hookLeft.Get() and hookRight.Get() and ratchet.Get())
+					{
+					    time.Reset();
+					    state = RETRACTING_CLIPS;
+					}
+
+                    if (hookLeft.Get() or hookRight.Get())
+                    {
+                        baseTime = time.Get();
+                        while(time.Get() - baseTime < 250)
+                        {
+                            //keep moving motors down
+                            if (hookLeft.Get() and hookRight.Get())
+                            {
+                                time.Reset();
+                                state = DEPLOYING_RATCHET;
+                                break;
+                            }
+                            if(not hookLeft.Get() or not hookRight.Get())
+                            {
+                                state = OH_SHIT;
+                                break;
+                            }
+                        }
+                        continue;
+                    }
+
+                    if(not clipLeft.Get() or not clipRight.Get())
+                    {
+                        state = OH_SHIT;
+                    }
+
+                    if(armTop.Get())
+                    {
+                        state = WTF;
+                    }
+
 					if (armBottom.Get())
 					{
 						//reset PID
@@ -369,12 +403,31 @@ class StateMachine: public SimpleRobot
 						Wait(.5);
 						state = MOVE_HOOKS_UP;
 					}
+
+                    if(ratchet.Get())
+                    {
+                        time.Reset();
+                        //keep moving hooks down
+                        if(time.Get() > 5000 and not hookLeft.Get() or not hookRight.Get())  ///if it takes 5 seconds, and one of the hooks is still not engaged
+                        {
+                            //retract ratchet
+                            state = MOVE_HOOKS_UP;
+                        }
+                    }
+
+                    if (clipPositionIn.Get())
+                    {
+                        state = OH_SHIT;
+                    }
+
 					if (pot.GetVoltage() <= SETPOINT_BOTTOM)
 					{
 						//move arm back
 						Wait(.5);
 						state = MOVE_HOOKS_UP; ///STAGE 6
 					}
+
+
 					if (time.Get() > 5000)
 					{
 						state = OH_SHIT;
