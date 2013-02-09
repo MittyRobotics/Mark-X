@@ -86,9 +86,14 @@ class StateMachine: public SimpleRobot
 					    state = OH_SHIT;
 					}
 
-                    if (not ratchet.Get())  ///If ratchet is disabled, E1 state
+                    if (not ratchet.Get())  ///If ratchet is disabled
 					{
-						state = OH_SHIT;
+						//push down ratchet
+						Wait(.5);
+						if (not ratchet.Get())
+						{
+						    state = OH_SHIT;
+						}
 					}
 
 					if(not clipPositionIn.Get())  ///if clips are not in
@@ -280,6 +285,22 @@ class StateMachine: public SimpleRobot
 						//stop motors
 						//rewind motors a bit
 						printf("You hit the top");
+                    }
+
+                    if (armBottom.Get())
+                    {
+                        state = WTF;
+                    }
+
+                    if (ratchet.Get())
+                    {
+                        //motor stop
+                        //retract ratchet
+                        Wait(.5);
+                        if(ratchet.Get())
+                        {
+                            state = OH_SHIT;
+                        }
                     }
 
                     if (clipPositionIn.Get()) ///if clips retract
