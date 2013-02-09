@@ -39,10 +39,14 @@ class StateMachine: public SimpleRobot
 			time.Reset();
 			while (time.Get() < 5000)
 			{
-			}
-			if (stick.GetRawButton(5))
-			{ ///if you press a button to continue climbing
-				return s;
+			    if (stick.GetRawButton(5))
+                { ///if you press a button to continue climbing
+                    return s;
+                }
+                if (stick.GetRawButton(6))
+                {
+                    return s+1;
+                }
 			}
 			return OH_SHIT;
 		}
@@ -233,6 +237,11 @@ class StateMachine: public SimpleRobot
                         }
                     }
 
+                    if(time.Get() > 1000 and clipPositionOut.Get()) ///your clip motors are broken. sucks to suck
+                    {
+                        state = OH_SHIT;
+                    }
+
 					if (time.Get() > 1000 and !clipLeft.Get() || !clipRight.Get())
 					{ ///if either clip does not engage in 1 second
 						//retract clips*/
@@ -247,21 +256,32 @@ class StateMachine: public SimpleRobot
 
                 else if (state == MOVE_HOOKS_UP)  ///state 5
 				{ ///Hooks begin moving up
+                    //run hook motors
+
+                    if (pot.GetVoltage() > SETPOINT_TOP)
+					{
+					    time.Reset();
+						state = MOVE_ARM_FORWARD;
+					}
+
+                    if (hookLeft.Get() or hookRight.Get())  ///wtf
+                    {
+                        state = OH_SHIT;
+                    }
+
+                  //  if (not clipLeft.Get() or not clipRight.Get() or)
+
 					if (armTop.Get())
 					{
 						//reset PID
 						//stop motors
+						//rewind motors a bit
 						printf("You hit the top");
                     }
+
 					if (time.Get() > 10000)
 					{
 						state = Decide(state);
-					}
-
-					if (pot.GetVoltage() > SETPOINT_TOP)
-					{
-					    time.Reset();
-						state = MOVE_ARM_FORWARD;
 					}
 				}
 
