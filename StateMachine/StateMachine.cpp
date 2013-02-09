@@ -269,14 +269,22 @@ class StateMachine: public SimpleRobot
                         state = OH_SHIT;
                     }
 
-                  //  if (not clipLeft.Get() or not clipRight.Get() or)
+                    if (not clipLeft.Get() or not clipRight.Get())  ///one of the clips comes off
+                    {
+                        state = OH_SHIT;
+                    }
 
-					if (armTop.Get())
+                    if (armTop.Get())
 					{
 						//reset PID
 						//stop motors
 						//rewind motors a bit
 						printf("You hit the top");
+                    }
+
+                    if (clipPositionIn.Get()) ///if clips retract
+                    {
+                        state = OH_SHIT;
                     }
 
 					if (time.Get() > 10000)

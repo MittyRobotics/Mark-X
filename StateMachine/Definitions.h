@@ -21,6 +21,7 @@ const int MOVE_HOOKS_DOWN = 8;
 const int DEPLOYING_RATCHET = 9;
 const int RETRACTING_CLIPS = 10;
 const int OH_SHIT = 13;
+const int WTF = 13;
 double SETPOINT_RATCHET_RETRACT = 4.0;
 double SETPOINT_BOTTOM = .3;
 double SETPOINT_TOP = 4.5;
