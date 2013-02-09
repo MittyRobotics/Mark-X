@@ -519,6 +519,7 @@ class StateMachine: public SimpleRobot
                     {
                         state = OH_SHIT;
                     }
+                    //check git braginsky branch
 
 					if (time.Get() > 2000 and  (clipLeft.Get() || clipRight.Get()))
 					{
