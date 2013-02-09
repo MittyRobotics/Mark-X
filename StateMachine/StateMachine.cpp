@@ -442,16 +442,46 @@ class StateMachine: public SimpleRobot
 				{///push down ratchet
 					//push down ratchet
 					time.Reset();
-					if (time.Get() > 1000)
-					{
-						state = OH_SHIT;
-					}
 					if (ratchet.Get())
 					{
                         time.Reset();
 						state = RETRACTING_CLIPS;
 					}
 
+					if (not hookLeft.Get() or not hookRight.Get())
+					{
+					    state = OH_SHIT;
+					}
+
+					if (not clipLeft.Get() or not clipRight.Get())
+					{
+					    state = OH_SHIT;
+					}
+
+                    if (armTop.Get())
+                    {
+                        state = WTF;
+                    }
+
+                    if (armBottom.Get())  ///if arm hits bottom, that means its too late to remove ratchet
+                    {
+                        state = OH_SHIT;
+                    }
+
+                    if (clipPositionOut.Get())
+                    {
+                        state = OH_SHIT;
+                    }
+
+                    if (pot.GetVoltage() < bottomOfBar)
+                    {
+                        state = OH_SHIT;
+                    }
+
+                    if (time.Get() > 1000)
+					{
+						state = OH_SHIT;
+					}
 
 					//move arm back
 					//wait(.5);
