@@ -70,7 +70,9 @@ void TKOAutonomous::autonomousCode()
 
 	printMessages();
 
-	if (autonTimer.Get() > 1)
+	if (autonTimer.Get() > 0.1)
+		shooting();
+	if (autonTimer.Get() > 3)
 	{
 		rampRate += rampRate2;
 		printf("About to start turning \n");
