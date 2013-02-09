@@ -18,6 +18,7 @@ public:
 		stick(1), // as they are declared above.
 				comp(14, 1), s1(8)
 	{
+		comp.Start();
 	}
 
 	/**
@@ -39,7 +40,6 @@ public:
 			else
 			{
 				comp.Start();
-				DSLog(1, "Running compressor");
 			}
 			if (stick.GetRawButton(4))
 				s1.Set(true);
