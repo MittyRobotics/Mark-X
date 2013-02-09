@@ -10,7 +10,7 @@ class MarkX: public SimpleRobot
 	CANJaguar drive1, drive2, drive3, drive4;
 	RobotDrive drive;
 	TurnAtom turn90D;
-	
+	Gyro gyro;
 	DriverStation *ds;
 	bool usingTank;
 
@@ -23,7 +23,8 @@ public:
 				drive3(DRIVE_R1_ID, CANJaguar::kSpeed), // initialize motor 3 < first right drive motor
 				drive4(DRIVE_R2_ID, CANJaguar::kPercentVbus), // initialize motor 4 < second right drive motor
 				drive(&drive1, &drive2, &drive3, &drive4),
-				turn90D(DRIVE_kP, DRIVE_kI, DRIVE_kD, &drive1, &drive2, &drive3, &drive4)
+				gyro(1),
+				turn90D(DRIVE_kP, DRIVE_kI, DRIVE_kD, &drive1, &drive2, &drive3, &drive4, &gyro, 90.)
 	{
 		drive.SetInvertedMotor(RobotDrive::kRearLeftMotor, true);
 		drive.SetInvertedMotor(RobotDrive::kFrontRightMotor, true);
