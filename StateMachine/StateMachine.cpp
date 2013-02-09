@@ -438,6 +438,8 @@ class StateMachine: public SimpleRobot
 					//state = 6
 				}
 
+				//test
+
 				else if (state == DEPLOYING_RATCHET)  ///state 8
 				{///push down ratchet
 					//push down ratchet
