@@ -445,6 +445,7 @@ class StateMachine: public SimpleRobot
 					if (ratchet.Get())
 					{
                         time.Reset();
+                        //stop motors
 						state = RETRACTING_CLIPS;
 					}
 
@@ -490,16 +491,38 @@ class StateMachine: public SimpleRobot
 
 				else if (state == RETRACTING_CLIPS)  ///state 9
 				{///retract clips
-					time.Reset();
-					if (time.Get() > 2000 && (clipLeft.Get() || clipRight.Get()))
-					{
-						state = OH_SHIT;
-					}
-					if (!clipLeft.Get() && !clipRight.Get())
+				    ///hook motors are stopped
+				    ///run clip motors
+                    if (!clipLeft.Get() && !clipRight.Get() and clipPositionIn.Get())
 					{
 						level++;
 						time.Reset();
 						state = ROBOT_PULLED_UP;
+					}
+
+					if (clipPositionIn.Get() and clipLeft.Get() or clipRight.Get())
+					{
+					    state = Decide(state);
+					}
+
+                    if (not hookLeft.Get() and not hookRight.Get())
+                    {
+                        state = OH_SHIT;
+                    }
+
+                    if (armTop.Get() or armBottom.Get())
+                    {
+                        state = WTF;
+                    }
+
+                    if (not ratchet.Get())
+                    {
+                        state = OH_SHIT;
+                    }
+
+					if (time.Get() > 2000 and  (clipLeft.Get() || clipRight.Get()))
+					{
+						state = OH_SHIT;
 					}
 				}
 
