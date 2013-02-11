@@ -9,52 +9,45 @@
  */
 class RobotDemo: public SimpleRobot
 {
-	Joystick stick; // only joystick
-	Compressor comp;
-	Solenoid s1;
+		Joystick stick; // only joystick
+		Compressor comp;
+		DriverStation *ds;
 
-public:
-	RobotDemo(void) :
-		stick(1), // as they are declared above.
-				comp(14, 1), s1(8)
-	{
-		comp.Start();
-	}
-
-	/**
-	 * Drive left & right motors for 2 seconds then stop
-	 */
-	void Autonomous(void)
-	{
-	}
-
-	/**
-	 * Runs the motors with arcade steering. 
-	 */
-	void OperatorControl(void)
-	{
-		while (true)
+	public:
+		RobotDemo(void) :
+			stick(1), // as they are declared above.
+			        comp(14, 2)
 		{
-			if (stick.GetRawButton(3))
-				comp.Stop();
-			else
-			{
-				comp.Start();
-			}
-			if (stick.GetRawButton(4))
-				s1.Set(true);
-			else
-				s1.Set(false);
+			ds = DriverStation::GetInstance();
 		}
-	}
 
-	/**
-	 * Runs during test mode
-	 */
-	void Test()
-	{
+		/**
+		 * Drive left & right motors for 2 seconds then stop
+		 */
+		void Autonomous(void)
+		{
+		}
 
-	}
+		/**
+		 * Runs the motors with arcade steering. 
+		 */
+		void OperatorControl(void)
+		{
+			while (true)
+			{
+				DSClear();
+				comp.Start();
+				DSLog(1, "Comp running");
+			}
+		}
+
+		/**
+		 * Runs during test mode
+		 */
+		void Test()
+		{
+
+		}
 };
 
 START_ROBOT_CLASS(RobotDemo)
