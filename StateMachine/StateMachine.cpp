@@ -1,20 +1,17 @@
 #include "WPILib.h"
 #include "Definitions.h"
 
-/*
- * This is a demo program showing the use of the RobotBase class.
- * The SimpleRobot class is the base of a robot application that will automatically call your
- * Autonomous and OperatorControl methods at the right time as controlled by the switches on
- * the driver station or the field controls.
- */
+//TODO: ADD CONTINUES TO EVERY CONTINGENCY
 
 class StateMachine: public SimpleRobot
 {
 		RobotDrive myRobot; // robot drive system
 		Joystick stick; // only joystick
-		DigitalInput hookLeft, hookRight, clipLeft, clipRight, armTop, armBottom, ratchet, clipPosition;
+		DigitalInput hookLeft, hookRight, clipLeft, clipRight, armTop, armBottom, ratchet, clipPositionIn, clipPositionOut;
 		AnalogChannel pot;
 		Timer time;
+		Timer time2;
+		DriverStation *ds;
 
 	private:
 		int state;
@@ -25,8 +22,9 @@ class StateMachine: public SimpleRobot
 		StateMachine(void) :
 			myRobot(1, 2), // these must be initialized in the same order
 			        stick(1), // as they are declared above.
-			        hookLeft(1), hookRight(2), clipLeft(3), clipRight(4), armTop(5), armBottom(6), ratchet(7), clipPosition(8), pot(1) ///clipPosition true means clips are out
+			        hookLeft(1), hookRight(2), clipLeft(3), clipRight(4), armTop(5), armBottom(6), ratchet(7), clipPositionIn(8), clipPositionOut(9), pot(1) ///clipPosition true means clips are out
 		{
+		    ds = DriverStation::GetInstance();
 			state = 1;
 		}
 
@@ -36,13 +34,18 @@ class StateMachine: public SimpleRobot
 
 		int Decide(int s)
 		{
-			time.Reset();
+
 			while (time.Get() < 5000)
 			{
-			}
-			if (stick.GetRawButton(5))
-			{ ///if you press a button to continue climbing
-				return s;
+			    if (stick.GetRawButton(5))
+                { ///if you press a button to continue climbing
+                    return s;
+                }
+                if (stick.GetRawButton(6))
+                {
+                    printf("OPERATOR WENT TO NEXT STATE");
+                    return s+1;
+                }
 			}
 			return OH_SHIT;
 		}
@@ -52,93 +55,117 @@ class StateMachine: public SimpleRobot
 			time.Start();
 			state = ROBOT_PULLED_UP;
 			int level = 0;
+			int baseTime = 0;
+			int counter = 0;
 			while (level < 3)
 			{
+			    counter++;
 				if (state == ROBOT_PULLED_UP)  ///state 1
 				{ ///begin pulling up robot
 				    //engage ratchet
 				    //arm de-pressure
 				    //run hook motors down
 				    //clips retracted
+				    time.Reset();
                     if (pot.GetVoltage() <= SETPOINT_RATCHET_RETRACT)  ///if PID says hooks are at their setpoint
 					{
-					    time.Reset();
+					    printf("---------------REACHED SETPOINT, MOVE TO RATCHET RETRACTING. YOU HAVE 1 SECOND. GO.----------------- \n");
 						state = RETRACTING_RATCHET;
 					}
 
 					if(clipLeft.Get() or clipRight.Get())
 					{
+					    printf("---------------CLIPS ARENT ON, DECIDE----------------- \n");
 					    state = Decide(state);
 					}
 
 					if (not hookLeft.Get() or not hookRight.Get())  ///if either hook jumps off bar, E2 state
 					{
-						state = Decide(state);
+					    printf("---------------ONE OF THE HOOKS JUMPED OFF, oh NO----------------- \n");
+						state = OH_SHIT;
 					}
 
 
 					if (armTop.Get() or armBottom.Get()) ///if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 					{
+                        printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
 					    state = OH_SHIT;
 					}
 
-                    if (not ratchet.Get())  ///If ratchet is disabled, E1 state
+                    if (not ratchet.Get())  ///If ratchet is disabled
 					{
-						state = OH_SHIT;
+						//push down ratchet
+						printf("---------------RATCHET IS DISABLED. WAITING HALF SECOND----------------- \n");
+						Wait(.5);
+						if (not ratchet.Get())
+						{
+						    printf("---------------RATCHET IS STILL DISABLED, oh NO----------------- \n");
+						    state = OH_SHIT;
+						}
 					}
 
-					if(clipPosition.Get())  ///if clips are out, stop robot -
+					if(not clipPositionIn.Get())  ///if clips are not in
 					{
 					    //retract clips
+					    printf("---------------CLIPS ARE NOT IN, WAITING HALF SECOND----------------- \n");
 					    Wait(.5);
-					    if(clipPosition.Get()){
+					    if(not clipPositionIn.Get()){
+					        printf("---------------CLIPS ARE STILL NOT IN, oh NO----------------- \n");
 					        state = OH_SHIT;
 					    }
 					}
 
 					if (time.Get() > 15000)   ///if hooks take 15 seconds to reach bottom
 					{
+					    printf("---------------HOOKS ARE TAKING TOO LONG. DECIDE----------------- \n");
 						Decide(state);
 					}
 				}
 
 				else if (state == RETRACTING_RATCHET)  ///state 2
 				{ ///retract ratchet
-				    //stop hook motors
+				    //slow down hook motors
 				    //run ratchet motor
+				    time.Reset();
                     if (not ratchet.Get()) ///if ratchet retracts, move on
 					{
-					    time.Reset();
+                        printf("----------RETRACTED RATCHET, MOVING ON TO NEXT STATE ------------- \n");
 						state = CHANGE_SETPOINT_MOVE_HOOKS_DOWN;
 					}
 
 					if (not hookLeft.Get() or not hookRight.Get())  ///if either hook comes off, then go to emergency state
 					{
+					    printf("---------------ONE OF THE HOOKS CAME OFF. oh NO----------------- \n");
 					    state = OH_SHIT;
 					}
 
 					if(clipLeft.Get() or clipRight.Get()) ///if either clip senses a bar, then sensor broke, go to emergency state
 					{
+					    printf("---------------A CLIP SENSED THE BAR. oh NO----------------- \n");
 					    state = OH_SHIT;
 					}
 
-					if(armTop.Get() or armBottom.Get())   ///if top or bottom limit switch senses something, then WTF
+					if(armTop.Get())   ///if top switch senses something, then WTF
 					{
+					    printf("--------------You somehow hit the top. What. oh NO.-------------- \n");
 					    state = OH_SHIT;
                     }
 
-					if(clipPosition.Get())  ///if clips are out, stop robot -
+					if(not clipPositionIn.Get())  ///if clips are not in, stop robot -
 					{
 					    //stop motors
 					    //retract clips
+					    printf("--------------The clips not all the way in. You have half a second.-------------- \n");
 					    Wait(.5);
-					    if(clipPosition.Get()){
+					    if(not clipPositionIn.Get()){
+					        printf("--------------Clips are still not in. oh NO.-------------- \n");
 					        state = OH_SHIT;
 					    }
 					}
 
                     if (time.Get() > 1000)  ///if the ratchet does not go down in 1 second
 					{
+					    printf("--------------You took too long. oh NO.-------------- \n");
 						state = OH_SHIT;
 					}
 
@@ -146,14 +173,16 @@ class StateMachine: public SimpleRobot
 
 				else if (state == CHANGE_SETPOINT_MOVE_HOOKS_DOWN)  ///state 3
 				{ ///change setpoint to very bottom, keep moving hooks
+				    time.Reset();
                     if (pot.GetVoltage() <= SETPOINT_BOTTOM)   ///if PID says hook reaches bottom of its movement
 					{
-					    time.Reset();
+                        printf("--------------You reached your setpoint. Move on to deploying clips-------------- \n");
 						state = DEPLOY_CLIPS;
 					}
 
 					if (not hookLeft.Get() or not hookRight.Get())  ///if either hook comes off at any point in time
 					{
+					    printf("--------------Your hooks came off. Whoops.-------------- \n");
 					    state = OH_SHIT;
 					}
 
@@ -165,22 +194,22 @@ class StateMachine: public SimpleRobot
 					if (armBottom.Get())
 					{ ///if hook hit the bottom of the bar
 						//reset PID Values
-						time.Reset();
+
 						state = DEPLOY_CLIPS;
 					}
 
 					if (ratchet.Get())  ///if ratchet is engaged
 					{
-					    time.Reset();
+
 					    state = RETRACTING_RATCHET;
 					}
 
-					if(clipPosition.Get())  ///if clips are out, stop robot -
+					if(clipPositionIn.Get())  ///if clips are not in, stop robot -
 					{
 					    //stop motors
 					    //retract clips
 					    Wait(.5);
-					    if(clipPosition.Get()){
+					    if(clipPositionIn.Get()){
 					        state = OH_SHIT;
 					    }
 					}
@@ -196,16 +225,22 @@ class StateMachine: public SimpleRobot
                 { ///deploying clips
 					//hook motor stops moving
 					//deploy clips
-
-                    if (clipLeft.Get() && clipRight.Get() && clipPosition.Get())  ///if clips engage and are down, move on to state 5
+                    time.Reset();
+                    if (clipLeft.Get() && clipRight.Get() && clipPositionOut.Get())  ///if clips engage and are down, move on to state 5
                     {
-                        time.Reset();
+
                         state = MOVE_HOOKS_UP;
                     }
 
-                    if (clipLeft.Get() and clipRight.Get() and not clipPosition.Get())  ///if both clips clip on, but the clip Position says clips are up, WTF
+                    if (clipLeft.Get() and clipRight.Get() and clipPositionIn.Get())  ///if both clips clip on, but the clip Position says clips are up, WTF
                     {
                         state = OH_SHIT;
+                    }
+
+                    if (clipLeft.Get() and clipRight.Get() and not clipPositionIn.Get() and not clipPositionOut.Get()) ///clips are somewhere in between, but they're also attached to bar. wtf
+                    {
+                        printf("Your hooks arent all the way down. we're gonna keep climbing. #YOLO");
+                        state = MOVE_HOOKS_UP;
                     }
 
                     if(not hookLeft.Get() or not hookRight.Get()) ///if either hook hops off, emergency
@@ -227,6 +262,11 @@ class StateMachine: public SimpleRobot
                         }
                     }
 
+                    if(time.Get() > 1000 and clipPositionOut.Get()) ///your clip motors are broken. sucks to suck
+                    {
+                        state = OH_SHIT;
+                    }
+
 					if (time.Get() > 1000 and !clipLeft.Get() || !clipRight.Get())
 					{ ///if either clip does not engage in 1 second
 						//retract clips*/
@@ -241,39 +281,146 @@ class StateMachine: public SimpleRobot
 
                 else if (state == MOVE_HOOKS_UP)  ///state 5
 				{ ///Hooks begin moving up
-					if (armTop.Get())
+                    //run hook motors
+                    time.Reset();
+                    if (pot.GetVoltage() > SETPOINT_TOP)
+					{
+
+						state = MOVE_ARM_FORWARD;
+					}
+
+                    if (hookLeft.Get() or hookRight.Get())  ///wtf
+                    {
+                        state = OH_SHIT;
+                    }
+
+                    if (not clipLeft.Get() or not clipRight.Get())  ///one of the clips comes off
+                    {
+                        state = OH_SHIT;
+                    }
+
+                    if (armTop.Get())
 					{
 						//reset PID
 						//stop motors
+						//rewind motors a bit
 						printf("You hit the top");
                     }
+
+                    if (armBottom.Get())
+                    {
+                        state = WTF;
+                    }
+
+                    if (ratchet.Get())
+                    {
+                        //motor stop
+                        //retract ratchet
+                        Wait(.5);
+                        if(ratchet.Get())
+                        {
+                            state = OH_SHIT;
+                        }
+                    }
+
+                    if (clipPositionIn.Get()) ///if clips retract
+                    {
+                        state = OH_SHIT;
+                    }
+
 					if (time.Get() > 10000)
 					{
 						state = Decide(state);
-					}
-
-					if (pot.GetVoltage() > SETPOINT_TOP)
-					{
-					    time.Reset();
-						state = MOVE_ARM_FORWARD;
 					}
 				}
 
 				else if (state == MOVE_ARM_FORWARD)  ///state 6
 				{ ///move arm forward
-					//move arm forward
-					Wait(.5);
+				    time.Reset();
+				    while(time.Get() < 500)
+				    {
+                        if(hookLeft.Get() or hookRight.Get())
+                        {
+                            state = WTF;
+                        }
+                        if(not clipLeft.Get() or not clipRight.Get())
+                        {
+                            state = OH_SHIT;
+                        }
+                        if(armTop.Get() or armBottom.Get())
+                        {
+                            state = WTF;
+                        }
+                        if (ratchet.Get())
+                        {
+                            //motor stop
+                            //retract ratchet
+                            Wait(.5);
+                            if(ratchet.Get())
+                            {
+                                state = OH_SHIT;
+                            }
+                        }
+                        if (clipPositionOut.Get())
+                        {
+                            //retract clips
+                            Wait(.5);
+                            if (clipPositionOut.Get())
+                            {
+                                state = Decide(state);
+                            }
+                        }
+				    }
+
 					state = MOVE_HOOKS_DOWN;
 				}
 
 				else if (state == MOVE_HOOKS_DOWN)  ///state 7
 				{ ///move hooks down
-					time.Reset();
-					if (hookLeft.Get() && hookRight.Get())  ///both hooks clip on
+				    time.Reset();
+					if (hookLeft.Get() && hookRight.Get() && not ratchet.Get())  ///both hooks clip on
 					{
-					    time.Reset();
+
 						state = DEPLOYING_RATCHET;
 					}
+
+					if (hookLeft.Get() and hookRight.Get() and ratchet.Get())
+					{
+
+					    state = RETRACTING_CLIPS;
+					}
+
+                    if (hookLeft.Get() or hookRight.Get())
+                    {
+                        baseTime = time.Get();
+                        while(time.Get() - baseTime < 250)
+                        {
+                            //keep moving motors down
+                            if (hookLeft.Get() and hookRight.Get())
+                            {
+
+                                state = DEPLOYING_RATCHET;
+                                break;
+                            }
+                            if(not hookLeft.Get() or not hookRight.Get())
+                            {
+                                state = OH_SHIT;
+                                break;
+                            }
+                        }
+                        continue;
+                    }
+
+                    if(not clipLeft.Get() or not clipRight.Get())
+                    {
+                        state = OH_SHIT;
+                    }
+
+                    if(armTop.Get())
+                    {
+                        state = WTF;
+                    }
+
 					if (armBottom.Get())
 					{
 						//reset PID
@@ -281,12 +428,31 @@ class StateMachine: public SimpleRobot
 						Wait(.5);
 						state = MOVE_HOOKS_UP;
 					}
+
+                    if(ratchet.Get())
+                    {
+
+                        //keep moving hooks down
+                        if(time.Get() > 5000 and not hookLeft.Get() or not hookRight.Get())  ///if it takes 5 seconds, and one of the hooks is still not engaged
+                        {
+                            //retract ratchet
+                            state = MOVE_HOOKS_UP;
+                        }
+                    }
+
+                    if (clipPositionIn.Get())
+                    {
+                        state = OH_SHIT;
+                    }
+
 					if (pot.GetVoltage() <= SETPOINT_BOTTOM)
 					{
 						//move arm back
 						Wait(.5);
 						state = MOVE_HOOKS_UP; ///STAGE 6
 					}
+
+
 					if (time.Get() > 5000)
 					{
 						state = OH_SHIT;
@@ -300,17 +466,48 @@ class StateMachine: public SimpleRobot
 				else if (state == DEPLOYING_RATCHET)  ///state 8
 				{///push down ratchet
 					//push down ratchet
-					time.Reset();
-					if (time.Get() > 1000)
-					{
-						state = OH_SHIT;
-					}
+                    time.Reset();
 					if (ratchet.Get())
 					{
-                        time.Reset();
+
+                        //stop motors
 						state = RETRACTING_CLIPS;
 					}
 
+					if (not hookLeft.Get() or not hookRight.Get())
+					{
+					    state = OH_SHIT;
+					}
+
+					if (not clipLeft.Get() or not clipRight.Get())
+					{
+					    state = OH_SHIT;
+					}
+
+                    if (armTop.Get())
+                    {
+                        state = WTF;
+                    }
+
+                    if (armBottom.Get())  ///if arm hits bottom, that means its too late to remove ratchet
+                    {
+                        state = OH_SHIT;
+                    }
+
+                    if (clipPositionOut.Get())
+                    {
+                        state = OH_SHIT;
+                    }
+
+                    if (pot.GetVoltage() < bottomOfBar)
+                    {
+                        state = OH_SHIT;
+                    }
+
+                    if (time.Get() > 1000)
+					{
+						state = OH_SHIT;
+					}
 
 					//move arm back
 					//wait(.5);
@@ -319,16 +516,40 @@ class StateMachine: public SimpleRobot
 
 				else if (state == RETRACTING_CLIPS)  ///state 9
 				{///retract clips
-					time.Reset();
-					if (time.Get() > 2000 && (clipLeft.Get() || clipRight.Get()))
-					{
-						state = OH_SHIT;
-					}
-					if (!clipLeft.Get() && !clipRight.Get())
+				    ///hook motors are stopped
+				    ///run clip motors
+				    time.Reset();
+                    if (!clipLeft.Get() && !clipRight.Get() and clipPositionIn.Get())
 					{
 						level++;
-						time.Reset();
+
 						state = ROBOT_PULLED_UP;
+					}
+
+					if (clipPositionIn.Get() and clipLeft.Get() or clipRight.Get())
+					{
+					    state = Decide(state);
+					}
+
+                    if (not hookLeft.Get() and not hookRight.Get())
+                    {
+                        state = OH_SHIT;
+                    }
+
+                    if (armTop.Get() or armBottom.Get())
+                    {
+                        state = WTF;
+                    }
+
+                    if (not ratchet.Get())
+                    {
+                        state = OH_SHIT;
+                    }
+                    //check git braginsky branch
+
+					if (time.Get() > 2000 and  (clipLeft.Get() || clipRight.Get()))
+					{
+						state = OH_SHIT;
 					}
 				}
 
@@ -336,27 +557,21 @@ class StateMachine: public SimpleRobot
 				{
 					//engages ratchet
 					//EMERGENCY
-
 				}
+            if(counter % 50)
+            {
+                DSLog(1, "HookLeft %d ", hookLeft.Get());
+                printf("HookRight %d ", hookRight.Get());
+                printf("Clip left %d\n", clipLeft.Get());
+                printf("Clip Right %d ", clipRight.Get());
+                printf("Arm Top %d ", armTop.Get());
+                printf("Arm Bottom %d\n", armBottom.Get());
+                printf("Ratchet %d ", ratchet.Get());
+                printf("Clip Position In %d ", clipPositionIn.Get());
+                printf("Clip Position Out %d ", clipPositionOut.Get());
+                printf("STATE %d", state);
 			}
-			printf("HookLeft %d", hookLeft.Get());
-			printf("\n");
-			printf("HookRight %d", hookRight.Get());
-			printf("\n");
-			printf("Clip left %d", clipLeft.Get());
-			printf("\n");
-			printf("Clip Right %d", clipRight.Get());
-			printf("\n");
-			printf("Arm Top %d", armTop.Get());
-			printf("\n");
-			printf("Arm Bottom %d", armBottom.Get());
-			printf("\n");
-			printf("Ratchet %d", ratchet.Get());
-			printf("\n");
-			printf("Clip Position %d", clipPosition.Get());
-			printf("\n");
-			printf("State %d", state);
-			printf("\n");
+			}
 
 		}
 
