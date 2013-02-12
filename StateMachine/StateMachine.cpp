@@ -188,34 +188,38 @@ class StateMachine: public SimpleRobot
 
                     if (clipLeft.Get() || clipRight.Get())  ///if either clip is engaged, WTF
                     {
+                        printf("--------------One of your clips came off. You're screwed------------------ \n");
                         state = OH_SHIT;
                     }
 
 					if (armBottom.Get())
 					{ ///if hook hit the bottom of the bar
 						//reset PID Values
-
+                        printf("--------------your hook hit the bottom of the bar. Reset PID, move hook up, go to deploying clips------------------ \n");
 						state = DEPLOY_CLIPS;
 					}
 
 					if (ratchet.Get())  ///if ratchet is engaged
 					{
-
+                        printf("--------------your ratchet was engaged. Begin retracting ratchet.------------------");
 					    state = RETRACTING_RATCHET;
 					}
 
 					if(clipPositionIn.Get())  ///if clips are not in, stop robot -
 					{
+					    printf("--------------Clip positions aren't all the way in. You have .5 seconds to retract them fully-------------- \n");
 					    //stop motors
 					    //retract clips
 					    Wait(.5);
 					    if(clipPositionIn.Get()){
+					        printf("--------------Too late. To the E1 state.------------------ \n");
 					        state = OH_SHIT;
 					    }
 					}
 
 					if (pot.GetVoltage() > SETPOINT_BOTTOM && !armBottom.Get() && time.Get() > 3000)  ///if hook has not hit bottom and time is greater than 3s
 					{
+					    printf("--------------The hook did not hit the bottom in 3 seconds. Oh crap.------------------ \n");
 						state = OH_SHIT;
 					}
 
