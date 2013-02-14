@@ -12,7 +12,6 @@ class StateMachine: public SimpleRobot
 		Timer time;
 		Timer time2;
 		DriverStation *ds;
-		//yay
 
 	private:
 		int state;
@@ -60,12 +59,14 @@ class StateMachine: public SimpleRobot
 			int counter = 0;
 			while (level < 3)
 			{
+
+			    //random comment
 			    counter++;
 				if (state == ROBOT_PULLED_UP)  ///state 1
 				{ ///begin pulling up robot
 				    //engage ratchet
-				    //arm de-pressure
-				    //run hook motors down
+				    //arm retracted, so it helps pull up robot
+				    //run hook motors down, moving setpoint
 				    //clips retracted
 				    time.Reset();
                     if (pot.GetVoltage() <= SETPOINT_RATCHET_RETRACT)  ///if PID says hooks are at their setpoint
@@ -195,9 +196,8 @@ class StateMachine: public SimpleRobot
 
 					if (armBottom.Get())
 					{ ///if hook hit the bottom of the bar
-						//reset PID Values
                         printf("--------------your hook hit the bottom of the bar. Reset PID, move hook up, go to deploying clips------------------ \n");
-						state = DEPLOY_CLIPS;
+						state = OH_SHIT;
 					}
 
 					if (ratchet.Get())  ///if ratchet is engaged
@@ -287,6 +287,7 @@ class StateMachine: public SimpleRobot
 						//extend clips*/
 						if (time.Get() > 1000 && !clipLeft.Get() || !clipRight.Get())
 						{ ///if still not clipped on
+
 							state = OH_SHIT;
 						}
 					}
@@ -298,7 +299,7 @@ class StateMachine: public SimpleRobot
                     time.Reset();
                     if (pot.GetVoltage() > SETPOINT_TOP)
 					{
-
+                        printf("---------------hooks reached top of their motion. Move on to next state ------------ \n");
 						state = MOVE_ARM_FORWARD;
 					}
 
@@ -314,10 +315,8 @@ class StateMachine: public SimpleRobot
 
                     if (armTop.Get())
 					{
-						//reset PID
-						//stop motors
-						//rewind motors a bit
 						printf("You hit the top");
+						state = OH_SHIT;
                     }
 
                     if (armBottom.Get())
@@ -436,10 +435,7 @@ class StateMachine: public SimpleRobot
 
 					if (armBottom.Get())
 					{
-						//reset PID
-						//move arm back
-						Wait(.5);
-						state = MOVE_HOOKS_UP;
+						state = OH_SHIT;
 					}
 
                     if(ratchet.Get())
