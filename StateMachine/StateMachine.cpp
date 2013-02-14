@@ -59,12 +59,14 @@ class StateMachine: public SimpleRobot
 			int counter = 0;
 			while (level < 3)
 			{
+
+			    //random comment
 			    counter++;
 				if (state == ROBOT_PULLED_UP)  ///state 1
 				{ ///begin pulling up robot
 				    //engage ratchet
-				    //arm de-pressure
-				    //run hook motors down
+				    //arm retracted, so it helps pull up robot
+				    //run hook motors down, moving setpoint
 				    //clips retracted
 				    time.Reset();
                     if (pot.GetVoltage() <= SETPOINT_RATCHET_RETRACT)  ///if PID says hooks are at their setpoint
