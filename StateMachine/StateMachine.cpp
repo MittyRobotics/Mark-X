@@ -288,6 +288,7 @@ class StateMachine: public SimpleRobot
 						//extend clips*/
 						if (time.Get() > 1000 && !clipLeft.Get() || !clipRight.Get())
 						{ ///if still not clipped on
+
 							state = OH_SHIT;
 						}
 					}
@@ -299,7 +300,7 @@ class StateMachine: public SimpleRobot
                     time.Reset();
                     if (pot.GetVoltage() > SETPOINT_TOP)
 					{
-
+                        printf("---------------hooks reached top of their motion. Move on to next state ------------ \n");
 						state = MOVE_ARM_FORWARD;
 					}
 
@@ -315,10 +316,8 @@ class StateMachine: public SimpleRobot
 
                     if (armTop.Get())
 					{
-						//reset PID
-						//stop motors
-						//rewind motors a bit
 						printf("You hit the top");
+						state = OH_SHIT;
                     }
 
                     if (armBottom.Get())
