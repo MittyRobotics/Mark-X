@@ -12,6 +12,7 @@ class StateMachine: public SimpleRobot
 		Timer time;
 		Timer time2;
 		DriverStation *ds;
+		//yay
 
 	private:
 		int state;
