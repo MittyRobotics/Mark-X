@@ -232,47 +232,55 @@ class StateMachine: public SimpleRobot
                     time.Reset();
                     if (clipLeft.Get() && clipRight.Get() && clipPositionOut.Get())  ///if clips engage and are down, move on to state 5
                     {
-
+                        printf("----------------Your clips are engaged and are all the way down, move on to next state------------------ \n");
                         state = MOVE_HOOKS_UP;
                     }
 
                     if (clipLeft.Get() and clipRight.Get() and clipPositionIn.Get())  ///if both clips clip on, but the clip Position says clips are up, WTF
                     {
+                        printf("----------------Both clips are engaged, but are not all the way down------------------ \n");
                         state = OH_SHIT;
                     }
 
                     if (clipLeft.Get() and clipRight.Get() and not clipPositionIn.Get() and not clipPositionOut.Get()) ///clips are somewhere in between, but they're also attached to bar. wtf
                     {
-                        printf("Your hooks arent all the way down. we're gonna keep climbing. #YOLO");
+                        printf("----------------Your hooks arent all the way down. we're gonna keep climbing. #YOLO--------------- \n");
                         state = MOVE_HOOKS_UP;
                     }
 
                     if(not hookLeft.Get() or not hookRight.Get()) ///if either hook hops off, emergency
                     {
+                        printf("----------------Your clips are engaged and are all the way down, move on to next state------------------ \n");
                         state = OH_SHIT;
                     }
 
                     if(armTop.Get() || armBottom.Get())  ///if top or bottom limit switches are triggered, limit switch doesn't work
                     {
+                        printf("----------------if either of the bottom or top limit switches is triggered, then broke limit switch------------------ \n");
                         state = OH_SHIT;
                     }
 
                     if(ratchet.Get())
                     {
-                        //TKOLift.RetractRatchet();
+                        printf("----------------Ratchet is engaged. You have .5 seconds------------------ \n");
+                        //retract ratchet
+                        Wait(.5);
                         if(ratchet.Get())
                         {
+                            printf("----------------Too slow. To E1------------------ \n");
                             state = OH_SHIT;
                         }
                     }
 
                     if(time.Get() > 1000 and clipPositionOut.Get()) ///your clip motors are broken. sucks to suck
                     {
+                        printf("----------------Your clips are engaged and are all the way down, move on to next state------------------ \n");
                         state = OH_SHIT;
                     }
 
 					if (time.Get() > 1000 and !clipLeft.Get() || !clipRight.Get())
 					{ ///if either clip does not engage in 1 second
+                        printf("-----------------The clips haven't clipped on in 1 second----------------- \n");
 						//retract clips*/
 						Wait(.5);
 						//extend clips*/
