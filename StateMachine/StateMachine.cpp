@@ -571,7 +571,7 @@ class StateMachine: public SimpleRobot
 
 				while (state == OH_SHIT)
 				{
-
+                    printf("THINGS WENT WRONG");
 					//engages ratchet
 					//EMERGENCY
 				}
