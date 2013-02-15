@@ -3,7 +3,6 @@
 #include "WPILib.h"
 #include "Definitions.h"
 #include "TKOAutonomous.h"
-#include "TKODvigat.h"
 
 /*---------------MarkX-Thing-to-Do---------------------*
  * 
@@ -18,53 +17,61 @@ class MarkX: public SimpleRobot
 		float kDRIVE_STRAIGHT, kDRIVE_ROTATION;
 		float left_joystick_y, right_joystick_y;
 		float final_velocity_left, final_velocity_right;
-		Joystick stick1, stick2, stick3, stick4; // define joysticks
 		CANJaguar drive1, drive2, drive3, drive4; // define motors
+		Joystick stick1, stick2, stick3, stick4; // define joysticks
 		DriverStation *ds; // define driver station object
 		TKOAutonomous auton;
-		TKODvigat dvigat;
-		Gyro gyro;
 		Timer timer;
 		void Disabled();
 		void Autonomous();
 		void OperatorControl();
 		void Operator();
 		void TKODrive();
+		void JukeL();
+		void JukeR();
+		void Test();
+		MarkX() :
+			drive1(DRIVE_L1_ID, CANJaguar::kSpeed), // initialize motor 1 < first left drive motor
+			        drive2(DRIVE_L2_ID, CANJaguar::kPercentVbus), // initialize motor 2 < second left drive motor
+			        drive3(DRIVE_R1_ID, CANJaguar::kSpeed), // initialize motor 3 < first right drive motor
+			        drive4(DRIVE_R2_ID, CANJaguar::kPercentVbus), // initialize motor 4 < second right drive motor
 
-	MarkX() :
-		stick1(STICK_1_PORT), // initialize joystick 1 < first drive joystick 
-		stick2(STICK_2_PORT), // initialize joystick 2 < second drive joystick
-		stick3(STICK_3_PORT), // initialize joystick 3 < first EVOM joystick
-		stick4(STICK_4_PORT), // initialize joystick 4 < first EVOM joystick
+			        stick1(STICK_1_PORT), // initialize joystick 1 < first drive joystick 
+			        stick2(STICK_2_PORT), // initialize joystick 2 < second drive joystick
+			        stick3(STICK_3_PORT), // initialize joystick 3 < first EVOM joystick
+			        stick4(STICK_4_PORT), // initialize joystick 4 < first EVOM joystick
 
-		drive1(DRIVE_L1_ID, CANJaguar::kSpeed), // initialize motor 1 < first left drive motor
-		drive2(DRIVE_L2_ID, CANJaguar::kPercentVbus), // initialize motor 2 < second left drive motor
-		drive3(DRIVE_R1_ID, CANJaguar::kSpeed), // initialize motor 3 < first right drive motor
-		drive4(DRIVE_R2_ID, CANJaguar::kPercentVbus), // initialize motor 4 < second right drive motor
-
-		auton(DRIVE_L1_ID, DRIVE_L2_ID, DRIVE_R1_ID, DRIVE_R2_ID), dvigat(DRIVE_L1_ID, DRIVE_L2_ID, DRIVE_R1_ID, DRIVE_R2_ID), gyro(1)
-
+			        auton(DRIVE_L1_ID, DRIVE_L2_ID, DRIVE_R1_ID, DRIVE_R2_ID)
 		{
 			ds = DriverStation::GetInstance(); // Pulls driver station information 
-
+			drive1.EnableControl(); //critical for these jags because they are in speed mode
+			drive3.EnableControl(); //critical for these jags because they are in speed mode
 			drive1.SetSpeedReference(JAG_SPEEDREF);
 			drive1.ConfigEncoderCodesPerRev(ENCODER_REVS);
 			drive1.SetPID(DRIVE_kP, DRIVE_kI, DRIVE_kD);
-			drive1.SetSafetyEnabled(JAG_SAFETY);
-			drive2.SetSafetyEnabled(JAG_SAFETY);
 			drive3.SetSpeedReference(JAG_SPEEDREF);
 			drive3.ConfigEncoderCodesPerRev(ENCODER_REVS);
 			drive3.SetPID(DRIVE_kP, DRIVE_kI, DRIVE_kD);
-			drive3.SetSafetyEnabled(JAG_SAFETY);
-			drive4.SetSafetyEnabled(JAG_SAFETY);
+			printf("Initialized the MarkX class \n");
 		}
 
 };
-START_ROBOT_CLASS(MarkX);
 
 //! Notifies driver if robot is disabled. Prints "Robot Died!" to console if it is disabled
 /*!
  */
+void MarkX::Test()
+{
+	while (IsEnabled())
+	{
+		DSLog(2, "LStick %f", stick1.GetY());
+		DSLog(3, "RStick %f", stick2.GetY());
+		DSLog(4, "LPos %f", drive1.GetPosition());
+		DSLog(5, "RPos %f", drive3.GetPosition());
+		drive1.Set(kMAX_DRIVE_RPM);
+		drive3.Set(kMAX_DRIVE_RPM);
+	}
+}
 void MarkX::Disabled()
 {
 	printf("Robot Died!");
@@ -75,6 +82,7 @@ void MarkX::Disabled()
  */
 void MarkX::Autonomous(void) //Choose autonomous mode between 4 options though DS
 {
+	printf("Starting Autonomous \n");
 	auton.initAutonomous();
 	auton.setDrivePID(20, 0.05, 0.01);
 	auton.setDriveTargetStraight(ds->GetAnalogIn(1) * 10 * REVS_PER_METER);
@@ -86,10 +94,9 @@ void MarkX::Autonomous(void) //Choose autonomous mode between 4 options though D
 			auton.stopAutonomous();
 
 		auton.autonomousCode();
-		Wait(0.005);
 	}
 	auton.stopAutonomous();
-
+	printf("Ending Autonomous \n");
 }
 //! Operator Control Initialize and runs the Operator Control loop
 /*!
@@ -98,6 +105,7 @@ void MarkX::Autonomous(void) //Choose autonomous mode between 4 options though D
 
 void MarkX::OperatorControl()
 {
+	printf("Starting OperatorControl \n");
 	Timer loopTimer;
 	float startLoopT, endLoopT, loopTime;
 	loopTimer.Start();
@@ -106,14 +114,16 @@ void MarkX::OperatorControl()
 		startLoopT = loopTimer.Get();
 		DSClear();
 
-		Operator();
-		TKODrive();
+		MarkX::Operator();
+		MarkX::TKODrive();
 
 		endLoopT = loopTimer.Get();
-		loopTime = startLoopT - endLoopT;
-		Wait(.005);
+		loopTime = endLoopT - startLoopT;
 		printf("Operator Loop Time, excluding Wait: %f", endLoopT);
+		space
+		loopTimer.Reset();
 	}
+	printf("Ending OperatorControl \n");
 }
 //! Driving and EVOM code
 /*!
@@ -121,19 +131,23 @@ void MarkX::OperatorControl()
 void MarkX::Operator()
 {
 	if (stick1.GetRawButton(10))
-		dvigat.JukeR();
+		JukeR();
 	if (stick1.GetRawButton(7))
-		dvigat.JukeL();
+		JukeL();
 
 	if (stick1.GetTrigger())
 	{
 		kDRIVE_STRAIGHT = 0.4;
 		kDRIVE_ROTATION = 0.2;
 	}
+	else if (stick1.GetRawButton(2))
+	{
+		kDRIVE_STRAIGHT = 0.2;
+	}
 	else
 	{
-		kDRIVE_STRAIGHT = 1;
-		kDRIVE_ROTATION = 0.6;
+		kDRIVE_STRAIGHT = 1.2;
+		kDRIVE_ROTATION = 0.7;
 	}
 
 	if (stick2.GetTrigger())
@@ -145,6 +159,16 @@ void MarkX::Operator()
 	{
 		kDRIVE_STRAIGHT = fabs(kDRIVE_STRAIGHT);
 		kDRIVE_ROTATION = fabs(kDRIVE_ROTATION);
+	}
+	if (stick3.GetTrigger())
+	{
+		drive1.Set(kMAX_DRIVE_RPM);
+		drive3.Set(kMAX_DRIVE_RPM);
+	}
+	if (stick4.GetTrigger())
+	{
+		drive2.Set(1);
+		drive4.Set(1);
 	}
 
 	if (stick3.GetRawButton(4))
@@ -166,6 +190,7 @@ void MarkX::Operator()
 
 void MarkX::TKODrive()
 {
+	printf("TKODriving...");
 	if (!stick2.GetTrigger())
 	{
 		left_joystick_y = stick1.GetY();
@@ -222,7 +247,7 @@ void MarkX::TKODrive()
 		}
 	}
 
-	if ((final_velocity_left - drive3.GetSpeed()) > kBURNOUT)
+	if ((final_velocity_left - fabs(drive3.GetSpeed())) > kBURNOUT)
 	{
 		burnoutIndexLeft++;
 	}
@@ -231,7 +256,7 @@ void MarkX::TKODrive()
 		burnoutIndexLeft = 0;
 	}
 
-	if ((final_velocity_right - drive1.GetSpeed()) > kBURNOUT)
+	if ((final_velocity_right - fabs(drive1.GetSpeed())) > kBURNOUT)
 	{
 		burnoutIndexRight++;
 	}
@@ -240,23 +265,29 @@ void MarkX::TKODrive()
 		burnoutIndexRight = 0;
 	}
 
-	if (burnoutIndexLeft > 100)
+	if (burnoutIndexLeft > kBURNOUT_CYCLES)
 	{
 		final_velocity_left = 0;
 		printf("Burnout Left");
 		DSLog(5, "Burnout Left");
 	}
 
-	if (burnoutIndexRight > 100)
+	if (burnoutIndexRight > kBURNOUT_CYCLES)
 	{
 		final_velocity_right = 0;
 		printf("Burnout Right");
 		DSLog(5, "Burnout Right");
 	}
+	printf("Finished processing joystick inputs. \n");
+	printf("Left velocity to set: %f", final_velocity_left);
+	space
+	printf("Right velocity to set: %f", final_velocity_right);
+	space
+
 	float speedLeft = drive1.GetSpeed() * 3.14159 * 6/*wheel size*// 12
 	/*inches in feet*// 60;
 	float speedRight = drive3.GetSpeed() * 3.14159 * 6 / 12 / 60;
-	DSLog(1, "Speed fps: %f", ((speedLeft + speedRight) / 2));
+	DSLog(1, "Speed F/s: %f", fabs(((speedLeft + speedRight) / 2)));
 
 	// implement processing for left_joystick_x, left_joystick_y, right_joystick_x, and right_joystick_y to account for PID and other factors
 	// then we pass these values to the SetLeftRightMotorsOutput() function of TKODrive
@@ -266,3 +297,121 @@ void MarkX::TKODrive()
 	drive4.Set(-drive3.GetOutputVoltage() / drive3.GetBusVoltage());
 
 }
+void MarkX::JukeR(void)
+{
+	printf("Juke manuever started\n");
+	timer.Start();
+	while (timer.Get() < 0.6 + 0.65 + 0.3 + 0.6 + 1 + 0.15 + 1.2 && IsEnabled())
+	{
+		if (timer.Get() < 0.6)
+		{
+			drive1.Set(-kMAX_DRIVE_RPM);
+			drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+			drive3.Set(-kMAX_DRIVE_RPM);
+			drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+		}
+		else if (timer.Get() < 0.6 + 0.65)
+		{
+			drive1.Set(-kMAX_DRIVE_RPM);
+			drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+		}
+		else if (timer.Get() < 0.6 + 0.65 + 0.3)
+		{
+			drive1.Set(-kMAX_DRIVE_RPM);
+			drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+			drive3.Set(-kMAX_DRIVE_RPM);
+			drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+		}
+		else if (timer.Get() < 0.6 + 0.65 + 0.3 + 0.6)
+		{
+			drive1.Set(kMAX_DRIVE_RPM);
+			drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+			drive3.Set(kMAX_DRIVE_RPM);
+			drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+		}
+		else if (timer.Get() < 0.6 + 0.65 + 0.3 + 0.6 + 1)
+		{
+			drive3.Set(kMAX_DRIVE_RPM);
+			drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+		}
+		else if (timer.Get() < 0.6 + 0.65 + 0.3 + 0.6 + 1 + 0.15)
+		{
+			drive1.Set(kMAX_DRIVE_RPM);
+			drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+			drive3.Set(kMAX_DRIVE_RPM);
+			drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+		}
+		else if (timer.Get() < 0.6 + 0.65 + 0.3 + 0.6 + 1 + 0.15 + 1.2)
+		{
+			drive1.Set(kMAX_DRIVE_RPM);
+			drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+			drive3.Set(-kMAX_DRIVE_RPM);
+			drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+		}
+		timer.Stop();
+	}
+}
+
+void MarkX::JukeL(void)
+{
+	printf("Juke manuever started\n");
+	timer.Start();
+	timer.Reset();
+	while (timer.Get() < .6)
+	{
+		drive1.Set(-kMAX_DRIVE_RPM);
+		drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+		drive3.Set(-kMAX_DRIVE_RPM);
+		drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+	}
+	timer.Reset();
+	while (timer.Get() < .65)
+	{
+		drive3.Set(-kMAX_DRIVE_RPM);
+		drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+	}
+	timer.Reset();
+	while (timer.Get() < .3)
+	{
+		drive1.Set(-kMAX_DRIVE_RPM);
+		drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+		drive3.Set(-kMAX_DRIVE_RPM);
+		drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+	}
+	timer.Reset();
+	while (timer.Get() < .6)
+	{
+		drive1.Set(kMAX_DRIVE_RPM);
+		drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+		drive3.Set(kMAX_DRIVE_RPM);
+		drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+	}
+	timer.Reset();
+	while (timer.Get() < 1)
+	{
+		drive1.Set(kMAX_DRIVE_RPM);
+		drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+	}
+	timer.Reset();
+	while (timer.Get() < .15)
+	{
+		drive1.Set(kMAX_DRIVE_RPM);
+		drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+		drive3.Set(kMAX_DRIVE_RPM);
+		drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+	}
+	timer.Reset();
+	while (timer.Get() < 1.2)
+	{
+		drive1.Set(kMAX_DRIVE_RPM);
+		drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+		drive3.Set(-kMAX_DRIVE_RPM);
+		drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+	}
+	timer.Reset();
+
+	timer.Stop();
+}
+
+START_ROBOT_CLASS(MarkX)
+;

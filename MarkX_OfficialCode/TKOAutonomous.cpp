@@ -39,15 +39,15 @@ void TKOAutonomous::initAutonomous()
 	rampRate2 = RAMP_RATE_2;
 	reachedTarget = false;
 	ds = DriverStation::GetInstance();
-	_gyro = _gyro->getInstance();
-	printf("Initialized Autonomous \n");
+//	_gyro = _gyro->getInstance();
+	printf("Initialized Autonomous Class\n");
 }
 
 void TKOAutonomous::startAutonomous()
 {
 	autonTimer.Reset();
 	autonTimer.Start();
-	_gyro->reset();
+//	_gyro->reset();
 	rightTarget = 0;
 	leftTarget = 0;
 	runningAuton = true;
@@ -116,7 +116,8 @@ void TKOAutonomous::PIDDriveStraight()
 
 bool TKOAutonomous::turn(double target)//takes negative values
 {
-	double currAngle = _gyro->GetAngle();
+//	double currAngle = _gyro->GetAngle();
+	double currAngle = 0;
 	if (currAngle < target - 1 && !(target < currAngle))
 	{
 		printf("Turning right \n");
@@ -155,13 +156,13 @@ bool TKOAutonomous::turn(double target)//takes negative values
 
 void TKOAutonomous::printMessages()
 {
-	DSLog(2, "Gyro Angle: %f", _gyro->GetAngle());
+//	DSLog(2, "Gyro Angle: %f", _gyro->GetAngle());
 	DSLog(3, "Timer: %f", autonTimer.Get());
 	DSLog(4, "Drive1 pos: %f", getPosition(1)); //uses the TKOAutonomous getPosition
 	DSLog(5, "Drive3 pos: %f", getPosition(3)); //uses the TKOAutonomous getPosition
 	DSLog(6, "Jag 3 Target: %f", getTarget(3));
 	printf("\n");
-	printf("Gyro Angle: %f", _gyro->GetAngle());
+//	printf("Gyro Angle: %f", _gyro->GetAngle());
 	printf("\n");
 	printf("Timer: %f", autonTimer.Get());
 	printf("\n");

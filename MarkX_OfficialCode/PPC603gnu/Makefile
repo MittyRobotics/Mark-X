@@ -170,18 +170,8 @@ SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOAutonomous
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP -mlongcall $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
-SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKODvigat.o : $(PRJ_ROOT_DIR)/TKODvigat.cpp $(FORCE_FILE_BUILD)
-	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP -mlongcall $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
-
-
-SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOGyro.o : $(PRJ_ROOT_DIR)/TKOGyro.cpp $(FORCE_FILE_BUILD)
-	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP -mlongcall $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
-
-
 OBJECTS_SimpleTemplate_partialImage = SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/MarkX.o \
-	 SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOAutonomous.o \
-	 SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKODvigat.o \
-	 SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOGyro.o
+	 SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOAutonomous.o
 
 SimpleTemplate_partialImage/$(MODE_DIR)/SimpleTemplate_partialImage.o : $(OBJECTS_SimpleTemplate_partialImage)
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc -r -nostdlib -Wl,-X  -o "$@" $(OBJECTS_SimpleTemplate_partialImage) $(LIBPATH) $(LIBS) $(ADDED_LIBPATH) $(ADDED_LIBS)  && if [ "$(EXPAND_DBG)" = "1" ]; then plink "$@";fi
@@ -195,8 +185,7 @@ SimpleTemplate_partialImage/$(MODE_DIR)/SimpleTemplate_partialImage_clean :
 
 force : 
 
-DEP_FILES := SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/MarkX.d SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOAutonomous.d SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKODvigat.d \
-	 SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOGyro.d
+DEP_FILES := SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/MarkX.d SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOAutonomous.d
 -include $(DEP_FILES)
 
 

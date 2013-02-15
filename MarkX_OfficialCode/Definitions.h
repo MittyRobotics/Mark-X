@@ -9,7 +9,7 @@
 #include "WPILib.h"
 #include "Vision/RGBImage.h"
 #include "Math.h"
-#include "TKOGyro.h"
+//#include "TKOGyro.h"
 #include "stdlib.h"
 
 /*!
@@ -25,6 +25,7 @@
 #define DSLog(line, msg, ...)	DriverStationLCD::GetInstance()->Printf(DriverStationLCD::GetInstance()->kUser_Line##line, 1, msg, ##__VA_ARGS__); \
 								DriverStationLCD::GetInstance()->UpdateLCD();
 
+#define space printf("\n");
 #define GO_AWAY NULL;
 
 /*! \mainpage Welcome to TKO 1351's MarkIX's Code Documentation!
@@ -88,7 +89,8 @@ const CANJaguar::SpeedReference JAG_SPEEDREF = CANJaguar::kSpeedRef_QuadEncoder;
 //Drive constants
 const float kMAX_DRIVE_RPM = 700;
 const float deadzone = 0.1;
-const int kBURNOUT = 1000;
+const int kBURNOUT = 500;
+const int kBURNOUT_CYCLES = 100;
 
 //Hoop heights
 const float HOOP_BOT = 23;
