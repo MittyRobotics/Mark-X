@@ -25,6 +25,6 @@ const int WTF = 13;
 double SETPOINT_RATCHET_RETRACT = 4.0;
 double SETPOINT_BOTTOM = .3;
 double SETPOINT_TOP = 4.5;
-
+double TOLERANCE = .2;
 
 #endif

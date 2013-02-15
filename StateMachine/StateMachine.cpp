@@ -69,7 +69,7 @@ class StateMachine: public SimpleRobot
 				    //run hook motors down, moving setpoint
 				    //clips retracted
 				    time.Reset();
-                    if (pot.GetVoltage() <= SETPOINT_RATCHET_RETRACT)  ///if PID says hooks are at their setpoint
+                    if (pot.GetVoltage() <= SETPOINT_RATCHET_RETRACT - TOLERANCE)  ///if PID says hooks are at their setpoint - some amount
 					{
 					    printf("---------------REACHED SETPOINT, MOVE TO RATCHET RETRACTING. YOU HAVE 1 SECOND. GO.----------------- \n");
 						state = RETRACTING_RATCHET;
@@ -152,7 +152,10 @@ class StateMachine: public SimpleRobot
 					    printf("--------------You somehow hit the top. What. oh NO.-------------- \n");
 					    state = OH_SHIT;
                     }
-
+                    if(armBottom.Get())
+                    {
+                        state = OH_SHIT;
+                    }
 					if(not clipPositionIn.Get())  ///if clips are not in, stop robot -
 					{
 					    //stop motors
@@ -165,7 +168,7 @@ class StateMachine: public SimpleRobot
 					    }
 					}
 
-                    if (time.Get() > 1000)  ///if the ratchet does not go down in 1 second
+                    if (pot.GetVoltage() < SETPOINT_BOTTOM - TOLERANCE or time.Get() > 1000)  ///if the ratchet does not go down in 1 second
 					{
 					    printf("--------------You took too long. oh NO.-------------- \n");
 						state = OH_SHIT;
