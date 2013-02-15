@@ -571,12 +571,13 @@ class StateMachine: public SimpleRobot
 
 				while (state == OH_SHIT)
 				{
+
 					//engages ratchet
 					//EMERGENCY
 				}
             if(counter % 50)
             {
-                DSLog(1, "HookLeft %d ", hookLeft.Get());
+                printf("HookLeft %d ", hookLeft.Get());
                 printf("HookRight %d ", hookRight.Get());
                 printf("Clip left %d\n", clipLeft.Get());
                 printf("Clip Right %d ", clipRight.Get());
