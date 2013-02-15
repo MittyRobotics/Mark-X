@@ -78,7 +78,7 @@ class StateMachine: public SimpleRobot
 					if(clipLeft.Get() or clipRight.Get())
 					{
 					    printf("---------------CLIPS ARENT ON, DECIDE----------------- \n");
-					    state = Decide(state);
+					    state = OH_SHIT;
 					}
 
 					if (not hookLeft.Get() or not hookRight.Get())  ///if either hook jumps off bar, E2 state
@@ -120,7 +120,7 @@ class StateMachine: public SimpleRobot
 					if (time.Get() > 15000)   ///if hooks take 15 seconds to reach bottom
 					{
 					    printf("---------------HOOKS ARE TAKING TOO LONG. DECIDE----------------- \n");
-						Decide(state);
+						OH_SHIT;
 					}
 				}
 
@@ -342,7 +342,7 @@ class StateMachine: public SimpleRobot
 
 					if (time.Get() > 10000)
 					{
-						state = Decide(state);
+						state = OH_SHIT;
 					}
 				}
 
@@ -379,7 +379,7 @@ class StateMachine: public SimpleRobot
                             Wait(.5);
                             if (clipPositionOut.Get())
                             {
-                                state = Decide(state);
+                                state = OH_SHIT;
                             }
                         }
 				    }
@@ -537,7 +537,7 @@ class StateMachine: public SimpleRobot
 
 					if (clipPositionIn.Get() and clipLeft.Get() or clipRight.Get())
 					{
-					    state = Decide(state);
+					    state = OH_SHIT;
 					}
 
                     if (not hookLeft.Get() and not hookRight.Get())
