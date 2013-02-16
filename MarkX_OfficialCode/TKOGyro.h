@@ -5,7 +5,6 @@
 
 #include "Definitions.h"
 #include "Gyro.h"
-#include <Math.h>
 
 class TKOGyro
 {
