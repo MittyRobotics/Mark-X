@@ -9,7 +9,7 @@
 #include "WPILib.h"
 #include "Vision/RGBImage.h"
 #include "Math.h"
-//#include "TKOGyro.h"
+#include "TKOGyro.h"
 #include "stdlib.h"
 
 /*!
