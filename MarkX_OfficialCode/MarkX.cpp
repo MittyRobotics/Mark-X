@@ -22,6 +22,7 @@ class MarkX: public SimpleRobot
 		DriverStation *ds; // define driver station object
 		TKOAutonomous auton;
 		Timer timer;
+		TKOLogger* logger;
 		void Disabled();
 		void Autonomous();
 		void OperatorControl();
@@ -47,6 +48,7 @@ class MarkX: public SimpleRobot
 			drive1.EnableControl(); //critical for these jags because they are in speed mode
 			drive3.EnableControl(); //critical for these jags because they are in speed mode
 			drive1.SetSpeedReference(JAG_SPEEDREF);
+			logger = logger->getInstance();
 			drive1.ConfigEncoderCodesPerRev(ENCODER_REVS);
 			drive1.SetPID(DRIVE_kP, DRIVE_kI, DRIVE_kD);
 			drive3.SetSpeedReference(JAG_SPEEDREF);
@@ -64,8 +66,8 @@ void MarkX::Test()
 {
 	while (IsEnabled())
 	{
-		DSLog(2, "LStick %f", stick1.GetY());
-		DSLog(3, "RStick %f", stick2.GetY());
+//		DSLog(2, "LStick %f", stick1.GetY());
+//		DSLog(3, "RStick %f", stick2.GetY());
 		DSLog(4, "LPos %f", drive1.GetPosition());
 		DSLog(5, "RPos %f", drive3.GetPosition());
 		drive1.Set(kMAX_DRIVE_RPM);
@@ -74,6 +76,19 @@ void MarkX::Test()
 }
 void MarkX::Disabled()
 {
+	logger->openFile();
+	for(int x = 0; x <= logger->i; x++){
+		DSLog(2,"%d",x);
+		switch(logger->getMessage(x)){
+		case 0:
+			logger->log("helloworld");
+			break;
+		case 1:
+			logger->logWithData("test2", logger->data[x]);
+			break;
+		}
+	}
+	logger->closeFile();
 	printf("Robot Died!");
 }
 
@@ -113,13 +128,13 @@ void MarkX::OperatorControl()
 	{
 		startLoopT = loopTimer.Get();
 		DSClear();
-
+		logger->setMessage(0);
 		MarkX::Operator();
 		MarkX::TKODrive();
-
+		logger->setMessageData(1, 25);
 		endLoopT = loopTimer.Get();
 		loopTime = endLoopT - startLoopT;
-		printf("Operator Loop Time, excluding Wait: %f", endLoopT);
+//		, "Operator Loop Time, excluding Wait: %f", endLoopT);
 		space
 		loopTimer.Reset();
 	}
@@ -287,7 +302,7 @@ void MarkX::TKODrive()
 	float speedLeft = drive1.GetSpeed() * 3.14159 * 6/*wheel size*// 12
 	/*inches in feet*// 60;
 	float speedRight = drive3.GetSpeed() * 3.14159 * 6 / 12 / 60;
-	DSLog(1, "Speed F/s: %f", fabs(((speedLeft + speedRight) / 2)));
+//	DSLog(1, "Speed F/s: %f", fabs(((speedLeft + speedRight) / 2)));
 
 	// implement processing for left_joystick_x, left_joystick_y, right_joystick_x, and right_joystick_y to account for PID and other factors
 	// then we pass these values to the SetLeftRightMotorsOutput() function of TKODrive
