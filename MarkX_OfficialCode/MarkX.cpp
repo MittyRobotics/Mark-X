@@ -1,11 +1,13 @@
 //Last edited by Vadim Korolik
 //on 02/09/2013
-#include "WPILib.h"
 #include "Definitions.h"
 #include "TKOAutonomous.h"
+#include "TKOShooter.h"
+#include "TKOClimber.h"
 
 /*---------------MarkX-Thing-to-Do---------------------*
- * 
+ * 1 single solenoid (spike), 2 double solenoids (spikes),
+ * 4 double solenoids (each solenoid 2 ports on breakout
  * 
  */
 
@@ -21,6 +23,9 @@ class MarkX: public SimpleRobot
 		Joystick stick1, stick2, stick3, stick4; // define joysticks
 		DriverStation *ds; // define driver station object
 		TKOAutonomous auton;
+		TKOShooter shooter;
+		TKOClimber climber;
+
 		Timer timer;
 		void Disabled();
 		void Autonomous();
@@ -39,9 +44,13 @@ class MarkX: public SimpleRobot
 			        stick1(STICK_1_PORT), // initialize joystick 1 < first drive joystick 
 			        stick2(STICK_2_PORT), // initialize joystick 2 < second drive joystick
 			        stick3(STICK_3_PORT), // initialize joystick 3 < first EVOM joystick
-			        stick4(STICK_4_PORT), // initialize joystick 4 < first EVOM joystick
+			        stick4(STICK_4_PORT), // initialize joystick 4 < first EVOM joystick-m,
 
-			        auton(DRIVE_L1_ID, DRIVE_L2_ID, DRIVE_R1_ID, DRIVE_R2_ID)
+			        auton(DRIVE_L1_ID, DRIVE_L2_ID, DRIVE_R1_ID, DRIVE_R2_ID),
+
+			        shooter(SHOOTER_PORT),
+
+			        climber(WINCH_1_PORT, WINCH_2_PORT)
 		{
 			ds = DriverStation::GetInstance(); // Pulls driver station information 
 			drive1.EnableControl(); //critical for these jags because they are in speed mode
@@ -111,6 +120,8 @@ void MarkX::OperatorControl()
 	loopTimer.Start();
 	while (IsOperatorControl() && ds->IsEnabled())
 	{
+		climber.stick4B4 = stick4.GetRawButton(4);
+		climber.stick4B6 = stick4.GetRawButton(6);
 		startLoopT = loopTimer.Get();
 		DSClear();
 

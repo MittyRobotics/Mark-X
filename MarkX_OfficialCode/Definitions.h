@@ -9,7 +9,6 @@
 #include "WPILib.h"
 #include "Vision/RGBImage.h"
 #include "Math.h"
-#include "TKOGyro.h"
 #include "stdlib.h"
 
 /*!
@@ -50,8 +49,9 @@ const int ROLLER_ID = 9;
 const int TURRET_ID = 10;
 const int SPINNER_1_ID = 5;
 const int SPINNER_2_ID = 6;
-const int WRIST_1_ID = 7;
-const int WRIST_2_ID = 8;
+const int SHOOTER_PORT = 5;
+const int WINCH_1_PORT = 6;
+const int WINCH_2_PORT = 7;
 
 // Ports of the various switches
 const int SWITCH_1_PORT = 3;
@@ -60,11 +60,6 @@ const int SWITCH_3_PORT = 1;
 const int LOWER_RELAY_PORT = 1;
 const int UPPER_RELAY_PORT = 2;
 
-// constants for the Intake
-const float WRIST_DOWN = -1.;
-const float WRIST_UP = 1.;
-const float ROLLER_ON = -1.;
-const float ROLLER_OFF = 0.;
 
 // Spinner constants
 const float RADIUS_WHEELS = 4;
@@ -102,6 +97,24 @@ const int BORDER_SIZE = 3;
 
 const float PI = 3.14159265;
 const float DEGREES_PER_RADIAN = 180 / PI;
+
+///state machine constants
+const int OPERATOR_CONTROL = 1;
+const int ROBOT_PULLED_UP = 2;
+const int RETRACTING_RATCHET = 3;
+const int CHANGE_SETPOINT_MOVE_HOOKS_DOWN = 4;
+const int DEPLOY_CLIPS = 5;
+const int MOVE_HOOKS_UP = 6;
+const int MOVE_ARM_FORWARD = 7;
+const int MOVE_HOOKS_DOWN = 8;
+const int DEPLOYING_RATCHET = 9;
+const int RETRACTING_CLIPS = 10;
+const int OH_SHIT = 13;
+const int WTF = 13;
+const double SETPOINT_RATCHET_RETRACT = 4.0;
+const double SETPOINT_BOTTOM = .3;
+const double SETPOINT_TOP = 4.5;
+const double TOLERANCE = .2;
 
 //Autonomous Constants
 const float RAMP_RATE = 0.005;

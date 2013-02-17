@@ -5,7 +5,7 @@
 ///Constructor for the TKOAutonomous class
 
 TKOShooter::TKOShooter(int port1) :
-	j(port1, CANJaguar::kSpeed)
+	shooter(port1, CANJaguar::kVoltage)
 {
 }
 ///Destructor for the TKOAutonomous class

@@ -4,7 +4,6 @@
 #define __TKOGYRO_H
 
 #include "Definitions.h"
-#include "Gyro.h"
 
 class TKOGyro
 {
