@@ -1,5 +1,5 @@
 //Last edited by Vadim Korolik
-//on 11/27/2012
+//on 02/09/2013
 #include "TKOAutonomous.h"
 
 ///Constructor for the TKOAutonomous class
@@ -40,7 +40,7 @@ void TKOAutonomous::initAutonomous()
 	reachedTarget = false;
 	ds = DriverStation::GetInstance();
 	_gyro = _gyro->getInstance();
-	printf("Initialized Autonomous \n");
+	printf("Initialized Autonomous Class\n");
 }
 
 void TKOAutonomous::startAutonomous()

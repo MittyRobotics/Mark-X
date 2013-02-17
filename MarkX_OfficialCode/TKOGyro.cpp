@@ -1,3 +1,5 @@
+//Last edited by Andrew Light
+//on 02/01/2013
 #include "TKOGyro.h"
 
 TKOGyro *instance;

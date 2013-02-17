@@ -1,3 +1,5 @@
+//Last edited by Vadim Korolik
+//on 02/09/2013
 #ifndef __DEFINITIONS_H
 #define __DEFINITIONS_H
 
@@ -23,6 +25,7 @@
 #define DSLog(line, msg, ...)	DriverStationLCD::GetInstance()->Printf(DriverStationLCD::GetInstance()->kUser_Line##line, 1, msg, ##__VA_ARGS__); \
 								DriverStationLCD::GetInstance()->UpdateLCD();
 
+#define space printf("\n");
 #define GO_AWAY NULL;
 
 /*! \mainpage Welcome to TKO 1351's MarkIX's Code Documentation!
@@ -86,7 +89,8 @@ const CANJaguar::SpeedReference JAG_SPEEDREF = CANJaguar::kSpeedRef_QuadEncoder;
 //Drive constants
 const float kMAX_DRIVE_RPM = 700;
 const float deadzone = 0.1;
-const int kBURNOUT = 1000;
+const int kBURNOUT = 500;
+const int kBURNOUT_CYCLES = 100;
 
 //Hoop heights
 const float HOOP_BOT = 23;
