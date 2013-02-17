@@ -2,7 +2,7 @@
 #include "Definitions.h"
 
 //DONE TODO: MAKE IT INTO A CASE STATEMENT
-//TODO: DO NOT SWITCH FROM STATE 8 TO STATE 9 WITHOUT CHECKING HOOKS
+//DONE TODO: DO NOT SWITCH FROM STATE 8 TO STATE 9 WITHOUT CHECKING HOOKS
 //TODO: CHANGE TIMERS BACK TO NORMAL
 
 class StateMachine: public SimpleRobot
@@ -372,12 +372,6 @@ class StateMachine: public SimpleRobot
                         {
 
                             state = DEPLOYING_RATCHET;
-                        }
-
-                        if (hookLeft.Get() and hookRight.Get() and ratchet.Get())
-                        {
-
-                            state = RETRACTING_CLIPS;
                         }
 
                         /*if (not hookLeft.Get() or not hookRight.Get())
