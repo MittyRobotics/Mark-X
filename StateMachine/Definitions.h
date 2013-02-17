@@ -22,9 +22,17 @@ const int DEPLOYING_RATCHET = 9;
 const int RETRACTING_CLIPS = 10;
 const int OH_SHIT = 13;
 const int WTF = 13;
-double SETPOINT_RATCHET_RETRACT = 4.0;
-double SETPOINT_BOTTOM = .3;
-double SETPOINT_TOP = 4.5;
-double TOLERANCE = .2;
-
+const double SETPOINT_RATCHET_RETRACT = 4.0;
+const double SETPOINT_BOTTOM = .3;
+const double SETPOINT_TOP = 4.5;
+const double TOLERANCE = .2;
+const int TIMEOUT2 = 15;
+const int TIMEOUT3 = 1;
+const int TIMEOUT4 = 3;
+const int TIMEOUT5 = 1;
+const int TIMEOUT6 = 10;
+const int TIMEOUT7 = 1;
+const int TIMEOUT8 = 5;
+const int TIMEOUT9 = 1;
+const int TIMEOUT10 = 2;
 #endif

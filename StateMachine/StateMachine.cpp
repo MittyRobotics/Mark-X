@@ -130,7 +130,7 @@ class StateMachine: public SimpleRobot
                             }
                         }
 
-                        /*if (time.Get() > 15000)   ///if hooks take 15 seconds to reach bottom
+                        /*if (time.Get() > TIMEOUT2)   ///if hooks take 15 seconds to reach bottom
                          {
                          printf("---------------HOOKS ARE TAKING TOO LONG. DECIDE----------------- \n");
                          Decide(state);
@@ -170,7 +170,7 @@ class StateMachine: public SimpleRobot
                             state = OH_SHIT;
                         }
 
-                        /*if (pot.GetVoltage() < SETPOINT_BOTTOM - TOLERANCE or time.Get() > 1000)  ///if the ratchet does not go down in 1 second
+                        /*if (pot.GetVoltage() < SETPOINT_BOTTOM - TOLERANCE or time.Get() > TIMEOUT3)  ///if the ratchet does not go down in 1 second
                          {
                          printf("--------------You took too long. oh NO.-------------- \n");
                          state = OH_SHIT;
@@ -211,7 +211,7 @@ class StateMachine: public SimpleRobot
                             state = RETRACTING_RATCHET;
                         }
 
-                        /*if (pot.GetVoltage() > SETPOINT_BOTTOM && !armBottom.Get() && time.Get() > 3000)  ///if hook has not hit bottom and time is greater than 3s
+                        /*if (pot.GetVoltage() > SETPOINT_BOTTOM && !armBottom.Get() && time.Get() > TIMEOUT4)  ///if hook has not hit bottom and time is greater than 3s
                          {
                          printf("--------------The hook did not hit the bottom in 3 seconds. Oh crap.------------------ \n");
                          state = OH_SHIT;
@@ -254,19 +254,19 @@ class StateMachine: public SimpleRobot
                             }
                         }
 
-                        /* if(time.Get() > 1000) ///your clip motors are broken. sucks to suck
+                        /* if(time.Get() > TIMEOUT5) ///your clip motors are broken. sucks to suck
                          {
                          printf("----------------Your clips are engaged and are all the way down, move on to next state------------------ \n");
                          state = OH_SHIT;
                          }*/
 
-                        /*if (time.Get() > 1000 and !clipLeft.Get() || !clipRight.Get())
+                        /*if (time.Get() > TIMEOUT5 and !clipLeft.Get() || !clipRight.Get())
                          { ///if either clip does not engage in 1 second
                          printf("-----------------The clips haven't clipped on in 1 second----------------- \n");
                          //retract clips*/
                         Wait(.5);
                         //extend clips*/
-                        /*if (time.Get() > 1000 && !clipLeft.Get() || !clipRight.Get())
+                        /*if (time.Get() > TIMEOUT5 && !clipLeft.Get() || !clipRight.Get())
                          { ///if still not clipped on
 
                          state = OH_SHIT;
@@ -284,7 +284,7 @@ class StateMachine: public SimpleRobot
                             state = MOVE_ARM_FORWARD;
                         }
 
-                        if (time.Get() > 10000 and (hookLeft.Get() or hookRight.Get())) ///wtf
+                        if (time.Get() > TIMEOUT6 and (hookLeft.Get() or hookRight.Get())) ///wtf
                         {
                             printf("--------------TIMEOUT ISSUE--------------");
                             state = OH_SHIT;
@@ -420,7 +420,7 @@ class StateMachine: public SimpleRobot
                             state = MOVE_HOOKS_UP; ///STAGE 6
                         }
 
-                        /*if (time.Get() > 5000)
+                        /*if (time.Get() > TIMEOUT8)
                          {
                          state = OH_SHIT;
                          }*/
@@ -466,7 +466,7 @@ class StateMachine: public SimpleRobot
                             state = OH_SHIT;
                         }
 
-                        /*if (time.Get() > 1000)
+                        /*if (time.Get() > TIMEOUT9)
                          {
                          state = OH_SHIT;
                          }*/
@@ -503,7 +503,7 @@ class StateMachine: public SimpleRobot
                         }
                         //check git braginsky branch
 
-                        /*if (time.Get() > 2000 and  (clipLeft.Get() || clipRight.Get()))
+                        /*if (time.Get() > TIMEOUT10 and  (clipLeft.Get() || clipRight.Get()))
                          {
                          state = OH_SHIT;
                          }*/
