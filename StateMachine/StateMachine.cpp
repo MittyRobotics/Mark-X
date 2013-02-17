@@ -2,7 +2,6 @@
 #include "Definitions.h"
 
 //DONE TODO: MAKE IT INTO A CASE STATEMENT
-//TODO: ADD CONTINUES TO EVERY CONTINGENCY
 //TODO: DO NOT SWITCH FROM STATE 8 TO STATE 9 WITHOUT CHECKING HOOKS
 //TODO: CHANGE TIMERS BACK TO NORMAL
 
@@ -418,17 +417,6 @@ class StateMachine: public SimpleRobot
                             //move arm back
                             Wait(.5);
                             state = MOVE_HOOKS_UP;
-                        }
-
-                        if (ratchet.Get())
-                        {
-
-                            //keep moving hooks down
-                            if (time.Get() > 5000 and not hookLeft.Get() or not hookRight.Get()) ///if it takes 5 seconds, and one of the hooks is still not engaged
-                            {
-                                //retract ratchet
-                                state = MOVE_HOOKS_UP;
-                            }
                         }
 
                         if (pot.GetVoltage() <= SETPOINT_BOTTOM)
