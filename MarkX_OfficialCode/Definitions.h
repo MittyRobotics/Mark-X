@@ -116,6 +116,16 @@ const double SETPOINT_BOTTOM = .3;
 const double SETPOINT_TOP = 4.5;
 const double TOLERANCE = .2;
 
+const int TIMEOUT2 = 15;
+const int TIMEOUT3 = 1;
+const int TIMEOUT4 = 3;
+const int TIMEOUT5 = 1;
+const int TIMEOUT6 = 10;
+const int TIMEOUT7 = 1;
+const int TIMEOUT8 = 5;
+const int TIMEOUT9 = 1;
+const int TIMEOUT10 = 2;
+
 //Autonomous Constants
 const float RAMP_RATE = 0.005;
 const float RAMP_RATE_2 = 0.0005;
