@@ -155,8 +155,11 @@ void MarkX::Operator()
 	if (stick3.GetRawButton(3))
 		rsFrontLoaderLift.SetOn(-1);
 	
-	if (stick3.GetRawButton(9))
+	if (stick3.GetRawButton(9) and stick3.GetX() > 0)
 		cameraServo.SetRaw(cameraServo.GetRaw() + CAMERA_PWM_INCREMENT);
+	
+	if (stick3.GetRawButton(9) and stick3.GetX() < 0)
+		cameraServo.SetRaw(cameraServo.GetRaw() - CAMERA_PWM_INCREMENT);
 	
 	if (stick1.GetRawButton(10))
 		JukeR();
