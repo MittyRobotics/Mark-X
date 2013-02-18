@@ -1,5 +1,5 @@
 //Last edited by Vadim Korolik
-//on 02/09/2013
+//on 02/18/2013
 #ifndef __DEFINITIONS_H
 #define __DEFINITIONS_H
 
@@ -91,6 +91,22 @@ const int kBURNOUT_CYCLES = 100;
 const float HOOP_BOT = 23;
 const float HOOP_TOP = 93;
 const float HOOP_MID = 58;
+
+// Pneumatics constants
+const int PN_R1_ID = 1;
+const int PN_R2_ID = 2;
+const int PN_R3_ID = 3;
+const int PN_R4_ID = 4;
+const int PN_R5_ID = 5;
+
+const int PN_S1_ID = 1;
+const int PN_S2_ID = 2;
+const int PN_S3_ID = 3;
+const int PN_S4_ID = 4;
+const int PN_S5_ID = 5;
+const int PN_S6_ID = 6;
+const int PN_S7_ID = 7;
+const int PN_S8_ID = 8;
 
 // Camera Constants
 const int BORDER_SIZE = 3;
