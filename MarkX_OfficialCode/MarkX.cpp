@@ -54,7 +54,7 @@ class MarkX: public SimpleRobot
 			        shooter(SHOOTER_PORT),
 
 			        climber(WINCH_1_PORT, WINCH_2_PORT),
-			        sTopDumber(PN_S1_ID), sShooter(PN_S2_ID),
+			        sTopDumper(PN_S1_ID), sShooter(PN_S2_ID),
 			        sFrontLoader1(PN_S3_ID), sFrontLoader2(PN_S4_ID), sFrontLoader3(PN_S5_ID), sFrontLoader4(PN_S6_ID),
 			        comp(14, 1)
 		{

@@ -11,7 +11,7 @@ TKOClimber::TKOClimber(int port1, int port2) :
 
 	///begin pneumatics crap
     sLeftClip(PN_S9_ID), sRightClip(PN_S10_ID), rsRatchet(PN_R3_ID),
-    sTopDumber(PN_S1_ID), sArmIn(PN_S7_ID), sArmOut(PN_S8_ID)
+    sTopDumper(PN_S1_ID), sArmIn(PN_S7_ID), sArmOut(PN_S8_ID)
 {
 	ds = DriverStation::GetInstance(); // Pulls driver station information
 	state = OPERATOR_CONTROL;
@@ -73,18 +73,20 @@ void TKOClimber::Climb()
 
 			case ROBOT_PULLED_UP: ///state 2
 				///begin pulling up robot
-				if(winch1.GetPosition() > SETPOINT_RATCHET_RETRACT)
+				if(winch1.GetPosition() > SETPOINT_RATCHET_RETRACT)   ///MOVE MOTORS
 				{
                     winch1.Set(winch1.GetPosition() + LIFT_INCREMENT);
 				}
-				//run hook motors down, moving setpoint
-				//clips retracted
-				if (pot.GetVoltage() <= SETPOINT_RATCHET_RETRACT - TOLERANCE) ///if PID says hooks are at their setpoint - some amount
+
+				///CONTINGENCIES
+
+				if (winch1.GetPosition() <= SETPOINT_RATCHET_RETRACT - TOLERANCE) ///if PID says hooks are at their setpoint - some amount
 				{
 					printf("---------------REACHED SETPOINT, MOVE TO RATCHET RETRACTING. YOU HAVE 1 SECOND. GO.----------------- \n");
 					print();
 					time.Reset();
 					state = RETRACTING_RATCHET;
+					continue;
 				}
 
 				if (clipLeft.Get() or clipRight.Get())
@@ -117,11 +119,11 @@ void TKOClimber::Climb()
 					}
 				}
 
-				/*if (time.Get() > TIMEOUT2)   ///if hooks take 15 seconds to reach bottom
-				 {
-				 printf("---------------HOOKS ARE TAKING TOO LONG. DECIDE----------------- \n");
-				 Decide(state);
-				 }*/
+				if (time.Get() > TIMEOUT2)   ///if hooks take 15 seconds to reach bottom
+				{
+                    printf("---------------HOOKS ARE TAKING TOO LONG. DECIDE----------------- \n");
+                    Decide(state);
+				}
 				break;
 
 			case RETRACTING_RATCHET: ///state 3
@@ -133,6 +135,7 @@ void TKOClimber::Climb()
 					printf("----------RETRACTED RATCHET, MOVING ON TO NEXT STATE ------------- \n");
 					time.Reset();
 					state = CHANGE_SETPOINT_MOVE_HOOKS_DOWN;
+					continue;
 				}
 
 				if (not hookLeft.Get() or not hookRight.Get()) ///if either hook comes off, then go to emergency state
@@ -171,6 +174,7 @@ void TKOClimber::Climb()
 					printf("--------------You reached your setpoint. Move on to deploying clips-------------- \n");
 					time.Reset();
 					state = DEPLOY_CLIPS;
+					continue;
 				}
 
 				if (not hookLeft.Get() or not hookRight.Get()) ///if either hook comes off at any point in time
@@ -215,6 +219,7 @@ void TKOClimber::Climb()
 					printf("----------------Your clips are engaged and are all the way down, move on to next state------------------ \n");
 					time.Reset();
 					state = MOVE_HOOKS_UP;
+					continue;
 				}
 
 				if (not hookLeft.Get() or not hookRight.Get()) ///if either hook hops off, emergency
@@ -269,6 +274,7 @@ void TKOClimber::Climb()
 					printf("---------------hooks reached top of their motion. Move on to next state ------------ \n");
 					time.Reset();
 					state = MOVE_ARM_FORWARD;
+					continue;
 				}
 
 				if (time.Get() > TIMEOUT6 and (hookLeft.Get() or hookRight.Get())) ///wtf
@@ -358,6 +364,7 @@ void TKOClimber::Climb()
 				{
                     time.Reset();
                     state = DEPLOYING_RATCHET;
+                    continue;
 				}
 
 				/*if (not hookLeft.Get() or not hookRight.Get())
@@ -424,6 +431,7 @@ void TKOClimber::Climb()
                     time.Reset();
 					//stop motors
 					state = RETRACTING_CLIPS;
+					continue;
 				}
 
 				if (not hookLeft.Get() or not hookRight.Get())
@@ -471,6 +479,7 @@ void TKOClimber::Climb()
 					level++;
 					time.Reset();
 					state = ROBOT_PULLED_UP;
+					continue;
 				}
 
 				if (not hookLeft.Get() and not hookRight.Get())
