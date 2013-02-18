@@ -364,25 +364,27 @@ void TKOClimber::Climb()
                     continue;
 				}
 
-				if ((hookLeft.Get() and not hookRight.Get()) or(hookRight.Get() and not hookLeft.Get()))  ///if only one of the hooks is attached
+				if (( hookLeft.Get() and not hookRight.Get() ) or( hookRight.Get() and not hookLeft.Get() ))  ///if only one of the hooks is attached
 				 {
+                    printf("------------ONLY ONE OF YOUR HOOKS WAS ATTACHED. CONTINUING TO MOVE THINGS FOR %f SECONDS----------", TIMEOUT8DELTA);
                     baseTime = time.Get();
                     while (time.Get() - baseTime < TIMEOUT8DELTA);
                     {
-                        //keep moving motors down
+                        winch1.Set(winch1.GetPosition() - LIFT_INCREMENT);
+
                         if (hookLeft.Get() and hookRight.Get())
                         {
                             state = DEPLOYING_RATCHET;
                             break;
                         }
-                    if (not hookLeft.Get() or not hookRight.Get())
-				 {
-				 state = OH_SHIT;
-				 break;
-				 }
-				 }
-				 continue;
-				 }
+                        if (not hookLeft.Get() or not hookRight.Get())
+                        {
+                            state = OH_SHIT;
+                            break;
+                        }
+                    }
+                    continue;
+                }
 
 				if (not clipLeft.Get() or not clipRight.Get())
 				{
