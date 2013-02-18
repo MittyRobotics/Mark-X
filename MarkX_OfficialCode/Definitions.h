@@ -131,6 +131,7 @@ const int OH_SHIT = 13;
 const int WTF = 13;
 const double SETPOINT_RATCHET_RETRACT = 4.0;
 const double LIFT_INCREMENT = 1.;
+const double LIFT_INCREMENT_RATCHET = LIFT_INCREMENT/2;
 const double SETPOINT_BOTTOM = .3;
 const double SETPOINT_TOP = 4.5;
 const double TOLERANCE = .2;

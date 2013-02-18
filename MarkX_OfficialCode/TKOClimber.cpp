@@ -127,8 +127,13 @@ void TKOClimber::Climb()
 
 			case RETRACTING_RATCHET: ///state 3
 				///retract ratchet
-				//slow down hook motors
-				//run ratchet motor
+
+                if(winch1.GetPosition() > SETPOINT_BOTTOM and ratchet.Get())   ///MOVE MOTORS
+				{
+				    rsRatchet.SetOn(-1);
+                    winch1.Set(winch1.GetPosition() + LIFT_INCREMENT_RATCHET);
+				}
+
 				if (not ratchet.Get()) ///if ratchet retracts, move on
 				{
 					printf("----------RETRACTED RATCHET, MOVING ON TO NEXT STATE ------------- \n");
@@ -159,11 +164,11 @@ void TKOClimber::Climb()
 					state = OH_SHIT;
 				}
 
-				/*if (winch1.GetPosition() < SETPOINT_BOTTOM - TOLERANCE or time.Get() > TIMEOUT3)  ///if the ratchet does not go down in 1 second
-				 {
-				 printf("--------------You took too long. oh NO.-------------- \n");
-				 state = OH_SHIT;
-				 }*/
+				if (winch1.GetPosition() < SETPOINT_BOTTOM - TOLERANCE or time.Get() > TIMEOUT3)  ///if the ratchet does not go down in 1 second
+                {
+                    printf("--------------You took too long. oh NO.-------------- \n");
+                    state = OH_SHIT;
+                }
 				break;
 
 			case CHANGE_SETPOINT_MOVE_HOOKS_DOWN: ///state 4
