@@ -93,6 +93,7 @@ const float HOOP_TOP = 93;
 const float HOOP_MID = 58;
 
 // Pneumatics constants
+//PN stands for pneumatics, R stands for relay, S stands for solenoid
 const int PN_R1_ID = 1;
 const int PN_R2_ID = 2;
 const int PN_R3_ID = 3;
