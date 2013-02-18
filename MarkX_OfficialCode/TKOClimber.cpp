@@ -56,7 +56,7 @@ void TKOClimber::Climb()
 	time.Start();
 	state = ROBOT_PULLED_UP;
 	int level = 0;
-	//double baseTime = 0;
+	double baseTime = 0;
 	int counter = 0;
 	rsRatchet.SetOn(1);
 	sArmE.Set(false);
@@ -65,7 +65,7 @@ void TKOClimber::Climb()
 	while (ds->IsEnabled() and level < 3)
 	{
 		//Wait(1.); FOR TESTING
-		winch2.Set(winch1.GetVoltage() / winch1.GetBusVoltage()); ///DOUBLE CHECK THIS (MASTER SLAVE MODE SET)
+		winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage()); ///DOUBLE CHECK THIS (MASTER SLAVE MODE SET)
 		print();
 		counter++;
 		switch (state)
@@ -248,7 +248,7 @@ void TKOClimber::Climb()
 				if (ratchet.Get())
 				{
 					printf("----------------Ratchet is engaged. Attempt to retract. Waiting .5 seconds------------------ \n");
-					rsRatchet.Set(false);
+					rsRatchet.SetOn(-1);
 					Wait(.5);
 					if (ratchet.Get())
 					{
@@ -306,7 +306,7 @@ void TKOClimber::Climb()
 				if (ratchet.Get())
 				{
 					printf("RATCHET PROBLEMS. DUDE. OH NO. WAITING .5 SECONDS");
-					rsRatchet.Set(false);
+					rsRatchet.SetOn(-1);
 					Wait(.5);
 					if (ratchet.Get())
 					{
@@ -340,7 +340,7 @@ void TKOClimber::Climb()
 					}
 					if (ratchet.Get())
 					{
-						rsRatchet.Set(false);
+						rsRatchet.SetOn(-1);
 						printf("------------RATCHET IS IN. ATTEMPTED TO RETRACT RATCHET, WAITING HALF A SECOND-----------");
 						Wait(.5);
 						if (ratchet.Get())
@@ -366,24 +366,23 @@ void TKOClimber::Climb()
 
 				if ((hookLeft.Get() and not hookRight.Get()) or(hookRight.Get() and not hookLeft.Get()))  ///if only one of the hooks is attached
 				 {
-				 baseTime = time.Get();
-				 while (time.Get() - baseTime < 250)
-				 {
-				 //keep moving motors down
-				 if (hookLeft.Get() and hookRight.Get())
-				 {
-
-				 state = DEPLOYING_RATCHET;
-				 break;
-				 }
-				 if (not hookLeft.Get() or not hookRight.Get())
+                    baseTime = time.Get();
+                    while (time.Get() - baseTime < TIMEOUT8DELTA);
+                    {
+                        //keep moving motors down
+                        if (hookLeft.Get() and hookRight.Get())
+                        {
+                            state = DEPLOYING_RATCHET;
+                            break;
+                        }
+                    if (not hookLeft.Get() or not hookRight.Get())
 				 {
 				 state = OH_SHIT;
 				 break;
 				 }
 				 }
 				 continue;
-				 }*/
+				 }
 
 				if (not clipLeft.Get() or not clipRight.Get())
 				{
