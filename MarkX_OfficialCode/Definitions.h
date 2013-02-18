@@ -80,7 +80,7 @@ const float REVS_PER_METER = 2.51;
 const int ENCODER_REVS = 250;
 const bool JAG_SAFETY = true;
 const CANJaguar::SpeedReference JAG_SPEEDREF = CANJaguar::kSpeedRef_QuadEncoder;
-const CANJaguar::PositionReference JAG_POSREF = CANJaguar::kPositionRef_QuadEncoder;
+const CANJaguar::PositionReference JAG_POSREF = CANJaguar::kPosRef_QuadEncoder;
 
 //Drive constants
 const float kMAX_DRIVE_RPM = 700;

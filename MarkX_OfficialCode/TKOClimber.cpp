@@ -5,18 +5,18 @@
 
 TKOClimber::TKOClimber(int port1, int port2) :
     ///lift crap
-	winch1(port1, CANJaguar::kPosition), winch2(port2, CANJaguar::kPercentVBus),
+	winch1(port1, CANJaguar::kPosition), winch2(port2, CANJaguar::kPercentVbus),
 	hookLeft(1), hookRight(2), clipLeft(3), clipRight(4), armTop(5),
 	armBottom(6), ratchet(7),
 
 	///begin pneumatics crap
-    sLeftClip(PN_S9_ID), sRightClip(PN_S10_ID), rsRatchet(PN_R3_ID),
-    sTopDumper(PN_S1_ID), sArmIn(PN_S7_ID), sArmOut(PN_S8_ID)
+    rsRatchet(PN_R3_ID),
+    sLeftClip(PN_S9_ID), sRightClip(PN_S10_ID), sTopDumper(PN_S1_ID), sArmIn(PN_S7_ID), sArmOut(PN_S8_ID)
 {
 	ds = DriverStation::GetInstance(); // Pulls driver station information
 	state = OPERATOR_CONTROL;
 	winch1.EnableControl();
-	winch1.SetSpeedReference(JAG_POSREF);
+	winch1.SetPositionReference(JAG_POSREF);
 	winch1.ConfigEncoderCodesPerRev(ENCODER_REVS);
 	winch1.SetPID(DRIVE_kP, DRIVE_kI, DRIVE_kD);
 }
@@ -48,7 +48,6 @@ void TKOClimber::print()
 	printf("Arm Top %d ", armTop.Get());
 	printf("Arm Bottom %d\n", armBottom.Get());
 	printf("Ratchet %d", ratchet.Get());
-	printf("POT VALUES %f", pot.GetVoltage());
 	printf("--------------STATE = %d ------------------- \n\n\n", state);
 }
 
@@ -160,7 +159,7 @@ void TKOClimber::Climb()
 					state = OH_SHIT;
 				}
 
-				/*if (pot.GetVoltage() < SETPOINT_BOTTOM - TOLERANCE or time.Get() > TIMEOUT3)  ///if the ratchet does not go down in 1 second
+				/*if (winch1.GetPosition() < SETPOINT_BOTTOM - TOLERANCE or time.Get() > TIMEOUT3)  ///if the ratchet does not go down in 1 second
 				 {
 				 printf("--------------You took too long. oh NO.-------------- \n");
 				 state = OH_SHIT;
@@ -169,7 +168,7 @@ void TKOClimber::Climb()
 
 			case CHANGE_SETPOINT_MOVE_HOOKS_DOWN: ///state 4
 				///change setpoint to very bottom, keep moving hooks
-				if (pot.GetVoltage() <= SETPOINT_BOTTOM) ///if PID says hook reaches bottom of its movement
+				if (winch1.GetPosition() <= SETPOINT_BOTTOM) ///if PID says hook reaches bottom of its movement
 				{
 					printf("--------------You reached your setpoint. Move on to deploying clips-------------- \n");
 					time.Reset();
@@ -202,7 +201,7 @@ void TKOClimber::Climb()
 					state = RETRACTING_RATCHET;
 				}
 
-				/*if (pot.GetVoltage() > SETPOINT_BOTTOM && !armBottom.Get() && time.Get() > TIMEOUT4)  ///if hook has not hit bottom and time is greater than 3s
+				/*if (winch1.GetPosition() > SETPOINT_BOTTOM && !armBottom.Get() && time.Get() > TIMEOUT4)  ///if hook has not hit bottom and time is greater than 3s
 				 {
 				 printf("--------------The hook did not hit the bottom in 3 seconds. Oh crap.------------------ \n");
 				 state = OH_SHIT;
@@ -269,7 +268,7 @@ void TKOClimber::Climb()
 			case MOVE_HOOKS_UP: ///state 6
 				///Hooks begin moving up
 				//run hook motors
-				if (pot.GetVoltage() > SETPOINT_TOP and (not hookLeft.Get() and not hookRight.Get()))
+				if (winch1.GetPosition() > SETPOINT_TOP and (not hookLeft.Get() and not hookRight.Get()))
 				{
 					printf("---------------hooks reached top of their motion. Move on to next state ------------ \n");
 					time.Reset();
@@ -406,7 +405,7 @@ void TKOClimber::Climb()
 					state = MOVE_HOOKS_UP;
 				}
 
-				if (pot.GetVoltage() <= SETPOINT_BOTTOM)
+				if (winch1.GetPosition() <= SETPOINT_BOTTOM)
 				{
 					//move arm back
 					Wait(.5);
@@ -454,7 +453,7 @@ void TKOClimber::Climb()
 					state = OH_SHIT;
 				}
 
-				if (pot.GetVoltage() < bottomOfBar)
+				if (winch1.GetPosition() < bottomOfBar)
 				{
 					state = OH_SHIT;
 				}

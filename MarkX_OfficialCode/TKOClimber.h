@@ -19,12 +19,11 @@ class TKOClimber
 	private:
 		CANJaguar winch1, winch2;
 		DigitalInput hookLeft, hookRight, clipLeft, clipRight, armTop, armBottom, ratchet;
-		AnalogChannel pot;
 		Timer time;
 		Timer time2;
 		DriverStation *ds;
 		TKORelay rsRatchet;
-		Solenoid sLeftClip, sRightClip, sTopDumper, sArmOut, sArmIn;
+		Solenoid sLeftClip, sRightClip, sTopDumper, sArmIn, sArmOut;
 
 		int state;
 		float topOfBar;
