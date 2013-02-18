@@ -5,6 +5,7 @@
 #include "TKOShooter.h"
 #include "TKOClimber.h"
 #include "TKORelay.h"
+#include "TKOLogger.h"
 
 /*---------------MarkX-Thing-to-Do---------------------*
  * 1 single solenoid (spike), 2 double solenoids (spikes),
@@ -24,10 +25,11 @@ class MarkX: public SimpleRobot
 		CANJaguar drive1, drive2, drive3, drive4; // define motors
 		Joystick stick1, stick2, stick3, stick4; // define joysticks
 		DriverStation *ds; // define driver station object
+		TKOLogger logger;
 		TKOAutonomous auton;
 		TKOShooter shooter;
 		TKOClimber climber;
-		TKORelay  rsFrontLoaderWrist, rsFrontLoaderLift;
+		TKORelay rsFrontLoaderWrist, rsFrontLoaderLift;
 		PWM cameraServo;
 		Compressor comp;
 
@@ -42,23 +44,20 @@ class MarkX: public SimpleRobot
 		void Test();
 		MarkX() :
 			drive1(DRIVE_L1_ID, CANJaguar::kSpeed), // initialize motor 1 < first left drive motor
-			        drive2(DRIVE_L2_ID, CANJaguar::kPercentVbus), // initialize motor 2 < second left drive motor
-			        drive3(DRIVE_R1_ID, CANJaguar::kSpeed), // initialize motor 3 < first right drive motor
-			        drive4(DRIVE_R2_ID, CANJaguar::kPercentVbus), // initialize motor 4 < second right drive motor
+			drive2(DRIVE_L2_ID, CANJaguar::kPercentVbus), // initialize motor 2 < second left drive motor
+			drive3(DRIVE_R1_ID, CANJaguar::kSpeed), // initialize motor 3 < first right drive motor
+			drive4(DRIVE_R2_ID, CANJaguar::kPercentVbus), // initialize motor 4 < second right drive motor
 
-			        stick1(STICK_1_PORT), // initialize joystick 1 < first drive joystick
-			        stick2(STICK_2_PORT), // initialize joystick 2 < second drive joystick
-			        stick3(STICK_3_PORT), // initialize joystick 3 < first EVOM joystick
-			        stick4(STICK_4_PORT), // initialize joystick 4 < first EVOM joystick-m,
+			stick1(STICK_1_PORT), // initialize joystick 1 < first drive joystick
+			stick2(STICK_2_PORT), // initialize joystick 2 < second drive joystick
+			stick3(STICK_3_PORT), // initialize joystick 3 < first EVOM joystick
+			stick4(STICK_4_PORT), // initialize joystick 4 < first EVOM joystick-m,
 
-			        auton(DRIVE_L1_ID, DRIVE_L2_ID, DRIVE_R1_ID, DRIVE_R2_ID),
+			logger(), auton(DRIVE_L1_ID, DRIVE_L2_ID, DRIVE_R1_ID, DRIVE_R2_ID),
 
-			        shooter(SHOOTER_PORT),
+			shooter(SHOOTER_PORT),
 
-			        climber(WINCH_1_PORT, WINCH_2_PORT),
-			        rsFrontLoaderWrist(PN_R1_ID), rsFrontLoaderLift(PN_R2_ID),
-			        cameraServo(CAMERA_SERVO_PORT),
-			        comp(PRESSURE_SWITCH_PORT, COMPRESSOR_ID)
+			climber(WINCH_1_PORT, WINCH_2_PORT), rsFrontLoaderWrist(PN_R1_ID), rsFrontLoaderLift(PN_R2_ID), cameraServo(CAMERA_SERVO_PORT), comp(PRESSURE_SWITCH_PORT, COMPRESSOR_ID)
 		{
 			ds = DriverStation::GetInstance(); // Pulls driver station information
 			drive1.EnableControl(); //critical for these jags because they are in speed mode
@@ -153,13 +152,13 @@ void MarkX::Operator()
 		rsFrontLoaderLift.SetOn(1);
 	if (stick3.GetRawButton(3))
 		rsFrontLoaderLift.SetOn(-1);
-	
+
 	if (stick3.GetRawButton(9) and stick3.GetX() > 0)
 		cameraServo.SetRaw(cameraServo.GetRaw() + CAMERA_PWM_INCREMENT);
-	
+
 	if (stick3.GetRawButton(9) and stick3.GetX() < 0)
 		cameraServo.SetRaw(cameraServo.GetRaw() - CAMERA_PWM_INCREMENT);
-	
+
 	if (stick1.GetRawButton(10))
 		JukeR();
 	if (stick1.GetRawButton(7))
