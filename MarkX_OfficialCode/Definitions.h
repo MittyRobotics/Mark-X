@@ -30,7 +30,7 @@
 /*! \mainpage Welcome to TKO 1351's MarkIX's Code Documentation!
  *
  * 	This is the Robot Code for the 2012 Season of Rebound Rumble
- *  
+ *
  *  If you haven't already, please visit our <a href="http://www.amhsrobotics.com">website</a>.
  */
 //Joystick ports
@@ -94,20 +94,16 @@ const float HOOP_MID = 58;
 
 // Pneumatics constants
 //PN stands for pneumatics, R stands for relay, S stands for solenoid
-const int PN_R1_ID = 1;
-const int PN_R2_ID = 2;
-const int PN_R3_ID = 3;
-const int PN_R4_ID = 4;
-const int PN_R5_ID = 5;
+const int PN_R1_ID = 1; //Left clip
+const int PN_R2_ID = 2; //Right clip
+const int PN_R3_ID = 3; //Lift ratchet
 
-const int PN_S1_ID = 1;
-const int PN_S2_ID = 2;
-const int PN_S3_ID = 3;
-const int PN_S4_ID = 4;
-const int PN_S5_ID = 5;
-const int PN_S6_ID = 6;
-const int PN_S7_ID = 7;
-const int PN_S8_ID = 8;
+const int PN_S1_ID = 1; //Top Dumper
+const int PN_S2_ID = 2; //Shooter
+const int PN_S3_ID = 3; //Front loader solenoids
+const int PN_S4_ID = 4; //Front loader solenoids
+const int PN_S5_ID = 5; //Front loader solenoids
+const int PN_S6_ID = 6; //Front loader solenoids
 
 // Camera Constants
 const int BORDER_SIZE = 3;

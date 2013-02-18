@@ -9,7 +9,7 @@
 /*---------------MarkX-Thing-to-Do---------------------*
  * 1 single solenoid (spike), 2 double solenoids (spikes),
  * 4 double solenoids (each solenoid 2 ports on breakout
- * 
+ *
  */
 
 class MarkX: public SimpleRobot
@@ -26,6 +26,7 @@ class MarkX: public SimpleRobot
 		TKOAutonomous auton;
 		TKOShooter shooter;
 		TKOClimber climber;
+		Solenoid  sTopDumper, sShooter, sFrontLoader1, sFrontLoader2, sFrontLoader3, sFrontLoader4;
 		Compressor comp;
 
 		Timer timer;
@@ -43,7 +44,7 @@ class MarkX: public SimpleRobot
 			        drive3(DRIVE_R1_ID, CANJaguar::kSpeed), // initialize motor 3 < first right drive motor
 			        drive4(DRIVE_R2_ID, CANJaguar::kPercentVbus), // initialize motor 4 < second right drive motor
 
-			        stick1(STICK_1_PORT), // initialize joystick 1 < first drive joystick 
+			        stick1(STICK_1_PORT), // initialize joystick 1 < first drive joystick
 			        stick2(STICK_2_PORT), // initialize joystick 2 < second drive joystick
 			        stick3(STICK_3_PORT), // initialize joystick 3 < first EVOM joystick
 			        stick4(STICK_4_PORT), // initialize joystick 4 < first EVOM joystick-m,
@@ -53,9 +54,11 @@ class MarkX: public SimpleRobot
 			        shooter(SHOOTER_PORT),
 
 			        climber(WINCH_1_PORT, WINCH_2_PORT),
+			        sTopDumber(PN_S1_ID), sShooter(PN_S2_ID),
+			        sFrontLoader1(PN_S3_ID), sFrontLoader2(PN_S4_ID), sFrontLoader3(PN_S5_ID), sFrontLoader4(PN_S6_ID),
 			        comp(14, 1)
 		{
-			ds = DriverStation::GetInstance(); // Pulls driver station information 
+			ds = DriverStation::GetInstance(); // Pulls driver station information
 			drive1.EnableControl(); //critical for these jags because they are in speed mode
 			drive3.EnableControl(); //critical for these jags because they are in speed mode
 			drive1.SetSpeedReference(JAG_SPEEDREF);
