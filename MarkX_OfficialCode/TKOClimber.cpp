@@ -7,7 +7,7 @@ TKOClimber::TKOClimber(int port1, int port2) :
     ///lift crap
 	winch1(port1, CANJaguar::kPosition), winch2(port2, CANJaguar::kPercentVBus),
 	hookLeft(1), hookRight(2), clipLeft(3), clipRight(4), armTop(5),
-	armBottom(6), ratchet(7), pot(6),
+	armBottom(6), ratchet(7),
 
 	///begin pneumatics crap
     sLeftClip(PN_S9_ID), sRightClip(PN_S10_ID), rsRatchet(PN_R3_ID),
@@ -73,14 +73,17 @@ void TKOClimber::Climb()
 
 			case ROBOT_PULLED_UP: ///state 2
 				///begin pulling up robot
-				if()
+				if(winch1.GetPosition() > SETPOINT_RATCHET_RETRACT)
+				{
+                    winch1.Set(winch1.GetPosition() + LIFT_INCREMENT);
+				}
 				//run hook motors down, moving setpoint
 				//clips retracted
-				time.Reset();
 				if (pot.GetVoltage() <= SETPOINT_RATCHET_RETRACT - TOLERANCE) ///if PID says hooks are at their setpoint - some amount
 				{
 					printf("---------------REACHED SETPOINT, MOVE TO RATCHET RETRACTING. YOU HAVE 1 SECOND. GO.----------------- \n");
 					print();
+					time.Reset();
 					state = RETRACTING_RATCHET;
 				}
 
@@ -125,10 +128,10 @@ void TKOClimber::Climb()
 				///retract ratchet
 				//slow down hook motors
 				//run ratchet motor
-				time.Reset();
 				if (not ratchet.Get()) ///if ratchet retracts, move on
 				{
 					printf("----------RETRACTED RATCHET, MOVING ON TO NEXT STATE ------------- \n");
+					time.Reset();
 					state = CHANGE_SETPOINT_MOVE_HOOKS_DOWN;
 				}
 
@@ -163,10 +166,10 @@ void TKOClimber::Climb()
 
 			case CHANGE_SETPOINT_MOVE_HOOKS_DOWN: ///state 4
 				///change setpoint to very bottom, keep moving hooks
-				time.Reset();
 				if (pot.GetVoltage() <= SETPOINT_BOTTOM) ///if PID says hook reaches bottom of its movement
 				{
 					printf("--------------You reached your setpoint. Move on to deploying clips-------------- \n");
+					time.Reset();
 					state = DEPLOY_CLIPS;
 				}
 
@@ -207,10 +210,10 @@ void TKOClimber::Climb()
 				///deploying clips
 				//hook motor stops moving
 				//deploy clips
-				time.Reset();
 				if (clipLeft.Get() && clipRight.Get()) ///if clips engage and are down, move on to state 5
 				{
 					printf("----------------Your clips are engaged and are all the way down, move on to next state------------------ \n");
+					time.Reset();
 					state = MOVE_HOOKS_UP;
 				}
 
@@ -261,10 +264,10 @@ void TKOClimber::Climb()
 			case MOVE_HOOKS_UP: ///state 6
 				///Hooks begin moving up
 				//run hook motors
-				time.Reset();
 				if (pot.GetVoltage() > SETPOINT_TOP and (not hookLeft.Get() and not hookRight.Get()))
 				{
 					printf("---------------hooks reached top of their motion. Move on to next state ------------ \n");
+					time.Reset();
 					state = MOVE_ARM_FORWARD;
 				}
 
@@ -312,7 +315,6 @@ void TKOClimber::Climb()
 
 			case MOVE_ARM_FORWARD: ///state 7
 				///move arm forward
-				time.Reset();
 				while (time.Get() < 5)
 				{
 					Wait(.5);
@@ -346,16 +348,16 @@ void TKOClimber::Climb()
 					}
 				}
 				printf("OUTSIDE OF LOOP YAY HAPPY");
+				time.Reset();
 				state = MOVE_HOOKS_DOWN;
 				break;
 
 			case MOVE_HOOKS_DOWN: ///state 8
 				///move hooks down
-				time.Reset();
 				if (hookLeft.Get() && hookRight.Get() && not ratchet.Get()) ///both hooks clip on
 				{
-
-					state = DEPLOYING_RATCHET;
+                    time.Reset();
+                    state = DEPLOYING_RATCHET;
 				}
 
 				/*if (not hookLeft.Get() or not hookRight.Get())
@@ -417,10 +419,9 @@ void TKOClimber::Climb()
 			case DEPLOYING_RATCHET: ///state 9
 				///push down ratchet
 				//push down ratchet
-				time.Reset();
 				if (ratchet.Get())
 				{
-
+                    time.Reset();
 					//stop motors
 					state = RETRACTING_CLIPS;
 				}
@@ -464,10 +465,11 @@ void TKOClimber::Climb()
 				///retract clips
 				///hook motors are stopped
 				///run clip motors
-				time.Reset();
+
 				if (!clipLeft.Get() && !clipRight.Get())
 				{
 					level++;
+					time.Reset();
 					state = ROBOT_PULLED_UP;
 				}
 
