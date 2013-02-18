@@ -4,6 +4,7 @@
 #include "TKOAutonomous.h"
 #include "TKOShooter.h"
 #include "TKOClimber.h"
+#include "TKORelay.h"
 
 /*---------------MarkX-Thing-to-Do---------------------*
  * 1 single solenoid (spike), 2 double solenoids (spikes),
