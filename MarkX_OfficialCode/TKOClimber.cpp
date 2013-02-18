@@ -173,7 +173,13 @@ void TKOClimber::Climb()
 
 			case CHANGE_SETPOINT_MOVE_HOOKS_DOWN: ///state 4
 				///change setpoint to very bottom, keep moving hooks
-				if (winch1.GetPosition() <= SETPOINT_BOTTOM) ///if PID says hook reaches bottom of its movement
+
+				if (winch1.GetPosition() > SETPOINT_BOTTOM - TOLERANCE)
+				{
+				    winch1.Set(winch1.GetPosition() + LIFT_INCREMENT)
+				}
+
+				if (winch1.GetPosition() <= SETPOINT_BOTTOM - TOLERANCE) ///if PID says hook reaches bottom of its movement
 				{
 					printf("--------------You reached your setpoint. Move on to deploying clips-------------- \n");
 					time.Reset();
