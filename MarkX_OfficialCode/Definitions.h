@@ -27,6 +27,9 @@
 #define space printf("\n");
 #define GO_AWAY NULL;
 
+#define setMessage(c) message[logger->i++]=c
+#define setMessageData(c, v) message[logger->i]=c; logger->data[logger->i++]=v;
+
 /*! \mainpage Welcome to TKO 1351's MarkIX's Code Documentation!
  *
  * 	This is the Robot Code for the 2012 Season of Rebound Rumble
@@ -59,7 +62,6 @@ const int SWITCH_2_PORT = 2;
 const int SWITCH_3_PORT = 1;
 const int LOWER_RELAY_PORT = 1;
 const int UPPER_RELAY_PORT = 2;
-
 
 // Spinner constants
 const float RADIUS_WHEELS = 4;
@@ -136,7 +138,7 @@ const double SETPOINT_BOTTOM = .3;
 const double SETPOINT_TOP = 4.5;
 const double TOLERANCE = .2;
 const double LIFT_INCREMENT = 1.;
-const double LIFT_INCREMENT_RATCHET = LIFT_INCREMENT/2;
+const double LIFT_INCREMENT_RATCHET = LIFT_INCREMENT / 2;
 
 const int TIMEOUT2 = 15;
 const int TIMEOUT3 = 1;
