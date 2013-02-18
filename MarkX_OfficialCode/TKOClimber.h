@@ -4,6 +4,7 @@
 #define __TKOCLIMBER_H
 
 #include "Definitions.h"
+#include "TKORelay.h"
 
 class TKOClimber
 {
@@ -14,6 +15,8 @@ class TKOClimber
 		void print();
 		void Climb();
 		int stick4B4, stick4B6;
+		TKORelay rs1, rs2, rs3, rs4, rs5;
+		Solenoid s1, s2, s3, s4, s5, s6, s7, s8;
 		
 	private:
 		CANJaguar winch1, winch2;

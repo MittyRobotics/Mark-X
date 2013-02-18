@@ -4,8 +4,9 @@
 ///Constructor for the TKOAutonomous class
 
 TKOClimber::TKOClimber(int port1, int port2) :
-	winch1(port1, CANJaguar::kVoltage), winch2(port2, CANJaguar::kVoltage), hookLeft(1), hookRight(2), clipLeft(3), clipRight(4), armTop(5), armBottom(6), ratchet(7), test(14), pot(6) ///clipPosition true means clips are out
+	winch1(port1, CANJaguar::kVoltage), winch2(port2, CANJaguar::kVoltage), hookLeft(1), hookRight(2), clipLeft(3), clipRight(4), armTop(5), armBottom(6), ratchet(7), test(14), pot(6), ///clipPosition true means clips are out
 
+	        rs1(PN_R1_ID), rs2(PN_R2_ID), rs3(PN_R3_ID), rs4(PN_R4_ID), rs5(PN_R5_ID), s1(PN_S1_ID), s2(PN_S2_ID), s3(PN_S3_ID), s4(PN_S4_ID), s5(PN_S5_ID), s6(PN_S6_ID), s7(PN_S7_ID), s8(PN_S8_ID)
 {
 	ds = DriverStation::GetInstance(); // Pulls driver station information
 	state = OPERATOR_CONTROL;

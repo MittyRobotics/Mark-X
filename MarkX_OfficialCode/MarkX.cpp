@@ -26,8 +26,7 @@ class MarkX: public SimpleRobot
 		TKOAutonomous auton;
 		TKOShooter shooter;
 		TKOClimber climber;
-		TKORelay rs1, rs2, rs3, rs4, rs5;
-		Solenoid s1, s2, s3, s4, s5, s6, s7, s8;
+		Compressor comp;
 
 		Timer timer;
 		void Disabled();
@@ -54,9 +53,7 @@ class MarkX: public SimpleRobot
 			        shooter(SHOOTER_PORT),
 
 			        climber(WINCH_1_PORT, WINCH_2_PORT),
-			        
-			        rs1(PN_R1_ID), rs2(PN_R2_ID), rs3(PN_R3_ID), rs4(PN_R4_ID), rs5(PN_R5_ID),
-			        s1(PN_S1_ID), s2(PN_S2_ID), s3(PN_S3_ID), s4(PN_S4_ID), s5(PN_S5_ID), s6(PN_S6_ID), s7(PN_S7_ID), s8(PN_S8_ID)
+			        comp(14, 1)
 		{
 			ds = DriverStation::GetInstance(); // Pulls driver station information 
 			drive1.EnableControl(); //critical for these jags because they are in speed mode
