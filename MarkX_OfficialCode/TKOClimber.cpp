@@ -65,6 +65,7 @@ void TKOClimber::Climb()
 	while (ds->IsEnabled() and level < 3)
 	{
 		//Wait(1.); FOR TESTING
+		winch2.Set(winch1.GetVoltage() / winch1.GetBusVoltage()); ///DOUBLE CHECK THIS (MASTER SLAVE MODE SET)
 		print();
 		counter++;
 		switch (state)
@@ -224,9 +225,6 @@ void TKOClimber::Climb()
 				///deploying clips
 				sClipsE.Set(false);
 				sClipsR.Set(true);
-
-				//hook motor stops moving
-				//deploy clips
 				if (clipLeft.Get() && clipRight.Get()) ///if clips engage and are down, move on to state 5
 				{
 					printf("----------------Your clips are engaged and are all the way down, move on to next state------------------ \n");
@@ -249,8 +247,8 @@ void TKOClimber::Climb()
 
 				if (ratchet.Get())
 				{
-					printf("----------------Ratchet is engaged. You have .5 seconds------------------ \n");
-					//retract ratchet
+					printf("----------------Ratchet is engaged. Attempt to retract. Waiting .5 seconds------------------ \n");
+					rsRatchet.Set(false);
 					Wait(.5);
 					if (ratchet.Get())
 					{
@@ -273,8 +271,6 @@ void TKOClimber::Climb()
 				{
 				    winch1.Set(winch1.GetPosition() + LIFT_INCREMENT);
 				}
-
-				//run hook motors
 				if (winch1.GetPosition() > SETPOINT_TOP and (not hookLeft.Get() and not hookRight.Get()))
 				{
 					printf("---------------hooks reached top of their motion. Move on to next state ------------ \n");
@@ -309,9 +305,8 @@ void TKOClimber::Climb()
 
 				if (ratchet.Get())
 				{
-					printf("RATCHET-ASS PROBLEMS, BRO");
-					//motor stop
-					//retract ratchet
+					printf("RATCHET PROBLEMS. DUDE. OH NO. WAITING .5 SECONDS");
+					rsRatchet.Set(false);
 					Wait(.5);
 					if (ratchet.Get())
 					{
@@ -327,10 +322,10 @@ void TKOClimber::Climb()
 
 			case MOVE_ARM_FORWARD: ///state 7
 				///move arm forward
-				while (time.Get() < 5)
+				while (time.Get() < TIMEOUT7)
 				{
-					Wait(.5);
-					printf("%f", time.Get());
+					//Wait(.5);  ///LEAVE IN FOR TESTING
+					//printf("%f", time.Get());  ///LEAVE IN FOR TESTING
 					if (hookLeft.Get() or hookRight.Get())
 					{
 						state = WTF;
@@ -345,21 +340,17 @@ void TKOClimber::Climb()
 					}
 					if (ratchet.Get())
 					{
-						//motor stop
-						//retract ratchet
+						rsRatchet.Set(false);
+						printf("------------RATCHET IS IN. ATTEMPTED TO RETRACT RATCHET, WAITING HALF A SECOND-----------");
 						Wait(.5);
 						if (ratchet.Get())
 						{
+						    printf("----------RATCHET FAILED TO GO IN AGAIN. CALLING IT A DAY-----------");
 							state = OH_SHIT;
 						}
 					}
 					print();
-					if (time.Get() > 450)
-					{
-						break;
-					}
 				}
-				printf("OUTSIDE OF LOOP YAY HAPPY");
 				time.Reset();
 				state = MOVE_HOOKS_DOWN;
 				break;
@@ -373,7 +364,7 @@ void TKOClimber::Climb()
                     continue;
 				}
 
-				/*if (not hookLeft.Get() or not hookRight.Get())
+				if ((hookLeft.Get() and not hookRight.Get()) or(hookRight.Get() and not hookLeft.Get()))  ///if only one of the hooks is attached
 				 {
 				 baseTime = time.Get();
 				 while (time.Get() - baseTime < 250)
