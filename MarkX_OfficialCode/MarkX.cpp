@@ -26,6 +26,7 @@ class MarkX: public SimpleRobot
 		TKOAutonomous auton;
 		TKOShooter shooter;
 		TKOClimber climber;
+		TKORelay s1, s2, s3, s4, s5;
 
 		Timer timer;
 		void Disabled();
