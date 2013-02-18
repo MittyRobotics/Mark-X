@@ -145,7 +145,7 @@ const int TIMEOUT5 = 1;
 const int TIMEOUT6 = 10;
 const int TIMEOUT7 = 1;
 const int TIMEOUT8 = 5;
-const int TIMEOUT8DELTA = .25;
+const double TIMEOUT8DELTA = .25;
 const int TIMEOUT9 = 1;
 const int TIMEOUT10 = 2;
 
