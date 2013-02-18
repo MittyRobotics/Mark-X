@@ -108,12 +108,12 @@ void TKOClimber::Climb()
 
 				if (not ratchet.Get()) ///If ratchet is disabled
 				{
-					//push down ratchet
-					printf("---------------RATCHET IS DISABLED. WAITING HALF SECOND----------------- \n");
+					rsRatchet.SetOn(1);  ///push down ratchet
+					printf("---------------RATCHET IS DISABLED. WE TRIED AGAIN. WAITING HALF SECOND TO CHECK AGAIN----------------- \n");
 					Wait(.5);
 					if (not ratchet.Get())
 					{
-						printf("---------------RATCHET IS STILL DISABLED, oh NO----------------- \n");
+						printf("---------------RATCHET IS STILL DISABLED. YOU'RE BONED.----------------- \n");
 						state = OH_SHIT;
 					}
 				}
@@ -222,6 +222,7 @@ void TKOClimber::Climb()
 
 			case DEPLOY_CLIPS: ///state 5
 				///deploying clips
+				sClipsE.Set(false);
 				sClipsR.Set(true);
 
 				//hook motor stops moving
