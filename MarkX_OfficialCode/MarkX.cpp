@@ -10,7 +10,6 @@
  * 1 single solenoid (spike), 2 double solenoids (spikes),
  * 4 double solenoids (each solenoid 2 ports on breakout
  * 
- * CHECK TKOCLIMBER LINE 68
  * FIX JAG PORTS/WINCH PORTS
  */
 
@@ -155,8 +154,11 @@ void MarkX::Operator()
 	if (stick3.GetRawButton(3))
 		rsFrontLoaderLift.SetOn(-1);
 	
-	if (stick3.GetRawButton(9))
+	if (stick3.GetRawButton(9) and stick3.GetX() > 0)
 		cameraServo.SetRaw(cameraServo.GetRaw() + CAMERA_PWM_INCREMENT);
+	
+	if (stick3.GetRawButton(9) and stick3.GetX() < 0)
+		cameraServo.SetRaw(cameraServo.GetRaw() - CAMERA_PWM_INCREMENT);
 	
 	if (stick1.GetRawButton(10))
 		JukeR();
