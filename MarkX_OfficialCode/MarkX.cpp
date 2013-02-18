@@ -26,7 +26,7 @@ class MarkX: public SimpleRobot
 		TKOAutonomous auton;
 		TKOShooter shooter;
 		TKOClimber climber;
-		Solenoid  sTopDumper, sShooter, sFrontLoader1, sFrontLoader2, sFrontLoader3, sFrontLoader4;
+		Solenoid  sShooter, sFrontLoaderWristIn, sFrontLoaderWristOut, sFrontLoaderLiftIn, sFrontLoaderLiftOut;
 		Compressor comp;
 
 		Timer timer;
@@ -54,8 +54,8 @@ class MarkX: public SimpleRobot
 			        shooter(SHOOTER_PORT),
 
 			        climber(WINCH_1_PORT, WINCH_2_PORT),
-			        sTopDumper(PN_S1_ID), sShooter(PN_S2_ID),
-			        sFrontLoader1(PN_S3_ID), sFrontLoader2(PN_S4_ID), sFrontLoader3(PN_S5_ID), sFrontLoader4(PN_S6_ID),
+			        sShooter(PN_S2_ID),
+			        sFrontLoaderWristIn(PN_S3_ID), sFrontLoaderWristOut(PN_S4_ID), sFrontLoaderLiftIn(PN_S5_ID), sFrontLoaderLiftOut(PN_S6_ID),
 			        comp(14, 1)
 		{
 			ds = DriverStation::GetInstance(); // Pulls driver station information

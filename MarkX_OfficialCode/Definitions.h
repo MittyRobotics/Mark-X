@@ -101,10 +101,10 @@ const int PN_R3_ID = 3; //Lift ratchet
 
 const int PN_S1_ID = 1; //Top Dumper
 const int PN_S2_ID = 2; //Shooter
-const int PN_S3_ID = 3; //Front loader solenoids
-const int PN_S4_ID = 4; //Front loader solenoids
-const int PN_S5_ID = 5; //Front loader solenoids
-const int PN_S6_ID = 6; //Front loader solenoids
+const int PN_S3_ID = 3; //Front loader solenoids, wrist in
+const int PN_S4_ID = 4; //Front loader solenoids, wrist out
+const int PN_S5_ID = 5; //Front loader solenoids, lift in
+const int PN_S6_ID = 6; //Front loader solenoids, lift out
 const int PN_S7_ID = 7; //Arm out
 const int PN_S8_ID = 8; //Arm in
 const int PN_S9_ID = 9; //Left clip
