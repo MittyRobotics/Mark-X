@@ -9,7 +9,9 @@
 /*---------------MarkX-Thing-to-Do---------------------*
  * 1 single solenoid (spike), 2 double solenoids (spikes),
  * 4 double solenoids (each solenoid 2 ports on breakout
- *
+ * 
+ * CHECK TKOCLIMBER LINE 68
+ * FIX JAG PORTS/WINCH PORTS
  */
 
 class MarkX: public SimpleRobot
@@ -27,6 +29,7 @@ class MarkX: public SimpleRobot
 		TKOShooter shooter;
 		TKOClimber climber;
 		TKORelay  rsFrontLoaderWrist, rsFrontLoaderLift;
+		PWM cameraServo;
 		Compressor comp;
 
 		Timer timer;
@@ -55,7 +58,8 @@ class MarkX: public SimpleRobot
 
 			        climber(WINCH_1_PORT, WINCH_2_PORT),
 			        rsFrontLoaderWrist(PN_R1_ID), rsFrontLoaderLift(PN_R2_ID),
-			        comp(14, COMPRESSOR_ID)
+			        cameraServo(CAMERA_SERVO_PORT),
+			        comp(PRESSURE_SWITCH_PORT, COMPRESSOR_ID)
 		{
 			ds = DriverStation::GetInstance(); // Pulls driver station information
 			drive1.EnableControl(); //critical for these jags because they are in speed mode
@@ -98,7 +102,7 @@ void MarkX::Autonomous(void) //Choose autonomous mode between 4 options though D
 {
 	printf("Starting Autonomous \n");
 	auton.initAutonomous();
-	auton.setDrivePID(20, 0.05, 0.01);
+	auton.setDrivePID(DRIVE_kP, DRIVE_kP, DRIVE_kI);
 	auton.setDriveTargetStraight(ds->GetAnalogIn(1) * 10 * REVS_PER_METER);
 	auton.startAutonomous();
 
@@ -148,8 +152,11 @@ void MarkX::Operator()
 {
 	if (stick3.GetRawButton(2))
 		rsFrontLoaderLift.SetOn(1);
-	if (stick3.GetRawButton(2))
+	if (stick3.GetRawButton(3))
 		rsFrontLoaderLift.SetOn(-1);
+	
+	if (stick3.GetRawButton(9))
+		cameraServo.SetRaw(cameraServo.GetRaw() + CAMERA_PWM_INCREMENT);
 	
 	if (stick1.GetRawButton(10))
 		JukeR();
