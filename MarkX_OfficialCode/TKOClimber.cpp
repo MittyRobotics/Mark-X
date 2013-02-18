@@ -131,7 +131,7 @@ void TKOClimber::Climb()
                 if(winch1.GetPosition() > SETPOINT_BOTTOM and ratchet.Get())   ///MOVE MOTORS
 				{
 				    rsRatchet.SetOn(-1);
-                    winch1.Set(winch1.GetPosition() + LIFT_INCREMENT_RATCHET);
+                    winch1.Set(winch1.GetPosition() - LIFT_INCREMENT_RATCHET);
 				}
 
 				if (not ratchet.Get()) ///if ratchet retracts, move on
@@ -174,9 +174,9 @@ void TKOClimber::Climb()
 			case CHANGE_SETPOINT_MOVE_HOOKS_DOWN: ///state 4
 				///change setpoint to very bottom, keep moving hooks
 
-				if (winch1.GetPosition() > SETPOINT_BOTTOM - TOLERANCE)
+				if (winch1.GetPosition() > SETPOINT_BOTTOM - TOLERANCE and not armBottom.Get())
 				{
-				    winch1.Set(winch1.GetPosition() + LIFT_INCREMENT)
+				    winch1.Set(winch1.GetPosition() - LIFT_INCREMENT);
 				}
 
 				if (winch1.GetPosition() <= SETPOINT_BOTTOM - TOLERANCE) ///if PID says hook reaches bottom of its movement
@@ -222,6 +222,9 @@ void TKOClimber::Climb()
 
 			case DEPLOY_CLIPS: ///state 5
 				///deploying clips
+				sClipLeft.Set(true);
+				sClipRight.Set(true);
+
 				//hook motor stops moving
 				//deploy clips
 				if (clipLeft.Get() && clipRight.Get()) ///if clips engage and are down, move on to state 5
@@ -256,28 +259,21 @@ void TKOClimber::Climb()
 					}
 				}
 
-				/* if(time.Get() > TIMEOUT5) ///your clip motors are broken. sucks to suck
-				 {
-				 printf("----------------Your clips are engaged and are all the way down, move on to next state------------------ \n");
-				 state = OH_SHIT;
-				 }*/
-
-				/*if (time.Get() > TIMEOUT5 and !clipLeft.Get() || !clipRight.Get())
-				 { ///if either clip does not engage in 1 second
-				 printf("-----------------The clips haven't clipped on in 1 second----------------- \n");
-				 //retract clips*/
-				Wait(.5);
-				//extend clips*/
-				/*if (time.Get() > TIMEOUT5 && !clipLeft.Get() || !clipRight.Get())
-				 { ///if still not clipped on
-
-				 state = OH_SHIT;
-				 }
-				 }*/
+				if(time.Get() > TIMEOUT5) ///your clip motors are broken. sucks to suck
+                {
+                    printf("-----------------Took too long!----------------- \n");
+                    state = OH_SHIT;
+                }
 				break;
 
 			case MOVE_HOOKS_UP: ///state 6
 				///Hooks begin moving up
+
+				if(winch1.GetPosition() < SETPOINT_TOP - TOLERANCE)
+				{
+				    winch1.Set(winch1.GetPosition + LIFT_INCREMENT);
+				}
+
 				//run hook motors
 				if (winch1.GetPosition() > SETPOINT_TOP and (not hookLeft.Get() and not hookRight.Get()))
 				{
