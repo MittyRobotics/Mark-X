@@ -17,7 +17,7 @@
 class Molecule {
 private:
 	unsigned int _position;
-	std::vector<Atom * > _formula;
+	std::vector<Atom *> _formula;
 	bool _done;
 	bool _newAtom;
 
