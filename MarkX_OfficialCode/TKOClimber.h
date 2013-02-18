@@ -23,7 +23,7 @@ class TKOClimber
 		Timer time2;
 		DriverStation *ds;
 		TKORelay rsRatchet;
-		Solenoid sLeftClip, sRightClip, sTopDumper, sArmIn, sArmOut;
+		Solenoid sDumperR, sDumperE, sClipsR, sClipsE, sArmR, sArmE;
 
 		int state;
 		float topOfBar;

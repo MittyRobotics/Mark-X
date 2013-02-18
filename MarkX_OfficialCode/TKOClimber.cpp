@@ -11,7 +11,7 @@ TKOClimber::TKOClimber(int port1, int port2) :
 
 	///begin pneumatics crap
     rsRatchet(PN_R3_ID),
-    sLeftClip(PN_S9_ID), sRightClip(PN_S10_ID), sTopDumper(PN_S1_ID), sArmIn(PN_S7_ID), sArmOut(PN_S8_ID)
+    sDumperR(PN_S1R_ID), sDumperE(PN_S1E_ID), sClipsR(PN_S3R_ID), sClipsE(PN_S3E_ID), sArmR(PN_S4R_ID), sArmE(PN_S4E_ID)
 {
 	ds = DriverStation::GetInstance(); // Pulls driver station information
 	state = OPERATOR_CONTROL;
@@ -59,8 +59,8 @@ void TKOClimber::Climb()
 	//double baseTime = 0;
 	int counter = 0;
 	rsRatchet.SetOn(1);
-	sArmOut.Set(false);
-	sArmIn.Set(true);
+	sArmE.Set(false);
+	sArmR.Set(true);
 
 	while (ds->IsEnabled() and level < 3)
 	{
@@ -222,8 +222,7 @@ void TKOClimber::Climb()
 
 			case DEPLOY_CLIPS: ///state 5
 				///deploying clips
-				sClipLeft.Set(true);
-				sClipRight.Set(true);
+				sClipsR.Set(true);
 
 				//hook motor stops moving
 				//deploy clips
@@ -271,7 +270,7 @@ void TKOClimber::Climb()
 
 				if(winch1.GetPosition() < SETPOINT_TOP - TOLERANCE)
 				{
-				    winch1.Set(winch1.GetPosition + LIFT_INCREMENT);
+				    winch1.Set(winch1.GetPosition() + LIFT_INCREMENT);
 				}
 
 				//run hook motors

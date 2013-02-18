@@ -95,20 +95,19 @@ const float HOOP_MID = 58;
 
 // Pneumatics constants
 //PN stands for pneumatics, R stands for relay, S stands for solenoid
-const int PN_R1_ID = 1; //Left clip
-const int PN_R2_ID = 2; //Right clip
-const int PN_R3_ID = 3; //Lift ratchet
+const int PN_R1_ID = 4; //Loader Wrist
+const int PN_R2_ID = 3; //Loader Lift
+const int PN_R3_ID = 2; //Loader Ratchet
+const int COMPRESSOR_ID = 1; //Compressor ID
 
-const int PN_S1_ID = 1; //Top Dumper
-const int PN_S2_ID = 2; //Shooter
-const int PN_S3_ID = 3; //Front loader solenoids, wrist in
-const int PN_S4_ID = 4; //Front loader solenoids, wrist out
-const int PN_S5_ID = 5; //Front loader solenoids, lift in
-const int PN_S6_ID = 6; //Front loader solenoids, lift out
-const int PN_S7_ID = 7; //Arm out
-const int PN_S8_ID = 8; //Arm in
-const int PN_S9_ID = 9; //Left clip
-const int PN_S10_ID = 10; //Right clip
+const int PN_S1R_ID = 8; //Top Dumper Retract
+const int PN_S1E_ID = 7; //Top Dumper Extend
+const int PN_S2R_ID = 6; //Shooter Retract
+const int PN_S2E_ID = 5; //Shooter Extend
+const int PN_S3R_ID = 4; //Clips Retract
+const int PN_S3E_ID = 3; //Clips Extend
+const int PN_S4R_ID = 2; //Arm Retract
+const int PN_S4E_ID = 1; //Arm Extend
 
 // Camera Constants
 const int BORDER_SIZE = 3;

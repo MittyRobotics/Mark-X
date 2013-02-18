@@ -26,7 +26,7 @@ class MarkX: public SimpleRobot
 		TKOAutonomous auton;
 		TKOShooter shooter;
 		TKOClimber climber;
-		Solenoid  sShooter, sFrontLoaderWristIn, sFrontLoaderWristOut, sFrontLoaderLiftIn, sFrontLoaderLiftOut;
+		TKORelay  rsFrontLoaderWrist, rsFrontLoaderLift;
 		Compressor comp;
 
 		Timer timer;
@@ -54,9 +54,8 @@ class MarkX: public SimpleRobot
 			        shooter(SHOOTER_PORT),
 
 			        climber(WINCH_1_PORT, WINCH_2_PORT),
-			        sShooter(PN_S2_ID),
-			        sFrontLoaderWristIn(PN_S3_ID), sFrontLoaderWristOut(PN_S4_ID), sFrontLoaderLiftIn(PN_S5_ID), sFrontLoaderLiftOut(PN_S6_ID),
-			        comp(14, 1)
+			        rsFrontLoaderWrist(PN_R1_ID), rsFrontLoaderLift(PN_R2_ID),
+			        comp(14, COMPRESSOR_ID)
 		{
 			ds = DriverStation::GetInstance(); // Pulls driver station information
 			drive1.EnableControl(); //critical for these jags because they are in speed mode
@@ -147,6 +146,11 @@ void MarkX::OperatorControl()
  */
 void MarkX::Operator()
 {
+	if (stick3.GetRawButton(2))
+		rsFrontLoaderLift.SetOn(1);
+	if (stick3.GetRawButton(2))
+		rsFrontLoaderLift.SetOn(-1);
+	
 	if (stick1.GetRawButton(10))
 		JukeR();
 	if (stick1.GetRawButton(7))
