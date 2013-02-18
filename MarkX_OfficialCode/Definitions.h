@@ -80,6 +80,7 @@ const float REVS_PER_METER = 2.51;
 const int ENCODER_REVS = 250;
 const bool JAG_SAFETY = true;
 const CANJaguar::SpeedReference JAG_SPEEDREF = CANJaguar::kSpeedRef_QuadEncoder;
+const CANJaguar::PositionReference JAG_POSREF = CANJaguar::kPositionRef_QuadEncoder;
 
 //Drive constants
 const float kMAX_DRIVE_RPM = 700;
@@ -104,6 +105,10 @@ const int PN_S3_ID = 3; //Front loader solenoids
 const int PN_S4_ID = 4; //Front loader solenoids
 const int PN_S5_ID = 5; //Front loader solenoids
 const int PN_S6_ID = 6; //Front loader solenoids
+const int PN_S7_ID = 7; //Arm out
+const int PN_S8_ID = 8; //Arm in
+const int PN_S9_ID = 9; //Left clip
+const int PN_S10_ID = 10; //Right clip
 
 // Camera Constants
 const int BORDER_SIZE = 3;

@@ -5,16 +5,20 @@
 
 TKOClimber::TKOClimber(int port1, int port2) :
     ///lift crap
-	winch1(port1, CANJaguar::kVoltage), winch2(port2, CANJaguar::kVoltage),
+	winch1(port1, CANJaguar::kPosition), winch2(port2, CANJaguar::kPercentVBus),
 	hookLeft(1), hookRight(2), clipLeft(3), clipRight(4), armTop(5),
 	armBottom(6), ratchet(7), pot(6),
 
 	///begin pneumatics crap
-    rsLeftClip(PN_R1_ID), rsRightClip(PN_R2_ID), rsRatchet(PN_R3_ID),
-    sTopDumber(PN_S1_ID)
+    sLeftClip(PN_S9_ID), sRightClip(PN_S10_ID), rsRatchet(PN_R3_ID),
+    sTopDumber(PN_S1_ID), sArmIn(PN_S7_ID), sArmOut(PN_S8_ID)
 {
 	ds = DriverStation::GetInstance(); // Pulls driver station information
 	state = OPERATOR_CONTROL;
+	winch1.EnableControl();
+	winch1.SetSpeedReference(JAG_POSREF);
+	winch1.ConfigEncoderCodesPerRev(ENCODER_REVS);
+	winch1.SetPID(DRIVE_kP, DRIVE_kI, DRIVE_kD);
 }
 
 int TKOClimber::Decide(int s)
@@ -55,19 +59,21 @@ void TKOClimber::Climb()
 	int level = 0;
 	//double baseTime = 0;
 	int counter = 0;
+	rsRatchet.SetOn(1);
+	sArmOut.Set(false);
+	sArmIn.Set(true);
+
 	while (ds->IsEnabled() and level < 3)
 	{
-		Wait(1.);
+		//Wait(1.); FOR TESTING
 		print();
-		//random comment
 		counter++;
 		switch (state)
 		{
 
 			case ROBOT_PULLED_UP: ///state 2
 				///begin pulling up robot
-				//engage ratchet
-				//arm retracted, so it helps pull up robot
+				if()
 				//run hook motors down, moving setpoint
 				//clips retracted
 				time.Reset();
