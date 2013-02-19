@@ -93,18 +93,21 @@ void TKOClimber::Climb()
 				{
 					printf("---------------CLIPS ARENT ON, DECIDE----------------- \n");
 					state = Decide(state);
+					continue;
 				}
 
 				if (not hookLeft.Get() or not hookRight.Get()) ///if either hook jumps off bar, E2 state
 				{
 					printf("---------------ONE OF THE HOOKS JUMPED OFF, oh NO----------------- \n");
 					state = OH_SHIT;
+					continue;
 				}
 
 				if (armTop.Get() or armBottom.Get()) ///if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 				{
 					printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
 					state = OH_SHIT;
+					continue;
 				}
 
 				if (not ratchet.Get()) ///If ratchet is disabled
@@ -116,6 +119,7 @@ void TKOClimber::Climb()
 					{
 						printf("---------------RATCHET IS STILL DISABLED. YOU'RE BONED.----------------- \n");
 						state = OH_SHIT;
+						continue;
 					}
 				}
 
@@ -123,6 +127,7 @@ void TKOClimber::Climb()
 				{
                     printf("---------------HOOKS ARE TAKING TOO LONG. DECIDE----------------- \n");
                     Decide(state);
+                    continue;
 				}
 				break;
 
@@ -147,28 +152,33 @@ void TKOClimber::Climb()
 				{
 					printf("---------------ONE OF THE HOOKS CAME OFF. oh NO----------------- \n");
 					state = OH_SHIT;
+					continue;
 				}
 
 				if (clipLeft.Get() or clipRight.Get()) ///if either clip senses a bar, then sensor broke, go to emergency state
 				{
 					printf("---------------A CLIP SENSED THE BAR. oh NO----------------- \n");
 					state = OH_SHIT;
+					continue;
 				}
 
 				if (armTop.Get()) ///if top switch senses something, then WTF
 				{
 					printf("--------------You somehow hit the top. What. oh NO.-------------- \n");
 					state = OH_SHIT;
+					continue;
 				}
 				if (armBottom.Get())
 				{
 					state = OH_SHIT;
+					continue;
 				}
 
 				if (winch1.GetPosition() < SETPOINT_BOTTOM - TOLERANCE or time.Get() > TIMEOUT3)  ///if the ratchet does not go down in 1 second
                 {
                     printf("--------------You took too long. oh NO.-------------- \n");
                     state = OH_SHIT;
+                    continue;
                 }
 				break;
 
@@ -192,12 +202,14 @@ void TKOClimber::Climb()
 				{
 					printf("--------------Your hooks came off. Whoops.-------------- \n");
 					state = OH_SHIT;
+					continue;
 				}
 
 				if (clipLeft.Get() || clipRight.Get()) ///if either clip is engaged, WTF
 				{
 					printf("--------------One of your clips came off. You're screwed------------------ \n");
 					state = OH_SHIT;
+					continue;
 				}
 
 				if (armBottom.Get())
@@ -205,19 +217,22 @@ void TKOClimber::Climb()
 					//reset PID Values
 					printf("--------------your hook hit the bottom of the bar. Reset PID, move hook up, go to deploying clips------------------ \n");
 					state = DEPLOY_CLIPS;
+					continue;
 				}
 
 				if (ratchet.Get()) ///if ratchet is engaged
 				{
 					printf("--------------your ratchet was engaged. Begin retracting ratchet.------------------");
 					state = RETRACTING_RATCHET;
+					continue;
 				}
 
-				/*if (winch1.GetPosition() > SETPOINT_BOTTOM && !armBottom.Get() && time.Get() > TIMEOUT4)  ///if hook has not hit bottom and time is greater than 3s
+				if (winch1.GetPosition() > SETPOINT_BOTTOM && !armBottom.Get() && time.Get() > TIMEOUT4)  ///if hook has not hit bottom and time is greater than 3s
 				 {
 				 printf("--------------The hook did not hit the bottom in 3 seconds. Oh crap.------------------ \n");
 				 state = OH_SHIT;
-				 }*/
+				 continue;
+				 }
 
 				break;
 
@@ -237,12 +252,14 @@ void TKOClimber::Climb()
 				{
 					printf("----------------Your clips are engaged and are all the way down, move on to next state------------------ \n");
 					state = OH_SHIT;
+					continue;
 				}
 
 				if (armTop.Get() || armBottom.Get()) ///if top or bottom limit switches are triggered, limit switch doesn't work
 				{
 					printf("----------------if either of the bottom or top limit switches is triggered, then broke limit switch------------------ \n");
 					state = OH_SHIT;
+					continue;
 				}
 
 				if (ratchet.Get())
@@ -254,6 +271,7 @@ void TKOClimber::Climb()
 					{
 						printf("----------------Too slow. To E1------------------ \n");
 						state = OH_SHIT;
+						continue;
 					}
 				}
 
@@ -261,6 +279,7 @@ void TKOClimber::Climb()
                 {
                     printf("-----------------Took too long!----------------- \n");
                     state = OH_SHIT;
+                    continue;
                 }
 				break;
 
@@ -283,24 +302,28 @@ void TKOClimber::Climb()
 				{
 					printf("--------------TIMEOUT ISSUE--------------");
 					state = OH_SHIT;
+					continue;
 				}
 
 				if (not clipLeft.Get() or not clipRight.Get()) ///one of the clips comes off
 				{
 					printf("------------ONE FO THE CLIPS CAME OFF----------");
 					state = OH_SHIT;
+					continue;
 				}
 
 				if (armTop.Get())
 				{
 					printf("You hit the top");
 					state = OH_SHIT;
+					continue;
 				}
 
 				if (armBottom.Get())
 				{
 					printf("ARMBOTTOM");
 					state = WTF;
+					continue;
 				}
 
 				if (ratchet.Get())
@@ -311,6 +334,7 @@ void TKOClimber::Climb()
 					if (ratchet.Get())
 					{
 						state = OH_SHIT;
+						continue;
 					}
 				}
 
@@ -329,14 +353,17 @@ void TKOClimber::Climb()
 					if (hookLeft.Get() or hookRight.Get())
 					{
 						state = WTF;
+						continue;
 					}
 					if (not clipLeft.Get() or not clipRight.Get())
 					{
 						state = OH_SHIT;
+						continue;
 					}
 					if (armTop.Get() or armBottom.Get())
 					{
 						state = WTF;
+						continue;
 					}
 					if (ratchet.Get())
 					{
@@ -347,6 +374,7 @@ void TKOClimber::Climb()
 						{
 						    printf("----------RATCHET FAILED TO GO IN AGAIN. CALLING IT A DAY-----------");
 							state = OH_SHIT;
+							continue;
 						}
 					}
 					print();
@@ -365,7 +393,7 @@ void TKOClimber::Climb()
 				}
 
 				if (( hookLeft.Get() and not hookRight.Get() ) or( hookRight.Get() and not hookLeft.Get() ))  ///if only one of the hooks is attached
-				 {
+				{
                     printf("------------ONLY ONE OF YOUR HOOKS WAS ATTACHED. CONTINUING TO MOVE THINGS FOR %f SECONDS----------", TIMEOUT8DELTA);
                     baseTime = time.Get();
                     while (time.Get() - baseTime < TIMEOUT8DELTA);
@@ -389,19 +417,19 @@ void TKOClimber::Climb()
 				if (not clipLeft.Get() or not clipRight.Get())
 				{
 					state = OH_SHIT;
+					continue;
 				}
 
 				if (armTop.Get())
 				{
 					state = WTF;
+					continue;
 				}
 
 				if (armBottom.Get())
 				{
-					//reset PID
-					//move arm back
-					Wait(.5);
-					state = MOVE_HOOKS_UP;
+					state = OH_SHIT;
+					continue;
 				}
 
 				if (winch1.GetPosition() <= SETPOINT_BOTTOM)
@@ -409,12 +437,14 @@ void TKOClimber::Climb()
 					//move arm back
 					Wait(.5);
 					state = MOVE_HOOKS_UP; ///STAGE 6
+					continue;
 				}
 
-				/*if (time.Get() > TIMEOUT8)
-				 {
-				 state = OH_SHIT;
-				 }*/
+				if (time.Get() > TIMEOUT8)
+                {
+                    state = OH_SHIT;
+                    continue;
+				}
 
 				//move arm back
 				//wait(.5);
@@ -435,32 +465,37 @@ void TKOClimber::Climb()
 				if (not hookLeft.Get() or not hookRight.Get())
 				{
 					state = OH_SHIT;
+					continue;
 				}
 
 				if (not clipLeft.Get() or not clipRight.Get())
 				{
 					state = OH_SHIT;
+					continue;
 				}
 
 				if (armTop.Get())
 				{
 					state = WTF;
+					continue;
 				}
 
 				if (armBottom.Get()) ///if arm hits bottom, that means its too late to remove ratchet
 				{
 					state = OH_SHIT;
+					continue;
 				}
 
 				if (winch1.GetPosition() < bottomOfBar)
 				{
 					state = OH_SHIT;
+					continue;
 				}
 
-				/*if (time.Get() > TIMEOUT9)
+				if (time.Get() > TIMEOUT9)
 				 {
 				 state = OH_SHIT;
-				 }*/
+				 }
 
 				//move arm back
 				//wait(.5);
@@ -483,16 +518,19 @@ void TKOClimber::Climb()
 				if (not hookLeft.Get() and not hookRight.Get())
 				{
 					state = OH_SHIT;
+					continue;
 				}
 
 				if (armTop.Get() or armBottom.Get())
 				{
 					state = WTF;
+					continue;
 				}
 
 				if (not ratchet.Get())
 				{
 					state = OH_SHIT;
+					continue;
 				}
 				//check git braginsky branch
 
