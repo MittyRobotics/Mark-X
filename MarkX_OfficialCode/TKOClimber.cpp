@@ -13,7 +13,7 @@ TKOClimber::TKOClimber(int port1, int port2) :
     rsRatchet(PN_R3_ID),
     sDumperR(PN_S1R_ID), sDumperE(PN_S1E_ID), sClipsR(PN_S3R_ID), sClipsE(PN_S3E_ID), sArmR(PN_S4R_ID), sArmE(PN_S4E_ID)
 {
-	ds = DriverStation::GetInstance(); // Pulls driver station information
+	ds = DriverStation::GetInstance(); /// Pulls driver station information
 	state = OPERATOR_CONTROL;
 	winch1.EnableControl();
 	winch1.SetPositionReference(JAG_POSREF);
@@ -58,10 +58,8 @@ void TKOClimber::Climb()
 	int level = 0;
 	double baseTime = 0;
 	int counter = 0;
-	rsRatchet.SetOn(1);
-	sArmE.Set(false);
-	sArmR.Set(true);
-
+	ratchetForward();
+    armBack();
 	while (ds->IsEnabled() and level < 3)
 	{
 		//Wait(1.); FOR TESTING
@@ -112,7 +110,7 @@ void TKOClimber::Climb()
 
 				if (not ratchet.Get()) ///If ratchet is disabled
 				{
-					rsRatchet.SetOn(1);  ///push down ratchet
+					ratchetForward();  ///push down ratchet
 					printf("---------------RATCHET IS DISABLED. WE TRIED AGAIN. WAITING HALF SECOND TO CHECK AGAIN----------------- \n");
 					Wait(.5);
 					if (not ratchet.Get())

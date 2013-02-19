@@ -3,6 +3,11 @@
 #ifndef __TKOCLIMBER_H
 #define __TKOCLIMBER_H
 
+#define armBack() sArmE.Set(false);sArmR.Set(true);
+#define armForward() sArmR.Set(false); sArmE.Set(true);
+#define ratchetBack() rsRatchet.SetOn(-1);
+#define ratchetForward() rsRatchet.SetOn(1);
+
 #include "Definitions.h"
 #include "TKORelay.h"
 
