@@ -48,20 +48,10 @@ const int DRIVE_L1_ID = 1;
 const int DRIVE_L2_ID = 2;
 const int DRIVE_R1_ID = 3;
 const int DRIVE_R2_ID = 4;
-const int ROLLER_ID = 9;
 const int TURRET_ID = 10;
-const int SPINNER_1_ID = 5;
-const int SPINNER_2_ID = 6;
-const int SHOOTER_PORT = 5;
-const int WINCH_1_PORT = 6;
-const int WINCH_2_PORT = 7;
-
-// Ports of the various switches
-const int SWITCH_1_PORT = 3;
-const int SWITCH_2_PORT = 2;
-const int SWITCH_3_PORT = 1;
-const int LOWER_RELAY_PORT = 1;
-const int UPPER_RELAY_PORT = 2;
+const int SHOOTER_PORT = 7;
+const int WINCH_1_PORT = 5;
+const int WINCH_2_PORT = 6;
 
 // Spinner constants
 const float RADIUS_WHEELS = 4;
@@ -90,10 +80,8 @@ const float deadzone = 0.1;
 const int kBURNOUT = 500;
 const int kBURNOUT_CYCLES = 100;
 
-//Hoop heights
-const float HOOP_BOT = 23;
-const float HOOP_TOP = 93;
-const float HOOP_MID = 58;
+//Miscelaneous
+const int GYRO_PORT = 1;
 
 // Pneumatics constants
 //PN stands for pneumatics, R stands for relay, S stands for solenoid
@@ -101,7 +89,7 @@ const int PN_R1_ID = 4; //Loader Wrist
 const int PN_R2_ID = 3; //Loader Lift
 const int PN_R3_ID = 2; //Loader Ratchet
 const int COMPRESSOR_ID = 1; //Compressor ID
-const int PRESSURE_SWITCH_PORT = 14;
+const int PRESSURE_SWITCH_PORT = 1;
 
 const int PN_S1R_ID = 8; //Top Dumper Retract
 const int PN_S1E_ID = 7; //Top Dumper Extend

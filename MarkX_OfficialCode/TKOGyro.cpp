@@ -13,7 +13,7 @@ TKOGyro* g;
 g = g->getInstance();
 g->getAngle();*/
 
-TKOGyro::TKOGyro() : gyro(1){
+TKOGyro::TKOGyro() : gyro(GYRO_PORT){
 	targetAngle = 0;
 }
 TKOGyro* TKOGyro::getInstance(){

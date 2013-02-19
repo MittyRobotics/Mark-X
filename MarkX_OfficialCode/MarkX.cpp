@@ -2,7 +2,6 @@
 //on 02/18/2013
 #include "Definitions.h"
 #include "TKOAutonomous.h"
-#include "TKOShooter.h"
 #include "TKOClimber.h"
 #include "TKORelay.h"
 #include "TKOLogger.h"
@@ -27,7 +26,6 @@ class MarkX: public SimpleRobot
 		DriverStation *ds; // define driver station object
 		TKOLogger logger;
 		TKOAutonomous auton;
-		TKOShooter shooter;
 		TKOClimber climber;
 		TKORelay rsFrontLoaderWrist, rsFrontLoaderLift;
 		PWM cameraServo;
@@ -44,20 +42,20 @@ class MarkX: public SimpleRobot
 		void Test();
 		MarkX() :
 			drive1(DRIVE_L1_ID, CANJaguar::kSpeed), // initialize motor 1 < first left drive motor
-			drive2(DRIVE_L2_ID, CANJaguar::kPercentVbus), // initialize motor 2 < second left drive motor
-			drive3(DRIVE_R1_ID, CANJaguar::kSpeed), // initialize motor 3 < first right drive motor
-			drive4(DRIVE_R2_ID, CANJaguar::kPercentVbus), // initialize motor 4 < second right drive motor
+			        drive2(DRIVE_L2_ID, CANJaguar::kPercentVbus), // initialize motor 2 < second left drive motor
+			        drive3(DRIVE_R1_ID, CANJaguar::kSpeed), // initialize motor 3 < first right drive motor
+			        drive4(DRIVE_R2_ID, CANJaguar::kPercentVbus), // initialize motor 4 < second right drive motor
 
-			stick1(STICK_1_PORT), // initialize joystick 1 < first drive joystick
-			stick2(STICK_2_PORT), // initialize joystick 2 < second drive joystick
-			stick3(STICK_3_PORT), // initialize joystick 3 < first EVOM joystick
-			stick4(STICK_4_PORT), // initialize joystick 4 < first EVOM joystick-m,
+			        stick1(STICK_1_PORT), // initialize joystick 1 < first drive joystick
+			        stick2(STICK_2_PORT), // initialize joystick 2 < second drive joystick
+			        stick3(STICK_3_PORT), // initialize joystick 3 < first EVOM joystick
+			        stick4(STICK_4_PORT), // initialize joystick 4 < first EVOM joystick-m,
 
-			logger(), auton(DRIVE_L1_ID, DRIVE_L2_ID, DRIVE_R1_ID, DRIVE_R2_ID),
+			        logger(), auton(DRIVE_L1_ID, DRIVE_L2_ID, DRIVE_R1_ID, DRIVE_R2_ID),
 
-			shooter(SHOOTER_PORT),
-
-			climber(WINCH_1_PORT, WINCH_2_PORT), rsFrontLoaderWrist(PN_R1_ID), rsFrontLoaderLift(PN_R2_ID), cameraServo(CAMERA_SERVO_PORT), comp(PRESSURE_SWITCH_PORT, COMPRESSOR_ID)
+			        climber(WINCH_1_PORT, WINCH_2_PORT), rsFrontLoaderWrist(PN_R1_ID), 
+			        rsFrontLoaderLift(PN_R2_ID), cameraServo(CAMERA_SERVO_PORT), 
+			        comp(PRESSURE_SWITCH_PORT, COMPRESSOR_ID)
 		{
 			ds = DriverStation::GetInstance(); // Pulls driver station information
 			drive1.EnableControl(); //critical for these jags because they are in speed mode
@@ -68,6 +66,8 @@ class MarkX: public SimpleRobot
 			drive3.SetSpeedReference(JAG_SPEEDREF);
 			drive3.ConfigEncoderCodesPerRev(ENCODER_REVS);
 			drive3.SetPID(DRIVE_kP, DRIVE_kI, DRIVE_kD);
+			if (not comp.StatusIsFatal())
+				comp.Start();
 			printf("Initialized the MarkX class \n");
 		}
 
