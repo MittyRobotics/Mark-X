@@ -53,9 +53,7 @@ class MarkX: public SimpleRobot
 
 			        logger(), auton(DRIVE_L1_ID, DRIVE_L2_ID, DRIVE_R1_ID, DRIVE_R2_ID),
 
-			        climber(WINCH_1_PORT, WINCH_2_PORT), rsFrontLoaderWrist(PN_R1_ID), 
-			        rsFrontLoaderLift(PN_R2_ID), cameraServo(CAMERA_SERVO_PORT), 
-			        comp(PRESSURE_SWITCH_PORT, COMPRESSOR_ID)
+			        climber(WINCH_1_PORT, WINCH_2_PORT), rsFrontLoaderWrist(PN_R1_ID), rsFrontLoaderLift(PN_R2_ID), cameraServo(CAMERA_SERVO_PORT), comp(PRESSURE_SWITCH_PORT, COMPRESSOR_ID)
 		{
 			ds = DriverStation::GetInstance(); // Pulls driver station information
 			drive1.EnableControl(); //critical for these jags because they are in speed mode
@@ -148,15 +146,24 @@ void MarkX::OperatorControl()
  */
 void MarkX::Operator()
 {
-	if (stick3.GetRawButton(2))
-		rsFrontLoaderLift.SetOn(1);
 	if (stick3.GetRawButton(3))
+		rsFrontLoaderLift.SetOn(1);
+	else if (stick3.GetRawButton(2))
 		rsFrontLoaderLift.SetOn(-1);
+	else
+		rsFrontLoaderLift.SetOn(0);
 
-	if (stick3.GetRawButton(9) and stick3.GetX() > 0)
+	if (stick3.GetRawButton(5))
+		rsFrontLoaderLift.SetOn(1);
+	else if (stick3.GetRawButton(4))
+		rsFrontLoaderLift.SetOn(-1);
+	else
+		rsFrontLoaderLift.SetOn(0);
+
+	if (stick3.GetRawButton(10) and stick3.GetX() > 0)
 		cameraServo.SetRaw(cameraServo.GetRaw() + CAMERA_PWM_INCREMENT);
 
-	if (stick3.GetRawButton(9) and stick3.GetX() < 0)
+	if (stick3.GetRawButton(10) and stick3.GetX() < 0)
 		cameraServo.SetRaw(cameraServo.GetRaw() - CAMERA_PWM_INCREMENT);
 
 	if (stick1.GetRawButton(10))
