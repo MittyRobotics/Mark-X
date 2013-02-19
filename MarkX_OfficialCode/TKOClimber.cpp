@@ -314,14 +314,14 @@ void TKOClimber::Climb()
 
 				if (armTop.Get())
 				{
-					printf("You hit the top");
+					printf("-----------You hit the top--------------");
 					state = OH_SHIT;
 					continue;
 				}
 
 				if (armBottom.Get())
 				{
-					printf("ARMBOTTOM");
+					printf("-----------ARMBOTTOM----------------");
 					state = WTF;
 					continue;
 				}
@@ -333,6 +333,7 @@ void TKOClimber::Climb()
 					Wait(.5);
 					if (ratchet.Get())
 					{
+					    printf("---------RATCHET IS STILL ENGAGED. SUCKS.-----------");
 						state = OH_SHIT;
 						continue;
 					}
@@ -352,16 +353,19 @@ void TKOClimber::Climb()
 					//printf("%f", time.Get());  ///LEAVE IN FOR TESTING
 					if (hookLeft.Get() or hookRight.Get())
 					{
+					    printf("---------One of the hooks is engaged. ERROR ERROR ERROR ERROR-----------");
 						state = WTF;
 						continue;
 					}
 					if (not clipLeft.Get() or not clipRight.Get())
 					{
+                        printf("---------ONE OF THE CLIPS DISENGAGED. OH GOD OH GOD ERROR OH GOD-----------");
 						state = OH_SHIT;
 						continue;
 					}
 					if (armTop.Get() or armBottom.Get())
 					{
+					    printf("---------HOOKS HIT THE TOP OR THE BOTTOM. I WAS UNAWARE YOU COULD FAIL THAT HARD. HAVE AN ERROR FOR YOUR TROUBLES.-----------");
 						state = WTF;
 						continue;
 					}
@@ -388,25 +392,27 @@ void TKOClimber::Climb()
 				if (hookLeft.Get() && hookRight.Get() && not ratchet.Get()) ///both hooks clip on
 				{
                     time.Reset();
+                    printf("---------Both hooks clipped on. Moving on to next stage.-----------");
                     state = DEPLOYING_RATCHET;
                     continue;
 				}
 
 				if (( hookLeft.Get() and not hookRight.Get() ) or( hookRight.Get() and not hookLeft.Get() ))  ///if only one of the hooks is attached
 				{
-                    printf("------------ONLY ONE OF YOUR HOOKS WAS ATTACHED. CONTINUING TO MOVE THINGS FOR %f SECONDS----------", TIMEOUT8DELTA);
+                    printf("------------ONLY ONE OF YOUR HOOKS WAS ATTACHED. CONTINUING TO MOVE HOOKS FOR %f SECONDS----------", TIMEOUT8DELTA);
                     baseTime = time.Get();
                     while (time.Get() - baseTime < TIMEOUT8DELTA);
                     {
                         winch1.Set(winch1.GetPosition() - LIFT_INCREMENT);
-
                         if (hookLeft.Get() and hookRight.Get())
                         {
+                            printf("---------GOT BOTH HOOKS ON. MOVE ON TO NEXT STATE.-----------");
                             state = DEPLOYING_RATCHET;
                             break;
                         }
                         if (not hookLeft.Get() or not hookRight.Get())
                         {
+                            printf("---------ONE OF YOUR HOOKS CAME OFF. YOU GOT 99 PROBLEMS, AND ERROR IS DEFINITELY ONE.-----------");
                             state = OH_SHIT;
                             break;
                         }
@@ -416,18 +422,21 @@ void TKOClimber::Climb()
 
 				if (not clipLeft.Get() or not clipRight.Get())
 				{
+				    printf("---------ONE OF THE CLIPS DISENGAGED. GOOD LUCK NOT FALLING.-----------");
 					state = OH_SHIT;
 					continue;
 				}
 
 				if (armTop.Get())
 				{
+				    printf("---------YOU SOMEHOW HIT THE TOP WHEN MOVING YOUR HOOKS DOWN. ERROR TIME-----------");
 					state = WTF;
 					continue;
 				}
 
 				if (armBottom.Get())
 				{
+				    printf("---------YOUR HOOKS HIT THE BOTTOM OF THE ARM. ERRORING OUT-----------");
 					state = OH_SHIT;
 					continue;
 				}
