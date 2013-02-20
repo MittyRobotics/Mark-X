@@ -134,7 +134,7 @@ void TKOClimber::Climb()
 
                 if(winch1.GetPosition() > SETPOINT_BOTTOM and ratchet.Get())   ///MOVE MOTORS
 				{
-				    rsRatchet.SetOn(-1);
+				    ratchetBack();
                     winch1.Set(winch1.GetPosition() - LIFT_INCREMENT_RATCHET);
 				}
 
