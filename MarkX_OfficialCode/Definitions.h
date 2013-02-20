@@ -10,6 +10,7 @@
 #include "Vision/RGBImage.h"
 #include "Math.h"
 #include "stdlib.h"
+#include "TKOLogger.h"
 
 /*!
  \def DSClear()
@@ -37,7 +38,6 @@
  *  If you haven't already, please visit our <a href="http://www.amhsrobotics.com">website</a>.
  */
 //Joystick ports
-
 const int STICK_1_PORT = 1;
 const int STICK_2_PORT = 2;
 const int STICK_3_PORT = 3;

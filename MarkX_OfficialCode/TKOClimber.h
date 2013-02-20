@@ -13,13 +13,6 @@
 
 class TKOClimber
 {
-	public:
-		TKOClimber(int port1, int port2);
-		~TKOClimber();
-		int Decide(int s);
-		void print();
-		void Climb();
-		int stick4B4, stick4B6;
 
 	private:
 		CANJaguar winch1, winch2;
@@ -29,10 +22,20 @@ class TKOClimber
 		DriverStation *ds;
 		TKORelay rsRatchet;
 		Solenoid sDumperR, sDumperE, sClipsR, sClipsE, sArmR, sArmE;
+		TKOLogger loggerObj;
+		Joystick _stick4;
 
 		int state;
 		float topOfBar;
 		float bottomOfBar;
+	public:
+		TKOClimber(int port1, int port2);
+		~TKOClimber();
+		int Decide(int s);
+		void print();
+		void Climb();
+		void Test();
+		TKOLogger* logger;
 };
 
 #endif

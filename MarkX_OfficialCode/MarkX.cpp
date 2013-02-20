@@ -21,9 +21,11 @@ class MarkX: public SimpleRobot
 		float kDRIVE_STRAIGHT, kDRIVE_ROTATION;
 		float left_joystick_y, right_joystick_y;
 		float final_velocity_left, final_velocity_right;
+		bool controllerDrive;
 		CANJaguar drive1, drive2, drive3, drive4; // define motors
 		Joystick stick1, stick2, stick3, stick4; // define joysticks
 		DriverStation *ds; // define driver station object
+		AnalogChannel sonar1, sonar2;
 		TKOLogger logger;
 		TKOAutonomous auton;
 		TKOClimber climber;
@@ -51,7 +53,7 @@ class MarkX: public SimpleRobot
 			        stick3(STICK_3_PORT), // initialize joystick 3 < first EVOM joystick
 			        stick4(STICK_4_PORT), // initialize joystick 4 < first EVOM joystick-m,
 
-			        logger(), auton(DRIVE_L1_ID, DRIVE_L2_ID, DRIVE_R1_ID, DRIVE_R2_ID),
+			        sonar1(3), sonar2(4), logger(), auton(DRIVE_L1_ID, DRIVE_L2_ID, DRIVE_R1_ID, DRIVE_R2_ID),
 
 			        climber(WINCH_1_PORT, WINCH_2_PORT), rsFrontLoaderWrist(PN_R1_ID), rsFrontLoaderLift(PN_R2_ID), cameraServo(CAMERA_SERVO_PORT), comp(PRESSURE_SWITCH_PORT, COMPRESSOR_ID)
 		{
@@ -64,6 +66,7 @@ class MarkX: public SimpleRobot
 			drive3.SetSpeedReference(JAG_SPEEDREF);
 			drive3.ConfigEncoderCodesPerRev(ENCODER_REVS);
 			drive3.SetPID(DRIVE_kP, DRIVE_kI, DRIVE_kD);
+			controllerDrive = false;
 			if (not comp.StatusIsFatal())
 				comp.Start();
 			printf("Initialized the MarkX class \n");
@@ -76,14 +79,29 @@ class MarkX: public SimpleRobot
  */
 void MarkX::Test()
 {
+	climber.Test();
 	while (IsEnabled())
 	{
-		DSLog(2, "LStick %f", stick1.GetY());
-		DSLog(3, "RStick %f", stick2.GetY());
-		DSLog(4, "LPos %f", drive1.GetPosition());
-		DSLog(5, "RPos %f", drive3.GetPosition());
-		drive1.Set(kMAX_DRIVE_RPM);
-		drive3.Set(kMAX_DRIVE_RPM);
+		/*DSLog(2, "LStick %f", stick1.GetY());
+		 DSLog(3, "RStick %f", stick2.GetY());
+		 DSLog(4, "LPos %f", drive1.GetPosition());
+		 DSLog(5, "RPos %f", drive3.GetPosition());
+		 drive1.Set(kMAX_DRIVE_RPM);
+		 drive3.Set(kMAX_DRIVE_RPM);*/
+
+		if (stick3.GetRawButton(3))
+			rsFrontLoaderLift.SetOn(1);
+		else if (stick3.GetRawButton(2))
+			rsFrontLoaderLift.SetOn(-1);
+		else
+			rsFrontLoaderLift.SetOn(0);
+
+		if (stick3.GetRawButton(5))
+			rsFrontLoaderLift.SetOn(1);
+		else if (stick3.GetRawButton(4))
+			rsFrontLoaderLift.SetOn(-1);
+		else
+			rsFrontLoaderLift.SetOn(0);
 	}
 }
 void MarkX::Disabled()
@@ -125,8 +143,6 @@ void MarkX::OperatorControl()
 	loopTimer.Start();
 	while (IsOperatorControl() && ds->IsEnabled())
 	{
-		climber.stick4B4 = stick4.GetRawButton(4);
-		climber.stick4B6 = stick4.GetRawButton(6);
 		startLoopT = loopTimer.Get();
 		DSClear();
 
@@ -146,6 +162,8 @@ void MarkX::OperatorControl()
  */
 void MarkX::Operator()
 {
+	if (stick2.GetRawButton(6))
+		controllerDrive = not controllerDrive;
 	if (stick3.GetRawButton(3))
 		rsFrontLoaderLift.SetOn(1);
 	else if (stick3.GetRawButton(2))
@@ -227,15 +245,23 @@ void MarkX::Operator()
 void MarkX::TKODrive()
 {
 	printf("TKODriving...");
-	if (!stick2.GetTrigger())
+	if (not controllerDrive)
 	{
-		left_joystick_y = stick1.GetY();
-		right_joystick_y = stick2.GetY();
+		if (!stick2.GetTrigger())
+		{
+			left_joystick_y = stick1.GetY();
+			right_joystick_y = stick2.GetY();
+		}
+		else
+		{
+			left_joystick_y = stick2.GetY();
+			right_joystick_y = stick1.GetY();
+		}
 	}
 	else
 	{
-		left_joystick_y = stick2.GetY();
-		right_joystick_y = stick1.GetY();
+		left_joystick_y = stick1.GetRawAxis(2);
+		right_joystick_y = stick1.GetRawAxis(5);
 	}
 	if (fabs(left_joystick_y) > deadzone)
 	{
@@ -324,6 +350,8 @@ void MarkX::TKODrive()
 	/*inches in feet*// 60;
 	float speedRight = drive3.GetSpeed() * 3.14159 * 6 / 12 / 60;
 	DSLog(1, "Speed F/s: %f", fabs(((speedLeft + speedRight) / 2)));
+	DSLog(2, "Sonar 1 in: %f", sonar1.GetVoltage() * 100);
+	DSLog(3, "Sonar 2 in: %f", sonar2.GetVoltage() * 100);
 
 	// implement processing for left_joystick_x, left_joystick_y, right_joystick_x, and right_joystick_y to account for PID and other factors
 	// then we pass these values to the SetLeftRightMotorsOutput() function of TKODrive

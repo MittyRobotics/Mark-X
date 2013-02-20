@@ -11,7 +11,8 @@ TKOClimber::TKOClimber(int port1, int port2) :
 
 	///begin pneumatics crap
     rsRatchet(PN_R3_ID),
-    sDumperR(PN_S1R_ID), sDumperE(PN_S1E_ID), sClipsR(PN_S3R_ID), sClipsE(PN_S3E_ID), sArmR(PN_S4R_ID), sArmE(PN_S4E_ID)
+    sDumperR(PN_S1R_ID), sDumperE(PN_S1E_ID), sClipsR(PN_S3R_ID), sClipsE(PN_S3E_ID), 
+    sArmR(PN_S4R_ID), sArmE(PN_S4E_ID), loggerObj(), _stick4(4)
 {
 	ds = DriverStation::GetInstance(); /// Pulls driver station information
 	state = OPERATOR_CONTROL;
@@ -19,18 +20,18 @@ TKOClimber::TKOClimber(int port1, int port2) :
 	winch1.SetPositionReference(JAG_POSREF);
 	winch1.ConfigEncoderCodesPerRev(ENCODER_REVS);
 	winch1.SetPID(DRIVE_kP, DRIVE_kI, DRIVE_kD);
+	logger = loggerObj.GetInstance(logger);
 }
 
 int TKOClimber::Decide(int s)
 {
-
 	while (time.Get() < 5)
 	{
-		if (stick4B4)
+		if (_stick4.GetRawButton(4))
 		{ ///if you press a button to continue climbing
 			return s;
 		}
-		if (stick4B6)
+		if (_stick4.GetRawButton(6))
 		{
 			printf("OPERATOR WENT TO NEXT STATE");
 			return s + 1;
@@ -41,14 +42,67 @@ int TKOClimber::Decide(int s)
 
 void TKOClimber::print()
 {
-	printf("HookLeft %d ", hookLeft.Get());
-	printf("HookRight %d ", hookRight.Get());
-	printf("Clip left %d ", clipLeft.Get());
+	printf("HookLeft %d \n", hookLeft.Get());
+	printf("HookRight %d \n", hookRight.Get());
+	printf("Clip left %d \n", clipLeft.Get());
 	printf("Clip Right %d\n", clipRight.Get());
-	printf("Arm Top %d ", armTop.Get());
+	printf("Arm Top %d \n", armTop.Get());
 	printf("Arm Bottom %d\n", armBottom.Get());
-	printf("Ratchet %d", ratchet.Get());
+	printf("Ratchet %d\n", ratchet.Get());
 	printf("--------------STATE = %d ------------------- \n\n\n", state);
+}
+
+void TKOClimber::Test()
+{
+	printf("Setting ratchet to 1.\n");
+	rsRatchet.SetOn(1);
+	Wait(5);
+	rsRatchet.SetOn(0);
+	Wait(10);
+	
+	printf("Setting ratchet to -1.\n");
+	rsRatchet.SetOn(-1);
+	Wait(5);
+	rsRatchet.SetOn(0);
+	Wait(10);
+	
+	printf("Triggering dumperR.\n");
+	sDumperR.Set(true);
+	Wait(5);
+	sDumperR.Set(false);
+	Wait(10);
+	
+	printf("Triggering dumperE.\n");
+	sDumperE.Set(true);
+	Wait(5);
+	sDumperE.Set(false);
+	Wait(10);
+	
+	printf("Triggering clipsR.\n");
+	sClipsR.Set(true);
+	Wait(5);
+	sClipsR.Set(false);
+	Wait(10);
+	
+	printf("Triggering clipsE.\n");
+	sClipsE.Set(true);
+	Wait(5);
+	sClipsE.Set(false);
+	Wait(10);
+	
+	printf("Triggering armR.\n");
+	sArmR.Set(true);
+	Wait(5);
+	sArmR.Set(false);
+	Wait(10);
+	
+	printf("Triggering armE.\n");
+	sArmE.Set(true);
+	Wait(5);
+	sArmE.Set(false);
+	Wait(10);
+	
+	print();
 }
 
 void TKOClimber::Climb()
@@ -337,10 +391,6 @@ void TKOClimber::Climb()
 					}
 				}
 
-				/*if (time.Get() > 10000)
-				 {
-				 state = Decide(state);
-				 }*/
 				break;
 
 			case MOVE_ARM_FORWARD: ///state 7
@@ -454,13 +504,12 @@ void TKOClimber::Climb()
 				}
 
 				//move arm back
-				//wait(.5);
-				//state = 6
 				break;
 
 			case DEPLOYING_RATCHET: ///state 9
 				///push down ratchet
 				//push down ratchet
+				
 				if (ratchet.Get())
 				{
                     time.Reset();
