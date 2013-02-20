@@ -42,6 +42,28 @@ int TKOClimber::Decide(int s)
 	return OH_SHIT;
 }
 
+void TKOClimber::ArmBack()
+{
+    if(sArmE.Get() and not sArmR.Get())
+    {
+        armBack();
+    }
+}
+
+void TKOCLimber::ArmForward()
+{
+    if(sArmR.Get() and not sArmE.Get())
+    {
+        armForward();
+    }
+}
+
+void TKOClimber::RatchetBack()
+{
+    if()
+}
+
+
 void TKOClimber::print()
 {
 	printf("HookLeft %d \n", hookLeft.Get());
@@ -294,8 +316,7 @@ void TKOClimber::Climb()
 
 			case DEPLOY_CLIPS: ///state 5
 				///deploying clips
-				sClipsE.Set(false);
-				sClipsR.Set(true);
+                clipForward();
 				if (clipLeft.Get() && clipRight.Get()) ///if clips engage and are down, move on to state 5
 				{
 					printf("----------------Your clips are engaged and are all the way down, move on to next state------------------ \n");
@@ -479,9 +500,9 @@ void TKOClimber::Climb()
 				}
 
 				if (time.Get() > TIMEOUT9)
-				 {
-				 state = OH_SHIT;
-				 }
+				{
+                    state = OH_SHIT;
+				}
 
 				//move arm back
 				//wait(.5);
@@ -588,20 +609,20 @@ void TKOClimber::Climb()
 					state = OH_SHIT;
 					continue;
 				}
-				//check git braginsky branch
 
-				/*if (time.Get() > TIMEOUT10 and  (clipLeft.Get() || clipRight.Get()))
+				if (time.Get() > TIMEOUT10 and  (clipLeft.Get() || clipRight.Get()))
 				 {
 				 state = OH_SHIT;
-				 }*/
+				 }
 				break;
 
 			case OH_SHIT:
-				printf("OH GOD THINGS WENT WRONG OH GOD OH GOD");
-				break;
-				//engages ratchet
-				//EMERGENCY
-				break;
+                while(true)
+                {
+                    ratchetForward();
+                    clipForward();
+                    printf("OH GOD THINGS WENT WRONG OH GOD OH GOD");
+                }
 		}
 	}
 
