@@ -7,6 +7,10 @@
 #define armForward() sArmR.Set(false); sArmE.Set(true);
 #define ratchetBack() rsRatchet.SetOn(-1);
 #define ratchetForward() rsRatchet.SetOn(1);
+#define clipForward() sClipsR.Set(false);sClipsE.Set(true);
+#define clipBack() sClipsE.Set(false);sClipsR(true);
+#define gg ;
+
 
 #include "Definitions.h"
 #include "TKORelay.h"

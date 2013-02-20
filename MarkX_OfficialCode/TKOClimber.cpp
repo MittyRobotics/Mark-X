@@ -117,7 +117,7 @@ void TKOClimber::Climb()
 	int counter = 0;
 	ratchetForward();
     armBack();
-	while (ds->IsEnabled() and level < 3)
+	while (ds->IsEnabled() and level < PYRAMID_SIZE)
 	{
 		//Wait(1.); FOR TESTING
 		winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
@@ -556,8 +556,6 @@ void TKOClimber::Climb()
                     state = OH_SHIT;
                     continue;
 				}
-
-				//move arm back
 				break;
 
 			case RETRACTING_CLIPS: ///state 10

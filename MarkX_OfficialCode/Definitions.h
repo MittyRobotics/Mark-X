@@ -121,6 +121,7 @@ const int MOVE_HOOKS_DOWN = 9;
 const int RETRACTING_CLIPS = 10;
 const int OH_SHIT = 13;
 const int WTF = 13;
+const int PYRAMID_SIZE = 3;
 const double SETPOINT_RATCHET_RETRACT = .9;
 const double SETPOINT_BOTTOM = .3;
 const double SETPOINT_TOP = 4.5;
