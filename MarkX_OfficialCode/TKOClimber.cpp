@@ -271,9 +271,8 @@ void TKOClimber::Climb()
 
 				if (armBottom.Get())
 				{ ///if hook hit the bottom of the bar
-					//reset PID Values
 					printf("--------------your hook hit the bottom of the bar. Reset PID, move hook up, go to deploying clips------------------ \n");
-					state = DEPLOY_CLIPS;
+					state = OH_SHIT;
 					continue;
 				}
 
@@ -364,7 +363,7 @@ void TKOClimber::Climb()
 
 				if (not clipLeft.Get() or not clipRight.Get()) ///one of the clips comes off
 				{
-					printf("------------ONE FO THE CLIPS CAME OFF----------");
+					printf("------------ONE OF THE CLIPS CAME OFF----------");
 					state = OH_SHIT;
 					continue;
 				}
@@ -386,7 +385,7 @@ void TKOClimber::Climb()
 				if (ratchet.Get())
 				{
 					printf("RATCHET PROBLEMS. DUDE. OH NO. WAITING .5 SECONDS");
-					rsRatchet.SetOn(-1);
+					ratchetBack();
 					Wait(.5);
 					if (ratchet.Get())
 					{
@@ -434,13 +433,63 @@ void TKOClimber::Climb()
 							continue;
 						}
 					}
-					print();
 				}
 				time.Reset();
 				state = MOVE_HOOKS_DOWN;
 				break;
 
-			case MOVE_HOOKS_DOWN: ///state 8
+				case DEPLOYING_RATCHET: ///state 8
+				///push down ratchet
+				ratchetForward();
+				if (ratchet.Get())
+				{
+                    time.Reset();
+					state = RETRACTING_CLIPS;
+					continue;
+				}
+
+				if (not hookLeft.Get() or not hookRight.Get())
+				{
+					state = OH_SHIT;
+					continue;
+				}
+
+				if (not clipLeft.Get() or not clipRight.Get())
+				{
+					state = OH_SHIT;
+					continue;
+				}
+
+				if (armTop.Get())
+				{
+					state = WTF;
+					continue;
+				}
+
+				if (armBottom.Get()) ///if arm hits bottom, that means its too late to remove ratchet
+				{
+					state = OH_SHIT;
+					continue;
+				}
+
+				if (winch1.GetPosition() < bottomOfBar)
+				{
+					state = OH_SHIT;
+					continue;
+				}
+
+				if (time.Get() > TIMEOUT9)
+				 {
+				 state = OH_SHIT;
+				 }
+
+				//move arm back
+				//wait(.5);
+				//state = 6
+				break;
+
+
+			case MOVE_HOOKS_DOWN: ///state 9
 				///move hooks down
 				if (hookLeft.Get() && hookRight.Get() && not ratchet.Get()) ///both hooks clip on
 				{
@@ -496,9 +545,9 @@ void TKOClimber::Climb()
 
 				if (winch1.GetPosition() <= SETPOINT_BOTTOM)
 				{
-					//move arm back
+					armBack();
 					Wait(.5);
-					state = MOVE_HOOKS_UP; ///STAGE 6
+					state = MOVE_HOOKS_UP; ///STATE 6
 					continue;
 				}
 
@@ -509,58 +558,6 @@ void TKOClimber::Climb()
 				}
 
 				//move arm back
-				break;
-
-			case DEPLOYING_RATCHET: ///state 9
-				///push down ratchet
-				//push down ratchet
-
-				if (ratchet.Get())
-				{
-                    time.Reset();
-					//stop motors
-					state = RETRACTING_CLIPS;
-					continue;
-				}
-
-				if (not hookLeft.Get() or not hookRight.Get())
-				{
-					state = OH_SHIT;
-					continue;
-				}
-
-				if (not clipLeft.Get() or not clipRight.Get())
-				{
-					state = OH_SHIT;
-					continue;
-				}
-
-				if (armTop.Get())
-				{
-					state = WTF;
-					continue;
-				}
-
-				if (armBottom.Get()) ///if arm hits bottom, that means its too late to remove ratchet
-				{
-					state = OH_SHIT;
-					continue;
-				}
-
-				if (winch1.GetPosition() < bottomOfBar)
-				{
-					state = OH_SHIT;
-					continue;
-				}
-
-				if (time.Get() > TIMEOUT9)
-				 {
-				 state = OH_SHIT;
-				 }
-
-				//move arm back
-				//wait(.5);
-				//state = 6
 				break;
 
 			case RETRACTING_CLIPS: ///state 10
