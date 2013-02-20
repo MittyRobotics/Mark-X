@@ -11,7 +11,7 @@ TKOClimber::TKOClimber(int port1, int port2) :
 
 	///begin pneumatics crap
     rsRatchet(PN_R3_ID),
-    sDumperR(PN_S1R_ID), sDumperE(PN_S1E_ID), sClipsR(PN_S3R_ID), sClipsE(PN_S3E_ID), 
+    sDumperR(PN_S1R_ID), sDumperE(PN_S1E_ID), sClipsR(PN_S3R_ID), sClipsE(PN_S3E_ID),
     sArmR(PN_S4R_ID), sArmE(PN_S4E_ID), loggerObj(), _stick4(4)
 {
 	ds = DriverStation::GetInstance(); /// Pulls driver station information
@@ -23,9 +23,11 @@ TKOClimber::TKOClimber(int port1, int port2) :
 	logger = loggerObj.GetInstance(logger);
 }
 
+//CHANGES YAY
+
 int TKOClimber::Decide(int s)
 {
-	while (time.Get() < 5)
+	while (time2.Get() < DECIDE_TIMEOUT)
 	{
 		if (_stick4.GetRawButton(4))
 		{ ///if you press a button to continue climbing
@@ -59,55 +61,56 @@ void TKOClimber::Test()
 	Wait(5);
 	rsRatchet.SetOn(0);
 	Wait(10);
-	
+
 	printf("Setting ratchet to -1.\n");
 	rsRatchet.SetOn(-1);
 	Wait(5);
 	rsRatchet.SetOn(0);
 	Wait(10);
-	
+
 	printf("Triggering dumperR.\n");
 	sDumperR.Set(true);
 	Wait(5);
 	sDumperR.Set(false);
 	Wait(10);
-	
+
 	printf("Triggering dumperE.\n");
 	sDumperE.Set(true);
 	Wait(5);
 	sDumperE.Set(false);
 	Wait(10);
-	
+
 	printf("Triggering clipsR.\n");
 	sClipsR.Set(true);
 	Wait(5);
 	sClipsR.Set(false);
 	Wait(10);
-	
+
 	printf("Triggering clipsE.\n");
 	sClipsE.Set(true);
 	Wait(5);
 	sClipsE.Set(false);
 	Wait(10);
-	
+
 	printf("Triggering armR.\n");
 	sArmR.Set(true);
 	Wait(5);
 	sArmR.Set(false);
 	Wait(10);
-	
+
 	printf("Triggering armE.\n");
 	sArmE.Set(true);
 	Wait(5);
 	sArmE.Set(false);
 	Wait(10);
-	
+
 	print();
 }
 
 void TKOClimber::Climb()
 {
 	time.Start();
+	time2.Start();  ///THIS IS THE DECIDE TIMER
 	state = ROBOT_PULLED_UP;
 	int level = 0;
 	double baseTime = 0;
@@ -117,7 +120,7 @@ void TKOClimber::Climb()
 	while (ds->IsEnabled() and level < 3)
 	{
 		//Wait(1.); FOR TESTING
-		winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage()); ///DOUBLE CHECK THIS (MASTER SLAVE MODE SET)
+		winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
 		print();
 		counter++;
 		switch (state)
@@ -144,6 +147,7 @@ void TKOClimber::Climb()
 				if (clipLeft.Get() or clipRight.Get())
 				{
 					printf("---------------CLIPS ARENT ON, DECIDE----------------- \n");
+					time2.Reset();
 					state = Decide(state);
 					continue;
 				}
@@ -178,7 +182,8 @@ void TKOClimber::Climb()
 				if (time.Get() > TIMEOUT2)   ///if hooks take 15 seconds to reach bottom
 				{
                     printf("---------------HOOKS ARE TAKING TOO LONG. DECIDE----------------- \n");
-                    Decide(state);
+                    time2.Reset();
+                    state = Decide(state);
                     continue;
 				}
 				break;
@@ -509,7 +514,7 @@ void TKOClimber::Climb()
 			case DEPLOYING_RATCHET: ///state 9
 				///push down ratchet
 				//push down ratchet
-				
+
 				if (ratchet.Get())
 				{
                     time.Reset();

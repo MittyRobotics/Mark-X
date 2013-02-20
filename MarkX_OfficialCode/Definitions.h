@@ -138,6 +138,7 @@ const int TIMEOUT8 = 5;
 const double TIMEOUT8DELTA = .25;
 const int TIMEOUT9 = 1;
 const int TIMEOUT10 = 2;
+const int DECIDE_TIMEOUT = 5;
 
 //Autonomous Constants
 const float RAMP_RATE = 0.005;
