@@ -10,14 +10,14 @@
 class RobotDemo: public SimpleRobot
 {
 		Joystick stick; // only joystick
-		Compressor comp;
 		DriverStation *ds;
 		Solenoid s1, s2, s3, s4, s5, s6, s7, s8;
+		TKORelay comp;
 
 	public:
 		RobotDemo(void) :
 			stick(1), // as they are declared above.
-			        comp(14, 2), s1(1), s2(2), s3(3), s4(4), s5(5), s6(6), s7(7), s8(8)
+			        s1(1), s2(2), s3(3), s4(4), s5(5), s6(6), s7(7), s8(8), comp(2)
 		{
 			ds = DriverStation::GetInstance();
 		}
@@ -38,7 +38,7 @@ class RobotDemo: public SimpleRobot
 			while (true)
 			{
 				DSClear();
-				comp.Start();
+				comp.SetOn(1);
 
 				if (stick.GetRawButton(2))
 				{
