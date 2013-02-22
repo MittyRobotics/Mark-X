@@ -58,9 +58,28 @@ void TKOCLimber::ArmForward()
     }
 }
 
-void TKOClimber::RatchetBack()
+void TKOClimber::ClipBack()
 {
-    if()
+    if(sClipsE.Get() and not sClipsR.Get())
+    {
+        clipBack();
+    }
+}
+
+void TKOCLimber::ClipForward()
+{
+    if(sCLipsR.Get() and not sClipsE.Get())
+    {
+        clipForward();
+    }
+}
+
+void TKOClimber::Dump()
+{
+    if(sArmR.Get() and not sArmE.Get())
+    {
+        topDumperForward();
+    }
 }
 
 
@@ -139,7 +158,7 @@ void TKOClimber::Climb()
 	int counter = 0;
 	ratchetForward();
     armBack();
-	while (ds->IsEnabled() and level < PYRAMID_SIZE)
+	while (level < PYRAMID_SIZE)
 	{
 		//Wait(1.); FOR TESTING
 		winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
@@ -160,7 +179,6 @@ void TKOClimber::Climb()
 				if (winch1.GetPosition() <= SETPOINT_RATCHET_RETRACT - TOLERANCE) ///if PID says hooks are at their setpoint - some amount
 				{
 					printf("---------------REACHED SETPOINT, MOVE TO RATCHET RETRACTING. YOU HAVE 1 SECOND. GO.----------------- \n");
-					print();
 					time.Reset();
 					state = RETRACTING_RATCHET;
 					continue;
@@ -316,7 +334,9 @@ void TKOClimber::Climb()
 
 			case DEPLOY_CLIPS: ///state 5
 				///deploying clips
-                clipForward();
+
+                ClipForward();
+
 				if (clipLeft.Get() && clipRight.Get()) ///if clips engage and are down, move on to state 5
 				{
 					printf("----------------Your clips are engaged and are all the way down, move on to next state------------------ \n");
@@ -422,6 +442,7 @@ void TKOClimber::Climb()
 				///move arm forward
 				while (time.Get() < TIMEOUT7)
 				{
+				    armForward();
 					//Wait(.5);  ///LEAVE IN FOR TESTING
 					//printf("%f", time.Get());  ///LEAVE IN FOR TESTING
 					if (hookLeft.Get() or hookRight.Get())
@@ -503,15 +524,13 @@ void TKOClimber::Climb()
 				{
                     state = OH_SHIT;
 				}
-
-				//move arm back
-				//wait(.5);
-				//state = 6
 				break;
 
 
 			case MOVE_HOOKS_DOWN: ///state 9
 				///move hooks down
+                winch1.Set(winch1.Get() - LIFT_INCREMENT);
+
 				if (hookLeft.Get() && hookRight.Get() && not ratchet.Get()) ///both hooks clip on
 				{
                     time.Reset();
@@ -582,15 +601,30 @@ void TKOClimber::Climb()
 			case RETRACTING_CLIPS: ///state 10
 				///retract clips
 				///hook motors are stopped
-				///run clip motors
+
+                ClipBack();
 
 				if (!clipLeft.Get() && !clipRight.Get())
 				{
-					level++;
-					time.Reset();
-					state = ROBOT_PULLED_UP;
-					continue;
-				}
+                    if(level < PYRAMID_SIZE)
+                    {
+                        level++;
+                        time.Reset();
+                        state = ROBOT_PULLED_UP;
+                        continue;
+                    }
+                    else if (level == PYRAMID_SIZE)
+                    {
+                        if(winch1.Get() < SETPOINT_LAST)
+                        {
+                            winch1.Set(winch1.Get() - LIFT_INCREMENT);
+                        }
+                        else
+                        {
+                            state = WE_MADE_IT;
+                        }
+                    }
+                }
 
 				if (not hookLeft.Get() and not hookRight.Get())
 				{
@@ -615,6 +649,14 @@ void TKOClimber::Climb()
 				 state = OH_SHIT;
 				 }
 				break;
+
+            case WE_MADE_IT:
+                while(true)
+                {
+                    ratchetForward();
+                    Dump();
+                    printf("AWWWW YEEEEEE WE ARE ON TOP OF THE PYRAMID");
+                }
 
 			case OH_SHIT:
                 while(true)

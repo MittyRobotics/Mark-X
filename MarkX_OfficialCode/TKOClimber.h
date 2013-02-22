@@ -9,6 +9,7 @@
 #define ratchetForward() rsRatchet.SetOn(1);
 #define clipForward() sClipsR.Set(false);sClipsE.Set(true);
 #define clipBack() sClipsE.Set(false);sClipsR(true);
+#define topDumperForward() sDumperR.Set(false);sDumperE.Set(true);
 #define gg ;
 
 
