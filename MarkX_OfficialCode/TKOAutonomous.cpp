@@ -45,6 +45,14 @@ void TKOAutonomous::initAutonomous()
 
 void TKOAutonomous::startAutonomous()
 {
+
+    ifstream autoMode
+    autoMode.open ("mode.txt");
+    if(autoMode.is_open())
+    {
+        autonomousMode = (int) autoMode.getline();
+        autoMode.close();
+    }
 	autonTimer.Reset();
 	autonTimer.Start();
 	_gyro->reset();

@@ -5,6 +5,8 @@
 
 #include "Definitions.h"
 #include "TKOGyro.h"
+#include <iostream>
+#include <fstream>
 
 class TKOAutonomous
 {
@@ -42,6 +44,7 @@ class TKOAutonomous
 		float rampRate2;
 		float targetAngle;
 		bool reachedTarget;
+		int autonomousMode;
 };
 
 #endif
