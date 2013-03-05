@@ -5,10 +5,7 @@
 ///Constructor for the TKOAutonomous class
 
 TKOAutonomous::TKOAutonomous(int port1, int port2, int port3, int port4) :
-	drive1(port1, CANJaguar::kPosition),
-			drive2(port2, CANJaguar::kPercentVbus),
-			drive3(port3, CANJaguar::kPosition),
-			drive4(port4, CANJaguar::kPercentVbus)
+	drive1(port1, CANJaguar::kPosition), drive2(port2, CANJaguar::kPercentVbus), drive3(port3, CANJaguar::kPosition), drive4(port4, CANJaguar::kPercentVbus)
 {
 	initAutonomous();
 }
@@ -46,13 +43,34 @@ void TKOAutonomous::initAutonomous()
 void TKOAutonomous::startAutonomous()
 {
 
-    ifstream autoMode
-    autoMode.open ("mode.txt");
-    if(autoMode.is_open())
-    {
-        autonomousMode = (int) autoMode.getline();
-        autoMode.close();
-    }
+	ifstream autoMode;
+	autoMode.open("mode.txt");
+	if (autoMode.is_open())
+	{
+
+		int length;
+		int * buffer2;
+		char * buffer;
+
+		// get length of file:
+		autoMode.seekg(0, ios::end);
+		length = autoMode.tellg();
+		autoMode.seekg(0, ios::beg);
+
+		// allocate memory:
+		buffer = new char[length];
+		buffer2 = new int[length];
+
+		// read data as a block:
+		autoMode.read(buffer, length);
+		
+		for (int i = 0; i < length; i++)
+		{
+			buffer2[i] = (int) buffer[i];
+		}
+
+		autoMode.close();
+	}
 	autonTimer.Reset();
 	autonTimer.Start();
 	_gyro->reset();

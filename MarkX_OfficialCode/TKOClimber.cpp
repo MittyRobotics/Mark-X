@@ -4,15 +4,11 @@
 ///Constructor for the TKOAutonomous class
 
 TKOClimber::TKOClimber(int port1, int port2) :
-    ///lift crap
-	winch1(port1, CANJaguar::kPosition), winch2(port2, CANJaguar::kPercentVbus),
-	hookLeft(1), hookRight(2), clipLeft(3), clipRight(4), armTop(5),
-	armBottom(6), ratchet(7),
+	///lift crap
+	        winch1(port1, CANJaguar::kPosition), winch2(port2, CANJaguar::kPercentVbus), hookLeft(1), hookRight(2), clipLeft(3), clipRight(4), armTop(5), armBottom(6), ratchet(7),
 
-	///begin pneumatics crap
-    rsRatchet(PN_R3_ID),
-    sDumperR(PN_S1R_ID), sDumperE(PN_S1E_ID), sClipsR(PN_S3R_ID), sClipsE(PN_S3E_ID),
-    sArmR(PN_S4R_ID), sArmE(PN_S4E_ID), loggerObj(), _stick4(4)
+	        ///begin pneumatics crap
+	        rsRatchet(PN_R3_ID), sDumperR(PN_S1R_ID), sDumperE(PN_S1E_ID), sClipsR(PN_S3R_ID), sClipsE(PN_S3E_ID), sArmR(PN_S4R_ID), sArmE(PN_S4E_ID), loggerObj(), _stick4(4)
 {
 	ds = DriverStation::GetInstance(); /// Pulls driver station information
 	state = OPERATOR_CONTROL;
@@ -44,44 +40,43 @@ int TKOClimber::Decide(int s)
 
 void TKOClimber::ArmBack()
 {
-    if(sArmE.Get() and not sArmR.Get())
-    {
-        armBack();
-    }
+	if (sArmE.Get() and not sArmR.Get())
+	{
+		armBack()
+	}
 }
 
-void TKOCLimber::ArmForward()
+void TKOClimber::ArmForward()
 {
-    if(sArmR.Get() and not sArmE.Get())
-    {
-        armForward();
-    }
+	if (sArmR.Get() and not sArmE.Get())
+	{
+		armForward()
+	}
 }
 
 void TKOClimber::ClipBack()
 {
-    if(sClipsE.Get() and not sClipsR.Get())
-    {
-        clipBack();
-    }
+	if (sClipsE.Get() and not sClipsR.Get())
+	{
+		clipBack()
+	}
 }
 
-void TKOCLimber::ClipForward()
+void TKOClimber::ClipForward()
 {
-    if(sCLipsR.Get() and not sClipsE.Get())
-    {
-        clipForward();
-    }
+	if (sClipsR.Get() and not sClipsE.Get())
+	{
+		clipForward();
+	}
 }
 
 void TKOClimber::Dump()
 {
-    if(sArmR.Get() and not sArmE.Get())
-    {
-        topDumperForward();
-    }
+	if (sArmR.Get() and not sArmE.Get())
+	{
+		topDumperForward();
+	}
 }
-
 
 void TKOClimber::print()
 {
@@ -151,13 +146,13 @@ void TKOClimber::Test()
 void TKOClimber::Climb()
 {
 	time.Start();
-	time2.Start();  ///THIS IS THE DECIDE TIMER
+	time2.Start(); ///THIS IS THE DECIDE TIMER
 	state = ROBOT_PULLED_UP;
 	int level = 0;
 	double baseTime = 0;
 	int counter = 0;
 	ratchetForward();
-    armBack();
+	armBack();
 	while (level < PYRAMID_SIZE)
 	{
 		//Wait(1.); FOR TESTING
@@ -169,9 +164,9 @@ void TKOClimber::Climb()
 
 			case ROBOT_PULLED_UP: ///state 2
 				///begin pulling up robot
-				if(winch1.GetPosition() > SETPOINT_RATCHET_RETRACT)   ///MOVE MOTORS
+				if (winch1.GetPosition() > SETPOINT_RATCHET_RETRACT) ///MOVE MOTORS
 				{
-                    winch1.Set(winch1.GetPosition() + LIFT_INCREMENT);
+					winch1.Set(winch1.GetPosition() + LIFT_INCREMENT);
 				}
 
 				///CONTINGENCIES
@@ -208,7 +203,7 @@ void TKOClimber::Climb()
 
 				if (not ratchet.Get()) ///If ratchet is disabled
 				{
-					ratchetForward();  ///push down ratchet
+					ratchetForward(); ///push down ratchet
 					printf("---------------RATCHET IS DISABLED. WE TRIED AGAIN. WAITING HALF SECOND TO CHECK AGAIN----------------- \n");
 					Wait(.5);
 					if (not ratchet.Get())
@@ -219,22 +214,22 @@ void TKOClimber::Climb()
 					}
 				}
 
-				if (time.Get() > TIMEOUT2)   ///if hooks take 15 seconds to reach bottom
+				if (time.Get() > TIMEOUT2) ///if hooks take 15 seconds to reach bottom
 				{
-                    printf("---------------HOOKS ARE TAKING TOO LONG. DECIDE----------------- \n");
-                    time2.Reset();
-                    state = Decide(state);
-                    continue;
+					printf("---------------HOOKS ARE TAKING TOO LONG. DECIDE----------------- \n");
+					time2.Reset();
+					state = Decide(state);
+					continue;
 				}
 				break;
 
 			case RETRACTING_RATCHET: ///state 3
 				///retract ratchet
 
-                if(winch1.GetPosition() > SETPOINT_BOTTOM and ratchet.Get())   ///MOVE MOTORS
+				if (winch1.GetPosition() > SETPOINT_BOTTOM and ratchet.Get()) ///MOVE MOTORS
 				{
-				    ratchetBack();
-                    winch1.Set(winch1.GetPosition() - LIFT_INCREMENT_RATCHET);
+					ratchetBack();
+					winch1.Set(winch1.GetPosition() - LIFT_INCREMENT_RATCHET);
 				}
 
 				if (not ratchet.Get()) ///if ratchet retracts, move on
@@ -271,12 +266,12 @@ void TKOClimber::Climb()
 					continue;
 				}
 
-				if (winch1.GetPosition() < SETPOINT_BOTTOM - TOLERANCE or time.Get() > TIMEOUT3)  ///if the ratchet does not go down in 1 second
-                {
-                    printf("--------------You took too long. oh NO.-------------- \n");
-                    state = OH_SHIT;
-                    continue;
-                }
+				if (winch1.GetPosition() < SETPOINT_BOTTOM - TOLERANCE or time.Get() > TIMEOUT3) ///if the ratchet does not go down in 1 second
+				{
+					printf("--------------You took too long. oh NO.-------------- \n");
+					state = OH_SHIT;
+					continue;
+				}
 				break;
 
 			case CHANGE_SETPOINT_MOVE_HOOKS_DOWN: ///state 4
@@ -284,7 +279,7 @@ void TKOClimber::Climb()
 
 				if (winch1.GetPosition() > SETPOINT_BOTTOM - TOLERANCE and not armBottom.Get())
 				{
-				    winch1.Set(winch1.GetPosition() - LIFT_INCREMENT);
+					winch1.Set(winch1.GetPosition() - LIFT_INCREMENT);
 				}
 
 				if (winch1.GetPosition() <= SETPOINT_BOTTOM - TOLERANCE) ///if PID says hook reaches bottom of its movement
@@ -323,19 +318,19 @@ void TKOClimber::Climb()
 					continue;
 				}
 
-				if (winch1.GetPosition() > SETPOINT_BOTTOM && !armBottom.Get() && time.Get() > TIMEOUT4)  ///if hook has not hit bottom and time is greater than 3s
-				 {
-				 printf("--------------The hook did not hit the bottom in 3 seconds. Oh crap.------------------ \n");
-				 state = OH_SHIT;
-				 continue;
-				 }
+				if (winch1.GetPosition() > SETPOINT_BOTTOM && !armBottom.Get() && time.Get() > TIMEOUT4) ///if hook has not hit bottom and time is greater than 3s
+				{
+					printf("--------------The hook did not hit the bottom in 3 seconds. Oh crap.------------------ \n");
+					state = OH_SHIT;
+					continue;
+				}
 
 				break;
 
 			case DEPLOY_CLIPS: ///state 5
 				///deploying clips
 
-                ClipForward();
+				ClipForward();
 
 				if (clipLeft.Get() && clipRight.Get()) ///if clips engage and are down, move on to state 5
 				{
@@ -372,20 +367,20 @@ void TKOClimber::Climb()
 					}
 				}
 
-				if(time.Get() > TIMEOUT5) ///your clip motors are broken. sucks to suck
-                {
-                    printf("-----------------Took too long!----------------- \n");
-                    state = OH_SHIT;
-                    continue;
-                }
+				if (time.Get() > TIMEOUT5) ///your clip motors are broken. sucks to suck
+				{
+					printf("-----------------Took too long!----------------- \n");
+					state = OH_SHIT;
+					continue;
+				}
 				break;
 
 			case MOVE_HOOKS_UP: ///state 6
 				///Hooks begin moving up
 
-				if(winch1.GetPosition() < SETPOINT_TOP - TOLERANCE)
+				if (winch1.GetPosition() < SETPOINT_TOP - TOLERANCE)
 				{
-				    winch1.Set(winch1.GetPosition() + LIFT_INCREMENT);
+					winch1.Set(winch1.GetPosition() + LIFT_INCREMENT);
 				}
 				if (winch1.GetPosition() > SETPOINT_TOP and (not hookLeft.Get() and not hookRight.Get()))
 				{
@@ -430,7 +425,7 @@ void TKOClimber::Climb()
 					Wait(.5);
 					if (ratchet.Get())
 					{
-					    printf("---------RATCHET IS STILL ENGAGED. SUCKS.-----------");
+						printf("---------RATCHET IS STILL ENGAGED. SUCKS.-----------");
 						state = OH_SHIT;
 						continue;
 					}
@@ -442,24 +437,24 @@ void TKOClimber::Climb()
 				///move arm forward
 				while (time.Get() < TIMEOUT7)
 				{
-				    armForward();
+					armForward();
 					//Wait(.5);  ///LEAVE IN FOR TESTING
 					//printf("%f", time.Get());  ///LEAVE IN FOR TESTING
 					if (hookLeft.Get() or hookRight.Get())
 					{
-					    printf("---------One of the hooks is engaged. ERROR ERROR ERROR ERROR-----------");
+						printf("---------One of the hooks is engaged. ERROR ERROR ERROR ERROR-----------");
 						state = WTF;
 						continue;
 					}
 					if (not clipLeft.Get() or not clipRight.Get())
 					{
-                        printf("---------ONE OF THE CLIPS DISENGAGED. OH GOD OH GOD ERROR OH GOD-----------");
+						printf("---------ONE OF THE CLIPS DISENGAGED. OH GOD OH GOD ERROR OH GOD-----------");
 						state = OH_SHIT;
 						continue;
 					}
 					if (armTop.Get() or armBottom.Get())
 					{
-					    printf("---------HOOKS HIT THE TOP OR THE BOTTOM. I WAS UNAWARE YOU COULD FAIL THAT HARD. HAVE AN ERROR FOR YOUR TROUBLES.-----------");
+						printf("---------HOOKS HIT THE TOP OR THE BOTTOM. I WAS UNAWARE YOU COULD FAIL THAT HARD. HAVE AN ERROR FOR YOUR TROUBLES.-----------");
 						state = WTF;
 						continue;
 					}
@@ -470,7 +465,7 @@ void TKOClimber::Climb()
 						Wait(.5);
 						if (ratchet.Get())
 						{
-						    printf("----------RATCHET FAILED TO GO IN AGAIN. CALLING IT A DAY-----------");
+							printf("----------RATCHET FAILED TO GO IN AGAIN. CALLING IT A DAY-----------");
 							state = OH_SHIT;
 							continue;
 						}
@@ -480,12 +475,13 @@ void TKOClimber::Climb()
 				state = MOVE_HOOKS_DOWN;
 				break;
 
-				case DEPLOYING_RATCHET: ///state 8
+			case DEPLOYING_RATCHET: ///state 8
 				///push down ratchet
-				ratchetForward();
+				ratchetForward()
+				;
 				if (ratchet.Get())
 				{
-                    time.Reset();
+					time.Reset();
 					state = RETRACTING_CLIPS;
 					continue;
 				}
@@ -522,63 +518,63 @@ void TKOClimber::Climb()
 
 				if (time.Get() > TIMEOUT9)
 				{
-                    state = OH_SHIT;
+					state = OH_SHIT;
 				}
 				break;
 
-
 			case MOVE_HOOKS_DOWN: ///state 9
 				///move hooks down
-                winch1.Set(winch1.Get() - LIFT_INCREMENT);
+				winch1.Set(winch1.Get() - LIFT_INCREMENT);
 
 				if (hookLeft.Get() && hookRight.Get() && not ratchet.Get()) ///both hooks clip on
 				{
-                    time.Reset();
-                    printf("---------Both hooks clipped on. Moving on to next stage.-----------");
-                    state = DEPLOYING_RATCHET;
-                    continue;
+					time.Reset();
+					printf("---------Both hooks clipped on. Moving on to next stage.-----------");
+					state = DEPLOYING_RATCHET;
+					continue;
 				}
 
-				if (( hookLeft.Get() and not hookRight.Get() ) or( hookRight.Get() and not hookLeft.Get() ))  ///if only one of the hooks is attached
+				if ((hookLeft.Get() and not hookRight.Get()) or (hookRight.Get() and not hookLeft.Get())) ///if only one of the hooks is attached
 				{
-                    printf("------------ONLY ONE OF YOUR HOOKS WAS ATTACHED. CONTINUING TO MOVE HOOKS FOR %f SECONDS----------", TIMEOUT8DELTA);
-                    baseTime = time.Get();
-                    while (time.Get() - baseTime < TIMEOUT8DELTA);
-                    {
-                        winch1.Set(winch1.GetPosition() - LIFT_INCREMENT);
-                        if (hookLeft.Get() and hookRight.Get())
-                        {
-                            printf("---------GOT BOTH HOOKS ON. MOVE ON TO NEXT STATE.-----------");
-                            state = DEPLOYING_RATCHET;
-                            break;
-                        }
-                        if (not hookLeft.Get() or not hookRight.Get())
-                        {
-                            printf("---------ONE OF YOUR HOOKS CAME OFF. YOU GOT 99 PROBLEMS, AND ERROR IS DEFINITELY ONE.-----------");
-                            state = OH_SHIT;
-                            break;
-                        }
-                    }
-                    continue;
-                }
+					printf("------------ONLY ONE OF YOUR HOOKS WAS ATTACHED. CONTINUING TO MOVE HOOKS FOR %f SECONDS----------", TIMEOUT8DELTA);
+					baseTime = time.Get();
+					while (time.Get() - baseTime < TIMEOUT8DELTA)
+						;
+					{
+						winch1.Set(winch1.GetPosition() - LIFT_INCREMENT);
+						if (hookLeft.Get() and hookRight.Get())
+						{
+							printf("---------GOT BOTH HOOKS ON. MOVE ON TO NEXT STATE.-----------");
+							state = DEPLOYING_RATCHET;
+							break;
+						}
+						if (not hookLeft.Get() or not hookRight.Get())
+						{
+							printf("---------ONE OF YOUR HOOKS CAME OFF. YOU GOT 99 PROBLEMS, AND ERROR IS DEFINITELY ONE.-----------");
+							state = OH_SHIT;
+							break;
+						}
+					}
+					continue;
+				}
 
 				if (not clipLeft.Get() or not clipRight.Get())
 				{
-				    printf("---------ONE OF THE CLIPS DISENGAGED. GOOD LUCK NOT FALLING.-----------");
+					printf("---------ONE OF THE CLIPS DISENGAGED. GOOD LUCK NOT FALLING.-----------");
 					state = OH_SHIT;
 					continue;
 				}
 
 				if (armTop.Get())
 				{
-				    printf("---------YOU SOMEHOW HIT THE TOP WHEN MOVING YOUR HOOKS DOWN. ERROR TIME-----------");
+					printf("---------YOU SOMEHOW HIT THE TOP WHEN MOVING YOUR HOOKS DOWN. ERROR TIME-----------");
 					state = WTF;
 					continue;
 				}
 
 				if (armBottom.Get())
 				{
-				    printf("---------YOUR HOOKS HIT THE BOTTOM OF THE ARM. ERRORING OUT-----------");
+					printf("---------YOUR HOOKS HIT THE BOTTOM OF THE ARM. ERRORING OUT-----------");
 					state = OH_SHIT;
 					continue;
 				}
@@ -592,9 +588,9 @@ void TKOClimber::Climb()
 				}
 
 				if (time.Get() > TIMEOUT8)
-                {
-                    state = OH_SHIT;
-                    continue;
+				{
+					state = OH_SHIT;
+					continue;
 				}
 				break;
 
@@ -602,29 +598,29 @@ void TKOClimber::Climb()
 				///retract clips
 				///hook motors are stopped
 
-                ClipBack();
+				ClipBack();
 
 				if (!clipLeft.Get() && !clipRight.Get())
 				{
-                    if(level < PYRAMID_SIZE)
-                    {
-                        level++;
-                        time.Reset();
-                        state = ROBOT_PULLED_UP;
-                        continue;
-                    }
-                    else if (level == PYRAMID_SIZE)
-                    {
-                        if(winch1.Get() < SETPOINT_LAST)
-                        {
-                            winch1.Set(winch1.Get() - LIFT_INCREMENT);
-                        }
-                        else
-                        {
-                            state = WE_MADE_IT;
-                        }
-                    }
-                }
+					if (level < PYRAMID_SIZE)
+					{
+						level++;
+						time.Reset();
+						state = ROBOT_PULLED_UP;
+						continue;
+					}
+					else if (level == PYRAMID_SIZE)
+					{
+						if (winch1.Get() < SETPOINT_LAST)
+						{
+							winch1.Set(winch1.Get() - LIFT_INCREMENT);
+						}
+						else
+						{
+							state = WE_MADE_IT;
+						}
+					}
+				}
 
 				if (not hookLeft.Get() and not hookRight.Get())
 				{
@@ -644,27 +640,27 @@ void TKOClimber::Climb()
 					continue;
 				}
 
-				if (time.Get() > TIMEOUT10 and  (clipLeft.Get() || clipRight.Get()))
-				 {
-				 state = OH_SHIT;
-				 }
+				if (time.Get() > TIMEOUT10 and (clipLeft.Get() || clipRight.Get()))
+				{
+					state = OH_SHIT;
+				}
 				break;
 
-            case WE_MADE_IT:
-                while(true)
-                {
-                    ratchetForward();
-                    Dump();
-                    printf("AWWWW YEEEEEE WE ARE ON TOP OF THE PYRAMID");
-                }
+			case WE_MADE_IT:
+				while (true)
+				{
+					ratchetForward();
+					Dump();
+					printf("AWWWW YEEEEEE WE ARE ON TOP OF THE PYRAMID");
+				}
 
 			case OH_SHIT:
-                while(true)
-                {
-                    ratchetForward();
-                    clipForward();
-                    printf("OH GOD THINGS WENT WRONG OH GOD OH GOD");
-                }
+				while (true)
+				{
+					ratchetForward();
+					clipForward();
+					printf("OH GOD THINGS WENT WRONG OH GOD OH GOD");
+				}
 		}
 	}
 

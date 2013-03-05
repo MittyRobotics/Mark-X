@@ -8,10 +8,9 @@
 #define ratchetBack() rsRatchet.SetOn(-1);
 #define ratchetForward() rsRatchet.SetOn(1);
 #define clipForward() sClipsR.Set(false);sClipsE.Set(true);
-#define clipBack() sClipsE.Set(false);sClipsR(true);
+#define clipBack() sClipsE.Set(false);sClipsR.Set(true);
 #define topDumperForward() sDumperR.Set(false);sDumperE.Set(true);
 #define gg ;
-
 
 #include "Definitions.h"
 #include "TKORelay.h"
@@ -40,6 +39,11 @@ class TKOClimber
 		void print();
 		void Climb();
 		void Test();
+		void Dump();
+		void ArmBack();
+		void ArmForward();
+		void ClipBack();
+		void ClipForward();
 		TKOLogger* logger;
 };
 
