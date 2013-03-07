@@ -89,7 +89,7 @@ const int PN_R1_ID = 4; //Loader Wrist
 const int PN_R2_ID = 3; //Loader Lift
 const int PN_R3_ID = 2; //Loader Ratchet
 const int COMPRESSOR_ID = 1; //Compressor ID
-const int PRESSURE_SWITCH_PORT = 1;
+const int PRESSURE_SWITCH_PORT = 14;
 
 const int PN_S1R_ID = 8; //Top Dumper Retract
 const int PN_S1E_ID = 7; //Top Dumper Extend
