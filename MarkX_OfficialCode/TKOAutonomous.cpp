@@ -116,30 +116,48 @@ void TKOAutonomous::shooting()
 {
 	//replace with evom task
 }
-void TKOAutonomous::driveLeft()
+bool TKOAutonomous::driveLeft()
 {
-	if (leftTarget >= -rampTargetLeft)
+	if (leftTarget >= -rampTargetLeft){
 		leftTarget -= rampRate;
-	drive1.Set(leftTarget); //sets pid drive target
-	printf("Setting left target to: %f", leftTarget);
-	printf("\n");
-	drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+		drive1.Set(leftTarget); //sets pid drive target
+		printf("Setting left target to: %f", leftTarget);
+		printf("\n");
+		drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+	}
+	else if (leftTarget < rampTargetLeft){
+		return true;
+	}
+	return false;
 }
-void TKOAutonomous::driveRight()
+bool TKOAutonomous::driveRight()
 {
-	if (rightTarget >= -rampTargetRight)
+	if (rightTarget >= -rampTargetRight){
 		rightTarget -= rampRate;
 	drive3.Set(rightTarget); //same, but for jag 3 since only 1 and 3 have encoders
 	drive4.Set(-drive3.GetOutputVoltage() / drive3.GetBusVoltage()); //sets second and fourth jags in slave mode
+	}
+	else if (rightTarget < rampTargetRight){
+		return true;
+	}
+	return false;
 }
 
-void TKOAutonomous::PIDDriveStraight()
+bool TKOAutonomous::PIDDriveStraight()
 {
 	printf("Driving straight!\n");
 	driveLeft();
 	driveRight();
+	if(driveLeft() and driveRight()){
+		resetEncoders();
+		return true;
+	}
+	return false;
 }
-
+void TKOAutonomous::resetEncoders(){
+	drive1.EnableControl(drive1.GetPosition());
+	drive3.EnableControl(drive3.GetPosition());
+}
 bool TKOAutonomous::turn(double target)//takes negative values
 {
 	double currAngle = _gyro->GetAngle();
@@ -160,10 +178,7 @@ bool TKOAutonomous::turn(double target)//takes negative values
 			if (!reachedTarget)
 			{
 				reachedTarget = true;
-				drive1.DisableControl();
-				drive3.DisableControl();
-				drive1.EnableControl();
-				drive3.EnableControl();
+				resetEncoders();
 				printf("Reset position\n"); //All this resetting does not work properly, needs to be fixed
 				//Cannot go without it because when the robot turns, it affects the position
 			}

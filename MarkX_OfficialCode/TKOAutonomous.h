@@ -21,9 +21,10 @@ class TKOAutonomous
 		void setDriveTargetLeft(float target);
 		void setDriveTargetRight(float target);
 		void setTargetAngle(float target);
-		void PIDDriveStraight();
-		void driveLeft();
-		void driveRight();
+		bool PIDDriveStraight();
+		bool driveLeft();
+		bool driveRight();
+		void resetEncoders();
 		void shooting();
 		bool turn(double target);
 		void initAutonomous();
