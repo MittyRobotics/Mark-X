@@ -14,6 +14,7 @@ class TKOAutonomous
 		TKOAutonomous(int port1, int port2, int port3, int port4);
 		~TKOAutonomous();
 		void autonomousCode();
+		void autonSetup1();
 		void startAutonomous();
 		void stopAutonomous();
 		void setDrivePID(float P, float I, float D);
@@ -32,6 +33,7 @@ class TKOAutonomous
 		float getPosition(int jaguar);
 		float getTarget(int jaguar);
 		bool runningAuton;
+		bool autonOption[15];
 		Timer autonTimer;
 	private:
 		CANJaguar drive1, drive2, drive3, drive4;

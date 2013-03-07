@@ -88,10 +88,13 @@ void TKOClimber::print()
 	printf("Arm Bottom %d\n", armBottom.Get());
 	printf("Ratchet %d\n", ratchet.Get());
 	printf("--------------STATE = %d ------------------- \n\n\n", state);
+	printf("\n");
 }
 
 void TKOClimber::Test()
 {
+	print();
+	
 	printf("Setting ratchet to 1.\n");
 	rsRatchet.SetOn(1);
 	Wait(5);

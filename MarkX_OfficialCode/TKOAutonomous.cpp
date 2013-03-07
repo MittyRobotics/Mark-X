@@ -63,7 +63,7 @@ void TKOAutonomous::startAutonomous()
 
 		// read data as a block:
 		autoMode.read(buffer, length);
-		
+
 		for (int i = 0; i < length; i++)
 		{
 			buffer2[i] = (int) buffer[i];
@@ -86,6 +86,36 @@ void TKOAutonomous::stopAutonomous()
 	autonTimer.Reset();
 	printf("Stopped Autonomous \n");
 	//stop evom tasks
+}
+void TKOAutonomous::autonSetup1()
+{
+	if (ds->IsDisabled())
+		stopAutonomous();
+	if (!ds->IsAutonomous())
+		stopAutonomous();
+
+	{ //this is one "Atom" that performs one task, in this case turns 90 degrees
+		setTargetAngle(90);
+		if (not turn(targetAngle) and not autonOption[0])
+			return;
+		else
+			autonOption[0] = true;
+	}
+	//second "Atom"
+	setDriveTargetStraight(10);
+	if (not PIDDriveStraight() and not autonOption[1])
+		return;
+	else
+		autonOption[1] = true;
+
+	//third "Atom"
+	setTargetAngle(0);
+	if (not turn(targetAngle) and not autonOption[2])
+		return;
+	else
+		autonOption[2] = true;
+
+	//Stringing them in a row like so
 }
 void TKOAutonomous::autonomousCode()
 {
@@ -118,26 +148,30 @@ void TKOAutonomous::shooting()
 }
 bool TKOAutonomous::driveLeft()
 {
-	if (leftTarget >= -rampTargetLeft){
+	if (leftTarget >= -rampTargetLeft)
+	{
 		leftTarget -= rampRate;
 		drive1.Set(leftTarget); //sets pid drive target
 		printf("Setting left target to: %f", leftTarget);
 		printf("\n");
 		drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
 	}
-	else if (leftTarget < rampTargetLeft){
+	else if (leftTarget < rampTargetLeft)
+	{
 		return true;
 	}
 	return false;
 }
 bool TKOAutonomous::driveRight()
 {
-	if (rightTarget >= -rampTargetRight){
+	if (rightTarget >= -rampTargetRight)
+	{
 		rightTarget -= rampRate;
-	drive3.Set(rightTarget); //same, but for jag 3 since only 1 and 3 have encoders
-	drive4.Set(-drive3.GetOutputVoltage() / drive3.GetBusVoltage()); //sets second and fourth jags in slave mode
+		drive3.Set(rightTarget); //same, but for jag 3 since only 1 and 3 have encoders
+		drive4.Set(-drive3.GetOutputVoltage() / drive3.GetBusVoltage()); //sets second and fourth jags in slave mode
 	}
-	else if (rightTarget < rampTargetRight){
+	else if (rightTarget < rampTargetRight)
+	{
 		return true;
 	}
 	return false;
@@ -148,13 +182,15 @@ bool TKOAutonomous::PIDDriveStraight()
 	printf("Driving straight!\n");
 	driveLeft();
 	driveRight();
-	if(driveLeft() and driveRight()){
+	if (driveLeft() and driveRight())
+	{
 		resetEncoders();
 		return true;
 	}
 	return false;
 }
-void TKOAutonomous::resetEncoders(){
+void TKOAutonomous::resetEncoders()
+{
 	drive1.EnableControl(drive1.GetPosition());
 	drive3.EnableControl(drive3.GetPosition());
 }

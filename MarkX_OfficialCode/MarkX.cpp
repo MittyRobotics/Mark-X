@@ -125,7 +125,8 @@ void MarkX::Autonomous(void) //Choose autonomous mode between 4 options though D
 		if (!ds->IsAutonomous())
 			auton.stopAutonomous();
 
-		auton.autonomousCode();
+		//auton.autonomousCode();
+		auton.autonSetup1();
 	}
 	auton.stopAutonomous();
 	printf("Ending Autonomous \n");
