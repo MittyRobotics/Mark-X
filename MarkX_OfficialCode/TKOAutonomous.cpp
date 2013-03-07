@@ -63,7 +63,7 @@ void TKOAutonomous::startAutonomous()
 
 		// read data as a block:
 		autoMode.read(buffer, length);
-		
+
 		for (int i = 0; i < length; i++)
 		{
 			buffer2[i] = (int) buffer[i];
@@ -160,10 +160,10 @@ bool TKOAutonomous::turn(double target)//takes negative values
 			if (!reachedTarget)
 			{
 				reachedTarget = true;
-				drive1.DisableControl();
-				drive3.DisableControl();
-				drive1.EnableControl();
-				drive3.EnableControl();
+				//drive1.DisableControl();
+				//drive3.DisableControl();
+				drive1.EnableControl(0);
+				drive3.EnableControl(0);
 				printf("Reset position\n"); //All this resetting does not work properly, needs to be fixed
 				//Cannot go without it because when the robot turns, it affects the position
 			}
