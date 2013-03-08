@@ -87,7 +87,7 @@ void TKOAutonomous::stopAutonomous()
 	printf("Stopped Autonomous \n");
 	//stop evom tasks
 }
-void TKOAutonomous::autonSetup1()
+void TKOAutonomous::autonSetup1() //left corner
 {
 	if (ds->IsDisabled())
 		stopAutonomous();
@@ -126,8 +126,6 @@ void TKOAutonomous::autonomousCode()
 
 	printMessages();
 
-	if (autonTimer.Get() > 0.1)
-		shooting();
 	if (autonTimer.Get() > 3)
 	{
 		rampRate += rampRate2;
@@ -142,13 +140,9 @@ void TKOAutonomous::autonomousCode()
 		}
 	}
 }
-void TKOAutonomous::shooting()
-{
-	//replace with evom task
-}
 bool TKOAutonomous::driveLeft()
 {
-	if (leftTarget >= -rampTargetLeft)
+	if (leftTarget > -rampTargetLeft)
 	{
 		leftTarget -= rampRate;
 		drive1.Set(leftTarget); //sets pid drive target
@@ -156,7 +150,7 @@ bool TKOAutonomous::driveLeft()
 		printf("\n");
 		drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
 	}
-	else if (leftTarget < rampTargetLeft)
+	else if (leftTarget <= rampTargetLeft)
 	{
 		return true;
 	}
@@ -164,13 +158,13 @@ bool TKOAutonomous::driveLeft()
 }
 bool TKOAutonomous::driveRight()
 {
-	if (rightTarget >= -rampTargetRight)
+	if (rightTarget > -rampTargetRight)
 	{
 		rightTarget -= rampRate;
 		drive3.Set(rightTarget); //same, but for jag 3 since only 1 and 3 have encoders
 		drive4.Set(-drive3.GetOutputVoltage() / drive3.GetBusVoltage()); //sets second and fourth jags in slave mode
 	}
-	else if (rightTarget < rampTargetRight)
+	else if (rightTarget <= rampTargetRight)
 	{
 		return true;
 	}
@@ -188,11 +182,6 @@ bool TKOAutonomous::PIDDriveStraight()
 		return true;
 	}
 	return false;
-}
-void TKOAutonomous::resetEncoders()
-{
-	drive1.EnableControl(drive1.GetPosition());
-	drive3.EnableControl(drive3.GetPosition());
 }
 bool TKOAutonomous::turn(double target)//takes negative values
 {
@@ -230,6 +219,12 @@ bool TKOAutonomous::turn(double target)//takes negative values
 	return false;
 }
 
+void TKOAutonomous::resetEncoders()
+{
+	drive1.EnableControl(drive1.GetPosition());
+	drive3.EnableControl(drive3.GetPosition());
+}
+
 void TKOAutonomous::printMessages()
 {
 	DSLog(2, "Gyro Angle: %f", _gyro->GetAngle());
@@ -257,14 +252,6 @@ void TKOAutonomous::setDrivePID(float P, float I, float D) //Sets drive1 and dri
 void TKOAutonomous::setDriveTargetStraight(float target)
 {
 	rampTargetLeft = target;
-	rampTargetRight = target;
-}
-void TKOAutonomous::setDriveTargetLeft(float target)
-{
-	rampTargetLeft = target;
-}
-void TKOAutonomous::setDriveTargetRight(float target)
-{
 	rampTargetRight = target;
 }
 void TKOAutonomous::setTargetAngle(float target)

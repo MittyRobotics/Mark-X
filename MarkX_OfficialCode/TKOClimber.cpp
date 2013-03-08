@@ -91,57 +91,68 @@ void TKOClimber::print()
 	printf("\n");
 }
 
-void TKOClimber::Test()
+void TKOClimber::Test() //pneumatics test
 {
+	printf("Starting pneumatics test. \n");
 	print();
-	
+
 	printf("Setting ratchet to 1.\n");
 	rsRatchet.SetOn(1);
-	Wait(5);
+	Wait(3);
+	printf("Setting ratchet to 0.\n");
 	rsRatchet.SetOn(0);
-	Wait(10);
+	Wait(3);
 
 	printf("Setting ratchet to -1.\n");
 	rsRatchet.SetOn(-1);
-	Wait(5);
+	Wait(3);
+	printf("Setting ratchet to 0.\n");
 	rsRatchet.SetOn(0);
-	Wait(10);
+	Wait(3);
 
 	printf("Triggering dumperR.\n");
 	sDumperR.Set(true);
-	Wait(5);
+	Wait(3);
+	printf("Untriggering dumperR.\n");
 	sDumperR.Set(false);
-	Wait(10);
+	Wait(3);
 
 	printf("Triggering dumperE.\n");
 	sDumperE.Set(true);
-	Wait(5);
+	Wait(3);
+	printf("Untriggering dumperE.\n");
 	sDumperE.Set(false);
-	Wait(10);
+	Wait(3);
 
 	printf("Triggering clipsR.\n");
 	sClipsR.Set(true);
-	Wait(5);
+	Wait(3);
+	printf("Untriggering clipsR.\n");
 	sClipsR.Set(false);
-	Wait(10);
+	Wait(3);
 
 	printf("Triggering clipsE.\n");
 	sClipsE.Set(true);
-	Wait(5);
+	Wait(3);
+	printf("Untriggering clipsE.\n");
 	sClipsE.Set(false);
-	Wait(10);
+	Wait(3);
 
 	printf("Triggering armR.\n");
 	sArmR.Set(true);
-	Wait(5);
+	Wait(3);
+	printf("Untriggering armR.\n");
 	sArmR.Set(false);
-	Wait(10);
+	Wait(3);
 
 	printf("Triggering armE.\n");
 	sArmE.Set(true);
-	Wait(5);
+	Wait(3);
+	printf("Untriggering armE.\n");
 	sArmE.Set(false);
-	Wait(10);
+	Wait(3);
+
+	printf("Finished climber pneumatics test \n");
 
 	print();
 }

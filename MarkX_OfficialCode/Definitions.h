@@ -1,4 +1,3 @@
-//Last edited by Vadim Korolik
 //on 02/18/2013
 #ifndef __DEFINITIONS_H
 #define __DEFINITIONS_H

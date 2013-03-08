@@ -6,11 +6,9 @@
 #include "TKORelay.h"
 #include "TKOLogger.h"
 
-/*---------------MarkX-Thing-to-Do---------------------*
- * 1 single solenoid (spike), 2 double solenoids (spikes),
- * 4 double solenoids (each solenoid 2 ports on breakout
- * 
- * FIX JAG PORTS/WINCH PORTS
+/*---------------MarkX-Thing-to-Do(TODO)---------------------*
+ * Keep working on adding multiple autonomous setups for different positions on the field.
+ * Test pneumatics/autonomous
  */
 
 class MarkX: public SimpleRobot
@@ -67,8 +65,7 @@ class MarkX: public SimpleRobot
 			drive3.ConfigEncoderCodesPerRev(ENCODER_REVS);
 			drive3.SetPID(DRIVE_kP, DRIVE_kI, DRIVE_kD);
 			controllerDrive = false;
-			if (not comp.StatusIsFatal())
-				comp.Start();
+			comp.Start();
 			printf("Initialized the MarkX class \n");
 		}
 
@@ -79,7 +76,10 @@ class MarkX: public SimpleRobot
  */
 void MarkX::Test()
 {
+	printf("Calling test function \n");
 	climber.Test();
+
+	return;
 	while (IsEnabled())
 	{
 		/*DSLog(2, "LStick %f", stick1.GetY());

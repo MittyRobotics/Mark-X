@@ -31,8 +31,8 @@ else
 MODE_DIR := NonDebug
 endif
 OBJ_DIR := .
-WS_ROOT_DIR := C:/Users/Andrew/repos/mark-ix
-PRJ_ROOT_DIR := C:/Users/Andrew/repos/mark-x/AtomsAndMolecules
+WS_ROOT_DIR := C:/Users/Vadim/repos/mark-x
+PRJ_ROOT_DIR := $(WS_ROOT_DIR)/AtomsAndMolecules
 
 
 
