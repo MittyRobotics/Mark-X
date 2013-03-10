@@ -9,6 +9,8 @@
 /*---------------MarkX-Thing-to-Do(TODO)---------------------*
  * Keep working on adding multiple autonomous setups for different positions on the field.
  * Test pneumatics/autonomous
+ * Implement logger!!!
+ * Test implementing a global timer/using system time to timestamp logger messages
  */
 
 class MarkX: public SimpleRobot
