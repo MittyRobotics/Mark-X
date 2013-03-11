@@ -50,7 +50,7 @@ void TKOClimber::ArmBack()
     }
 }
 
-void TKOCLimber::ArmForward()
+void TKOClimber::ArmForward()
 {
     if(sArmR.Get() and not sArmE.Get())
     {
@@ -66,9 +66,9 @@ void TKOClimber::ClipBack()
     }
 }
 
-void TKOCLimber::ClipForward()
+void TKOClimber::ClipForward()
 {
-    if(sCLipsR.Get() and not sClipsE.Get())
+    if(sClipsR.Get() and not sClipsE.Get())
     {
         clipForward();
     }

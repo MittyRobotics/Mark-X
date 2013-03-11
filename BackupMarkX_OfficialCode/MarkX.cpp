@@ -153,7 +153,7 @@ void MarkX::OperatorControl()
 		endLoopT = loopTimer.Get();
 		loopTime = endLoopT - startLoopT;
 		printf("Operator Loop Time, excluding Wait: %f", endLoopT);
-		space
+		space;
 		loopTimer.Reset();
 	}
 	printf("Ending OperatorControl \n");

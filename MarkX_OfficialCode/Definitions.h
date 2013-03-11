@@ -108,6 +108,7 @@ const float PI = 3.14159265;
 const float DEGREES_PER_RADIAN = 180 / PI;
 
 ///state machine constants
+const int INITIAL_STATE = 2;
 const int OPERATOR_CONTROL = 1;
 const int ROBOT_PULLED_UP = 2;
 const int RETRACTING_RATCHET = 3;

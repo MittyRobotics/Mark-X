@@ -38,6 +38,7 @@ class TKOClimber
 		~TKOClimber();
 		int Decide(int s);
 		void print();
+		void ClipForward();
 		void Climb();
 		void Test();
 		TKOLogger* logger;

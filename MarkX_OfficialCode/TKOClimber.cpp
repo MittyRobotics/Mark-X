@@ -11,7 +11,7 @@ TKOClimber::TKOClimber(int port1, int port2) :
 	        rsRatchet(PN_R3_ID), sDumperR(PN_S1R_ID), sDumperE(PN_S1E_ID), sClipsR(PN_S3R_ID), sClipsE(PN_S3E_ID), sArmR(PN_S4R_ID), sArmE(PN_S4E_ID), loggerObj(), _stick4(4)
 {
 	ds = DriverStation::GetInstance(); /// Pulls driver station information
-	state = OPERATOR_CONTROL;
+	state = INITIAL_STATE;
 	winch1.EnableControl();
 	winch1.SetPositionReference(JAG_POSREF);
 	winch1.ConfigEncoderCodesPerRev(ENCODER_REVS);
@@ -202,6 +202,7 @@ void TKOClimber::Climb()
 		winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
 		print();
 		counter++;
+		Wait(1);
 		switch (state)
 		{
 
