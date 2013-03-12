@@ -32,7 +32,7 @@
 
 /*! \mainpage Welcome to TKO 1351's MarkIX's Code Documentation!
  *
- * 	This is the Robot Code for the 2012 Season of Rebound Rumble
+ * 	This is the Robot Code for the 2013 Season of Ultimate Ascent
  *
  *  If you haven't already, please visit our <a href="http://www.amhsrobotics.com">website</a>.
  */
@@ -43,14 +43,14 @@ const int STICK_3_PORT = 3;
 const int STICK_4_PORT = 4;
 
 //Jaguar ports
-const int DRIVE_L1_ID = 1;
-const int DRIVE_L2_ID = 2;
-const int DRIVE_R1_ID = 3;
-const int DRIVE_R2_ID = 4;
+const int DRIVE_L1_ID = 2;
+const int DRIVE_L2_ID = 3;
+const int DRIVE_R1_ID = 4;
+const int DRIVE_R2_ID = 5;
 const int TURRET_ID = 10;
-const int SHOOTER_PORT = 7;
-const int WINCH_1_PORT = 5;
-const int WINCH_2_PORT = 6;
+const int SHOOTER_PORT = 8;
+const int WINCH_1_PORT = 6;
+const int WINCH_2_PORT = 7;
 
 // Spinner constants
 const float RADIUS_WHEELS = 4;

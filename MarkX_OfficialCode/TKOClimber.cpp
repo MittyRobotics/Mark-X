@@ -80,6 +80,7 @@ void TKOClimber::Dump()
 
 void TKOClimber::print()
 {
+	printf("Winch 1 pos: %f \n", winch1.GetPosition());
 	printf("HookLeft %d \n", hookLeft.Get());
 	printf("HookRight %d \n", hookRight.Get());
 	printf("Clip left %d \n", clipLeft.Get());
@@ -198,7 +199,7 @@ void TKOClimber::Climb()
 	{
 		if (!ds->IsEnabled())
 			return;
-		//Wait(1.); FOR TESTING
+		Wait(1.); //FOR TESTING
 		winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
 		print();
 		counter++;
