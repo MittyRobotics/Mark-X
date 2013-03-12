@@ -84,20 +84,31 @@ const int GYRO_PORT = 1;
 
 // Pneumatics constants
 //PN stands for pneumatics, R stands for relay, S stands for solenoid
-const int PN_R1_ID = 4; //Loader Wrist
-const int PN_R2_ID = 3; //Loader Lift
-const int PN_R3_ID = 2; //Loader Ratchet
 const int COMPRESSOR_ID = 1; //Compressor ID
 const int PRESSURE_SWITCH_PORT = 14;
 
+//const int PN_R1_ID = 4; //Loader Wrist
+//const int PN_R2_ID = 3; //Loader Lift
+//const int PN_R3_ID = 2; //Loader Ratchet
+//
+//const int PN_S1R_ID = 8; //Top Dumper Retract
+//const int PN_S1E_ID = 7; //Top Dumper Extend
+//const int PN_S2R_ID = 6; //Shooter Retract
+//const int PN_S2E_ID = 5; //Shooter Extend
+//const int PN_S3R_ID = 4; //Clips Retract
+//const int PN_S3E_ID = 3; //Clips Extend
+//const int PN_S4R_ID = 2; //Arm Retract
+//const int PN_S4E_ID = 1; //Arm Extend
+const int PN_R1_ID = 4; //Loader Wrist
+const int PN_R2_ID = 3; //Loader Lift
+const int PN_R3_ID = 2; //Loader Ratchet
+
 const int PN_S1R_ID = 8; //Top Dumper Retract
 const int PN_S1E_ID = 7; //Top Dumper Extend
-const int PN_S2R_ID = 6; //Shooter Retract
-const int PN_S2E_ID = 5; //Shooter Extend
-const int PN_S3R_ID = 4; //Clips Retract
-const int PN_S3E_ID = 3; //Clips Extend
-const int PN_S4R_ID = 2; //Arm Retract
-const int PN_S4E_ID = 1; //Arm Extend
+const int PN_S3R_ID = 3; //Clips Retract
+const int PN_S3E_ID = 4; //Clips Extend
+const int PN_S4R_ID = 1; //Arm Retract
+const int PN_S4E_ID = 2; //Arm Extend
 
 // Camera Constants
 const int BORDER_SIZE = 3;
@@ -131,17 +142,29 @@ const double TOLERANCE = .2;
 const double LIFT_INCREMENT = 1.;
 const double LIFT_INCREMENT_RATCHET = LIFT_INCREMENT / 2;
 
-const int TIMEOUT2 = 15;
-const int TIMEOUT3 = 1;
-const int TIMEOUT4 = 3;
-const int TIMEOUT5 = 1;
-const int TIMEOUT6 = 10;
+//const int TIMEOUT2 = 15;
+//const int TIMEOUT3 = 1;
+//const int TIMEOUT4 = 3;
+//const int TIMEOUT5 = 1;
+//const int TIMEOUT6 = 10;
+//const int TIMEOUT7 = 1;
+//const int TIMEOUT8 = 5;
+//const double TIMEOUT8DELTA = .25;
+//const int TIMEOUT9 = 1;
+//const int TIMEOUT10 = 2;
+//const int DECIDE_TIMEOUT = 5;
+
+const int TIMEOUT2 = 9001;
+const int TIMEOUT3 = 9001;
+const int TIMEOUT4 = 9001;
+const int TIMEOUT5 = 9001;
+const int TIMEOUT6 = 9001;
 const int TIMEOUT7 = 1;
-const int TIMEOUT8 = 5;
-const double TIMEOUT8DELTA = .25;
-const int TIMEOUT9 = 1;
-const int TIMEOUT10 = 2;
-const int DECIDE_TIMEOUT = 5;
+const int TIMEOUT8 = 9001;
+const double TIMEOUT8DELTA = 9001.;
+const int TIMEOUT9 = 9001;
+const int TIMEOUT10 = 9001;
+const int DECIDE_TIMEOUT = 9001;
 
 //Autonomous Constants
 const float RAMP_RATE = 0.005;
