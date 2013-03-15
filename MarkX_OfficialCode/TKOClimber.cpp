@@ -12,10 +12,13 @@ TKOClimber::TKOClimber(int port1, int port2) :
 {
 	ds = DriverStation::GetInstance(); /// Pulls driver station information
 	state = INITIAL_STATE;
-	winch1.EnableControl();
+	winch1.EnableControl(SETPOINT_TOP);
 	winch1.SetPositionReference(JAG_POSREF);
 	winch1.ConfigEncoderCodesPerRev(ENCODER_REVS);
-	winch1.SetPID(DRIVE_kP, DRIVE_kI, DRIVE_kD);
+	winch1.SetPID(WINCH_kP, WINCH_kI, WINCH_kD);
+	clipBack()
+	armBack()
+	ratchetBack()
 	logger = loggerObj.GetInstance(logger);
 }
 
@@ -66,8 +69,18 @@ void TKOClimber::ClipForward()
 {
 	if (sClipsR.Get() and not sClipsE.Get())
 	{
-		clipForward();
+		clipForward()
 	}
+}
+
+void TKOClimber::RatchetBack()
+{
+	rsRatchet.SetOn(0);
+}
+
+void TKOClimber::RatchetForward()
+{
+	rsRatchet.SetOn(1);
 }
 
 void TKOClimber::Dump()
@@ -96,128 +109,117 @@ void TKOClimber::Test() //pneumatics test
 {
 	printf("Starting pneumatics test. \n");
 	print();
-
-	//	while (true)
-	//	{
-	//		printf("Setting ratchet to 1.\n");
-	//		rsRatchet.SetOn(1);
-	//		if (!ds->IsEnabled())
-	//			return;
-	//	}
 	//
-
-	while (ds->IsEnabled())
-	{
-		sClipsE.Set(false);
-		Wait(0.30);
-		sClipsR.Set(true);
-		Wait(0.30);
-		sClipsR.Set(false);
-		Wait(0.30);
-		sClipsR.Set(false);
-		Wait(0.30);
-		sClipsE.Set(true);
-		Wait(0.30);
-		sClipsE.Set(false);
-		Wait(0.30);
-	}
-	
-	if (!ds->IsEnabled())
-		return;
-	printf("Setting ratchet to 1.\n");
-	rsRatchet.SetOn(1);
-	Wait(1);
-	printf("Setting ratchet to 0.\n");
-	rsRatchet.SetOn(0);
-	Wait(3);
-	if (!ds->IsEnabled())
-		return;
-
-	printf("Setting ratchet to -1.\n");
-	rsRatchet.SetOn(-1);
-	Wait(1);
-	printf("Setting ratchet to 0.\n");
-	rsRatchet.SetOn(0);
-	Wait(3);
-	if (!ds->IsEnabled())
-		return;
-
-	printf("Triggering dumperR.\n");
-	sDumperR.Set(true);
-	Wait(1);
-	printf("Untriggering dumperR.\n");
-	sDumperR.Set(false);
-	Wait(3);
-	if (!ds->IsEnabled())
-		return;
-
-	printf("Triggering dumperE.\n");
-	sDumperE.Set(true);
-	Wait(1);
-	printf("Untriggering dumperE.\n");
-	sDumperE.Set(false);
-	Wait(3);
-	if (!ds->IsEnabled())
-		return;
-
-	printf("Triggering clipsR.\n");
-	sClipsR.Set(true);
-	Wait(1);
-	printf("Untriggering clipsR.\n");
-	sClipsR.Set(false);
-	Wait(3);
-	if (!ds->IsEnabled())
-		return;
-
-	printf("Triggering clipsE.\n");
-	sClipsE.Set(true);
-	Wait(1);
-	printf("Untriggering clipsE.\n");
-	sClipsE.Set(false);
-	Wait(3);
-	if (!ds->IsEnabled())
-		return;
-
-	printf("Triggering armR.\n");
-	sArmR.Set(true);
-	Wait(1);
-	printf("Untriggering armR.\n");
-	sArmR.Set(false);
-	Wait(3);
-	if (!ds->IsEnabled())
-		return;
-
-	printf("Triggering armE.\n");
-	sArmE.Set(true);
-	Wait(1);
-	printf("Untriggering armE.\n");
-	sArmE.Set(false);
-	Wait(3);
-	if (!ds->IsEnabled())
-		return;
-
-	rsRatchet.SetOn(0);
-	sDumperE.Set(false);
-	Wait(0.2);
-	sDumperR.Set(true);
-	Wait(0.2);
-	sDumperR.Set(false);
-	Wait(0.2);
-	sClipsE.Set(false);
-	Wait(0.2);
-	sClipsR.Set(true);
-	Wait(0.2);
-	sClipsR.Set(false);
-	Wait(0.2);
-	sArmE.Set(false);
-	Wait(0.2);
-	sArmR.Set(true);
-	Wait(0.2);
-	sArmR.Set(false);
-	Wait(0.2);
-
-	printf("Finished climber pneumatics test \n");
-	print();
+	//	//	while (true)
+	//	//	{
+	//	//		printf("Setting ratchet to 1.\n");
+	//	//		rsRatchet.SetOn(1);
+	//	//		if (!ds->IsEnabled())
+	//	//			return;
+	//	//	}
+	//	//
+	//
+	//	//	while (ds->IsEnabled())
+	//	//	{
+	//	sClipsE.Set(false);
+	//	Wait(0.30);
+	//	sClipsR.Set(true);
+	//	Wait(0.30);
+	//	//		sClipsR.Set(false);
+	//	//		Wait(0.30);
+	//	//		sClipsR.Set(false);
+	//	//		Wait(0.30);
+	//	//		sClipsE.Set(true);
+	//	//		Wait(0.30);
+	//	//		sClipsE.Set(false);
+	//	//		Wait(0.30);
+	//	//	}
+	//
+	//	if (!ds->IsEnabled())
+	//		return;
+	//	printf("Setting ratchet to 1.\n");
+	//	rsRatchet.SetOn(1);
+	//	Wait(1);
+	//	printf("Setting ratchet to 0.\n");
+	//	rsRatchet.SetOn(0);
+	//	Wait(3);
+	//	if (!ds->IsEnabled())
+	//		return;
+	//	//
+	//	//	printf("Triggering dumperR.\n");
+	//	//	sDumperR.Set(true);
+	//	//	Wait(1);
+	//	//	printf("Untriggering dumperR.\n");
+	//	//	sDumperR.Set(false);
+	//	//	Wait(3);
+	//	//	if (!ds->IsEnabled())
+	//	//		return;
+	//
+	//	printf("Triggering clipsR.\n");
+	//	sClipsR.Set(true);
+	//	Wait(1);
+	//	printf("Untriggering clipsR.\n");
+	//	sClipsR.Set(false);
+	//	Wait(3);
+	//	if (!ds->IsEnabled())
+	//		return;
+	//
+	//	printf("Triggering clipsE.\n");
+	//	sClipsE.Set(true);
+	//	Wait(1);
+	//	printf("Untriggering clipsE.\n");
+	//	sClipsE.Set(false);
+	//	Wait(3);
+	//	if (!ds->IsEnabled())
+	//		return;
+	//
+	//	printf("Triggering armR.\n");
+	//	sArmR.Set(true);
+	//	Wait(1);
+	//	printf("Untriggering armR.\n");
+	//	sArmR.Set(false);
+	//	Wait(3);
+	//	if (!ds->IsEnabled())
+	//		return;
+	//
+	//	printf("Triggering armE.\n");
+	//	sArmE.Set(true);
+	//	Wait(1);
+	//	printf("Untriggering armE.\n");
+	//	sArmE.Set(false);
+	//	Wait(3);
+	//	if (!ds->IsEnabled())
+	//		return;
+	//
+	//	printf("Running functions");
+	//	ArmBack();
+	//	ArmForward();
+	//	ClipBack();
+	//	ClipForward();
+	//	Dump();
+	//
+	//	rsRatchet.SetOn(0);
+	//	sDumperE.Set(false);
+	//	Wait(0.2);
+	//	sDumperR.Set(true);
+	//	Wait(0.2);
+	//	sDumperR.Set(false);
+	//	Wait(0.2);
+	//	sClipsE.Set(false);
+	//	Wait(0.2);
+	//	sClipsR.Set(true);
+	//	Wait(0.2);
+	//	sClipsR.Set(false);
+	//	Wait(0.2);
+	//	sArmE.Set(false);
+	//	Wait(0.2);
+	//	sArmR.Set(true);
+	//	Wait(0.2);
+	//	sArmR.Set(false);
+	//	Wait(0.2);
+	//
+	//	printf("Finished climber pneumatics test \n");
+	//	print();
 
 	Climb();
 }
@@ -227,16 +229,20 @@ void TKOClimber::Climb()
 	time.Start();
 	time2.Start(); ///THIS IS THE DECIDE TIMER
 	state = ROBOT_PULLED_UP;
+	winch1.EnableControl(SETPOINT_TOP);
 	int level = 0;
 	double baseTime = 0;
 	int counter = 0;
-	ratchetForward();
-	armBack();
+	ratchetForward()
+	armBack()
+	clipBack()
+	armBack()
 	while (level < PYRAMID_SIZE)
 	{
+		DSLog(1, "Winch1 pos: %f", winch1.GetPosition());
 		if (!ds->IsEnabled())
 			return;
-		Wait(1.); //FOR TESTING
+		Wait(.1); //FOR TESTING
 		winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
 		print();
 		counter++;
@@ -247,7 +253,10 @@ void TKOClimber::Climb()
 				///begin pulling up robot
 				if (winch1.GetPosition() > SETPOINT_RATCHET_RETRACT) ///MOVE MOTORS
 				{
-					winch1.Set(winch1.GetPosition() + LIFT_INCREMENT);
+					//					winch1.Set(winch1.GetPosition() - LIFT_INCREMENT);
+					//					if (winch1.GetPosition() < SETPOINT_BOTTOM)
+					//						winch1.Set(SETPOINT_BOTTOM);
+					winch1.Set(SETPOINT_BOTTOM);
 				}
 
 				///CONTINGENCIES
@@ -311,6 +320,8 @@ void TKOClimber::Climb()
 				{
 					ratchetBack();
 					winch1.Set(winch1.GetPosition() - LIFT_INCREMENT_RATCHET);
+					if (winch1.GetPosition() < SETPOINT_BOTTOM)
+						winch1.Set(SETPOINT_BOTTOM);
 				}
 
 				if (not ratchet.Get()) ///if ratchet retracts, move on
@@ -347,7 +358,7 @@ void TKOClimber::Climb()
 					continue;
 				}
 
-				if (winch1.GetPosition() < (SETPOINT_BOTTOM - TOLERANCE) and time.Get() > TIMEOUT3) ///if the ratchet does not go down in 1 second
+				if (winch1.GetPosition() < (SETPOINT_BOTTOM - TOLERANCE) or time.Get() > TIMEOUT3) ///if the ratchet does not go down in 1 second
 				{
 					printf("--------------You took too long. oh NO.-------------- \n");
 					state = OH_SHIT;
@@ -559,7 +570,7 @@ void TKOClimber::Climb()
 			case DEPLOYING_RATCHET: ///state 8
 				///push down ratchet
 				ratchetForward()
-				;
+
 				if (ratchet.Get())
 				{
 					time.Reset();
@@ -605,7 +616,7 @@ void TKOClimber::Climb()
 
 			case MOVE_HOOKS_DOWN: ///state 9
 				///move hooks down
-				winch1.Set(winch1.Get() - LIFT_INCREMENT);
+				winch1.Set(SETPOINT_BOTTOM);
 
 				if (hookLeft.Get() && hookRight.Get() && not ratchet.Get()) ///both hooks clip on
 				{
@@ -740,6 +751,10 @@ void TKOClimber::Climb()
 				;
 				clipForward()
 				;
+				winch1.DisableControl();
+				winch1.Disable();
+				winch2.DisableControl();
+				winch2.Disable();
 				printf("OH GOD THINGS WENT WRONG OH GOD OH GOD \n");
 		}
 	}

@@ -8,7 +8,7 @@
 
 /*---------------MarkX-Thing-to-Do(TODO)---------------------*
  * Keep working on adding multiple autonomous setups for different positions on the field.
- * Test pneumatics/autonomous
+ * CRITICAL!!!!!! ADD FRONT DUMPER TO AUTONOMOUS!!! Probably move the dumper to autonomous because it has to be acessed from auton and markX
  * Implement logger!!!
  * Test implementing a global timer/using system time to timestamp logger messages
  */
@@ -59,7 +59,11 @@ class MarkX: public SimpleRobot
 		{
 			ds = DriverStation::GetInstance(); // Pulls driver station information
 			drive1.EnableControl(); //critical for these jags because they are in speed mode
+			drive1.SetSafetyEnabled(false);
+			drive2.SetSafetyEnabled(false);
 			drive3.EnableControl(); //critical for these jags because they are in speed mode
+			drive3.SetSafetyEnabled(false);
+			drive4.SetSafetyEnabled(false);
 			drive1.SetSpeedReference(JAG_SPEEDREF);
 			drive1.ConfigEncoderCodesPerRev(ENCODER_REVS);
 			drive1.SetPID(DRIVE_kP, DRIVE_kI, DRIVE_kD);
@@ -165,6 +169,23 @@ void MarkX::OperatorControl()
  */
 void MarkX::Operator()
 {
+	//TEST
+	if (stick1.GetTrigger())
+		return;
+	if (stick1.GetRawButton(4))
+		climber.ClipBack();
+	if (stick1.GetRawButton(5))
+		climber.ClipForward();
+	if (stick1.GetRawButton(2))
+		climber.ArmBack();
+	if (stick1.GetRawButton(3))
+		climber.ArmForward();
+	if (stick1.GetRawButton(8))
+		climber.RatchetBack();
+	if (stick1.GetRawButton(9))
+		climber.RatchetForward();
+	//END OF TEST STATEMENT
+
 	if (stick2.GetRawButton(6))
 		controllerDrive = not controllerDrive;
 	if (stick3.GetRawButton(3))
@@ -240,7 +261,7 @@ void MarkX::Operator()
 	}
 	if (stick3.GetRawButton(9) and stick4.GetRawButton(9))
 	{
-		//TKOClimber.autoClimb();
+		climber.Climb();
 		DSLog(6, "Autoclimbing");
 	}
 }

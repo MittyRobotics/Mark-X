@@ -114,6 +114,7 @@ void TKOAutonomous::autonSetup1() //left corner
 		return;
 	else
 		autonOption[2] = true;
+	
 
 	//Stringing them in a row like so
 }
@@ -221,8 +222,8 @@ bool TKOAutonomous::turn(double target)//takes negative values
 
 void TKOAutonomous::resetEncoders()
 {
-	drive1.EnableControl(drive1.GetPosition());
-	drive3.EnableControl(drive3.GetPosition());
+	drive1.EnableControl(0);
+	drive3.EnableControl(0);
 }
 
 void TKOAutonomous::printMessages()

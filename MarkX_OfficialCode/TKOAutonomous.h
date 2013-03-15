@@ -5,6 +5,7 @@
 
 #include "Definitions.h"
 #include "TKOGyro.h"
+#include "TKOClimber.h"
 #include <iostream>
 #include <fstream>
 
