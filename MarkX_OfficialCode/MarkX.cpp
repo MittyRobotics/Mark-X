@@ -76,9 +76,6 @@ class MarkX: public SimpleRobot
 
 };
 
-//! Notifies driver if robot is disabled. Prints "Robot Died!" to console if it is disabled
-/*!
- */
 void MarkX::Test()
 {
 	printf("Calling test function \n");
@@ -106,6 +103,9 @@ void MarkX::Test()
 
 	}
 }
+//! Notifies driver if robot is disabled. Prints "Robot Died!" to console if it is disabled
+/*!
+ */
 void MarkX::Disabled()
 {
 	//this part in robot disabled
