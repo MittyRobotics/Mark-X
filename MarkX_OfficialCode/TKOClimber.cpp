@@ -135,25 +135,25 @@ void TKOClimber::Test() //pneumatics test
 		if (!ds->IsEnabled())
 			return;
 
-		//		if (armTop.Get())
-		//		{
-		//			winch1.Set(winch1.GetPosition());
-		//			if (_stick1.GetY() < 0)
-		//			{
-		//				setpointtest = setpointtest + _stick1.GetY();
-		//				winch1.Set(setpointtest);
-		//			}
-		//		}
-		//		else if (armBottom.Get())
-		//		{
-		//			winch1.Set(winch1.GetPosition());
-		//			if (_stick1.GetY() > 0)
-		//			{
-		//				setpointtest = setpointtest + _stick1.GetY();
-		//				winch1.Set(setpointtest);
-		//			}
-		//		}
-		//		else
+        if (armTop.Get() && _stick1.GetY() >= 0)
+        {
+                winch1.Set(winch1.GetPosition());
+        }
+        else if (armTop.Get() && _stick1.GetY() < 0)
+        {
+            setpointtest = setpointtest + _stick1.GetY();
+            winch1.Set(setpointtest);
+        }
+        else if (armBottom.Get() && _stick1.GetY() <= 0)
+        {
+            winch1.Set(winch1.GetPosition());
+        }
+        else if (armBottom.Get() && _stick1.GetY() > 0)
+        {
+            setpointtest = setpointtest + _stick1.GetY();
+            winch1.Set(setpointtest);
+        }
+        else
 		{
 			//			setpointtest = setpointtest + (_stick1.GetY() / 10);
 			if (_stick1.GetY() < 0.5)
