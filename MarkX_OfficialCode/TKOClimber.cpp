@@ -110,6 +110,8 @@ void TKOClimber::Test() //pneumatics test
 	print();
     while(true)
     {
+    	if (!ds->IsEnabled())
+			return;
         setpointtest = setpointtest + _stick1.GetY();
         winch1.Set(setpointtest);
         DSLog(1, "Encoder Value = %f", winch1.GetPosition());
