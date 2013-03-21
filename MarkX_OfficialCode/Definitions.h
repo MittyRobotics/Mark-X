@@ -27,8 +27,8 @@
 #define space printf("\n");
 #define GO_AWAY NULL;
 
-#define setMessage(c) message[logger->i++]=c
-#define setMessageData(c, v) message[logger->i]=c; logger->data[logger->i++]=v;
+//#define setMessage(c) message[logger->i++]=c
+//#define setMessageData(c, v) message[logger->i]=c; logger->data[logger->i++]=v;
 
 /*! \mainpage Welcome to TKO 1351's MarkIX's Code Documentation!
  *

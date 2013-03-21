@@ -25,7 +25,6 @@ class MarkX: public SimpleRobot
 		Joystick stick1, stick2, stick3, stick4; // define joysticks
 		DriverStation *ds; // define driver station object
 		AnalogChannel sonar1, sonar2;
-		TKOLogger logger;
 		TKOAutonomous auton;
 		TKOClimber climber;
 		PWM cameraServo;
@@ -51,7 +50,7 @@ class MarkX: public SimpleRobot
 			        stick3(STICK_3_PORT), // initialize joystick 3 < first EVOM joystick
 			        stick4(STICK_4_PORT), // initialize joystick 4 < first EVOM joystick-m,
 
-			        sonar1(3), sonar2(4), logger(), auton(DRIVE_L1_ID, DRIVE_L2_ID, DRIVE_R1_ID, DRIVE_R2_ID),
+			        sonar1(3), sonar2(4), auton(DRIVE_L1_ID, DRIVE_L2_ID, DRIVE_R1_ID, DRIVE_R2_ID),
 
 			        climber(WINCH_1_PORT, WINCH_2_PORT), cameraServo(CAMERA_SERVO_PORT), comp(PRESSURE_SWITCH_PORT, COMPRESSOR_ID)
 		{

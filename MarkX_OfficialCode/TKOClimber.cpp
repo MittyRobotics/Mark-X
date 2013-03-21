@@ -19,7 +19,6 @@ TKOClimber::TKOClimber(int port1, int port2) :
 	clipBack()
 	armBack()
 	ratchetBack()
-	logger = loggerObj.GetInstance(logger);
 }
 
 int TKOClimber::Decide(int s)
