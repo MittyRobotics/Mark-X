@@ -16,7 +16,7 @@ TKOClimber::TKOClimber(int port1, int port2) :
 	winch1.SetPositionReference(JAG_POSREF);
 	winch1.ConfigEncoderCodesPerRev(ENCODER_REVS);
 	winch1.SetPID(WINCH_kP, WINCH_kI, WINCH_kD);
-    winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage())
+    winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage()); 
 	clipBack()
 	armBack()
 	ratchetBack()
@@ -237,8 +237,8 @@ void TKOClimber::Climb()
 	double baseTime = 0;
 	int counter = 0;
 	ratchetForward()
-	ArmForward()
-	clipBack()
+	ArmForward();
+	ClipBack();
 	time.Start();
 	time2.Start(); //THIS IS THE DECIDE TIMER
 	while(not clipLeft.Get() or not clipRight.Get())
@@ -254,7 +254,7 @@ void TKOClimber::Climb()
 	    {
 	        break;
 	    }
-	    if((clipLeft.Get() and not clipRight.Get()) or (not clipLeft.Get() and clipRight.Get()) //If only one clip is on,
+	    if((clipLeft.Get() and not clipRight.Get()) or (not clipLeft.Get() and clipRight.Get())) //If only one clip is on,
         {
             time2.Reset();
             if(time2.Get() > .1)
