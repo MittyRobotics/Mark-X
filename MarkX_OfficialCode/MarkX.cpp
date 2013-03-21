@@ -108,6 +108,9 @@ void MarkX::Test()
  */
 void MarkX::Disabled()
 {
+	ofstream logFile;
+	logFile.open("log.txt");
+
 	//this part in robot disabled
 	int i = 0;
 	for (; i <= indx; i++)
@@ -115,7 +118,10 @@ void MarkX::Disabled()
 		switch (message[i])
 		{
 			case 1:
-				//print 1st message here
+				if (logFile.is_open())
+				{
+					logFile << "Log message 1";
+				}
 				break;
 
 			default:
@@ -123,6 +129,7 @@ void MarkX::Disabled()
 				break;
 		}
 	}
+	logFile.close();
 	printf("Robot Died!");
 }
 
