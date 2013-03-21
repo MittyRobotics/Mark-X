@@ -33,9 +33,47 @@ class TKOClimber
 		float topOfBar;
 		float bottomOfBar;
 	public:
+	///Constructor for the TKOClimber class
+	/*!
+
+    *    - Does the following:
+    *        -# Initializes Winch Jaguars
+    *        -# Initializes Switches
+    *        -# Initializes Pneumatics
+    *        -# Initializes DriverStation
+    *        -# Sets initial state for State Machine
+    *        -# Position mode for winch1
+    *        -# Slave mode for winch2
+    *        -# Moves back Clips
+    *        -# Moves back Arm
+    *        -# Moves back Ratchet
+
+        \param int port1 - ID for winch1
+        \param int port2 - ID for winch2
+	*/
 		TKOClimber(int port1, int port2);
+    ///Destructor for the TKOClimber class
+    /*!
+    */
 		~TKOClimber();
+    ///Decide method for TKOCLimber class
+    /*!
+        Lets the driver decide whether they are going to continue climbing or not
+        There is a certain amount of time they have to decide in, otherwise it
+        errors out.
+
+        This will return the original argument if button 4 is pressed
+        This will return the original argument plus one if button 6 is pressed
+
+        \param int state - The state you call it from
+        \return The state it goes to after this method. Defaults to 13 in 5 seconds
+
+    */
 		int Decide(int s);
+    ///The print method for TKOClimber class
+    /*!
+
+    */
 		void print();
 		void Climb();
 		void Test();
