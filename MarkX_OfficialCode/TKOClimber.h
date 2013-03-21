@@ -32,6 +32,7 @@ class TKOClimber
 		int state;
 		float topOfBar;
 		float bottomOfBar;
+		float setpointtest;
 	public:
 	///Constructor for the TKOClimber class
 	/*!

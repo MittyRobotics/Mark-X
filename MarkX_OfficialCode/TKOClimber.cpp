@@ -19,6 +19,7 @@ TKOClimber::TKOClimber(int port1, int port2) :
 	clipBack()
 	armBack()
 	ratchetBack()
+	setpointtest = 0;
 }
 
 int TKOClimber::Decide(int s)
@@ -106,6 +107,13 @@ void TKOClimber::Test() //pneumatics test
 {
 	printf("Starting pneumatics test. \n");
 	print();
+    while(true)
+    {
+        setpointtest = setpointtest + _stick1.GetY();
+        winch1.Set(setpointtest);
+        DSLog(1, "Encoder Value = %f", winch1.GetPosition());
+    }
+
 	//
 	//	//	while (true)
 	//	//	{
