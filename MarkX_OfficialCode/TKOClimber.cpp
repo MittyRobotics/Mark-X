@@ -243,6 +243,10 @@ void TKOClimber::Climb()
 		winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
 		print();
 		counter++;
+		if(_stick1.GetRawButton(1))
+		{
+		    state = OH_SHIT;
+		}
 		switch (state)
 		{
 			case ROBOT_PULLED_UP: ///state 2
