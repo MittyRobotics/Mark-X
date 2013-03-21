@@ -214,20 +214,20 @@ void MarkX::OperatorControl()
 void MarkX::Operator()
 {
 	//TEST
-	if (stick1.GetTrigger())
-		return;
-	if (stick1.GetRawButton(4))
-		climber.ClipBack();
-	if (stick1.GetRawButton(5))
-		climber.ClipForward();
-	if (stick1.GetRawButton(2))
-		climber.ArmBack();
-	if (stick1.GetRawButton(3))
-		climber.ArmForward();
-	if (stick1.GetRawButton(8))
-		climber.RatchetBack();
-	if (stick1.GetRawButton(9))
-		climber.RatchetForward();
+	//	if (stick1.GetTrigger())
+	//		return;
+	//	if (stick1.GetRawButton(4))
+	//		climber.ClipBack();
+	//	if (stick1.GetRawButton(5))
+	//		climber.ClipForward();
+	//	if (stick1.GetRawButton(2))
+	//		climber.ArmBack();
+	//	if (stick1.GetRawButton(3))
+	//		climber.ArmForward();
+	//	if (stick1.GetRawButton(8))
+	//		climber.RatchetBack();
+	//	if (stick1.GetRawButton(9))
+	//		climber.RatchetForward();
 	//END OF TEST STATEMENT
 
 	if (stick2.GetRawButton(6))
@@ -301,6 +301,7 @@ void MarkX::Operator()
 	}
 	if (stick3.GetRawButton(9) and stick4.GetRawButton(9))
 	{
+		
 		climber.Climb();
 		DSLog(6, "Autoclimbing");
 	}
