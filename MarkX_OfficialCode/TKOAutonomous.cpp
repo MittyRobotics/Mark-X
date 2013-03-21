@@ -300,8 +300,12 @@ bool TKOAutonomous::PIDDriveStraight()
 	printf("Driving straight!\n");
 	driveLeft();
 	driveRight();
-//	if (drive1.GetOutputCurrent() > )
-	
+	if (drive1.GetOutputCurrent() > DRIVE_CURRENT_CUTOFF or drive3.GetOutputCurrent() > DRIVE_CURRENT_CUTOFF)
+	{
+		printf("Crashed into wall...");
+		return true;
+	}
+
 	if (driveLeft() and driveRight())
 	{
 		resetEncoders();
@@ -312,6 +316,13 @@ bool TKOAutonomous::PIDDriveStraight()
 bool TKOAutonomous::turn(double target)//takes negative values
 {
 	double currAngle = _gyro->GetAngle();
+
+	if (drive1.GetOutputCurrent() > DRIVE_CURRENT_CUTOFF or drive3.GetOutputCurrent() > DRIVE_CURRENT_CUTOFF)
+	{
+		printf("Crashed into wall...");
+		return true;
+	}
+
 	if (currAngle < target - 1 && !(target < currAngle))
 	{
 		printf("Turning right \n");

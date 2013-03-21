@@ -8,7 +8,7 @@ TKOClimber::TKOClimber(int port1, int port2) :
 	        winch1(port1, CANJaguar::kPosition), winch2(port2, CANJaguar::kPercentVbus), hookLeft(1), hookRight(2), clipLeft(3), clipRight(4), armTop(5), armBottom(6), ratchet(7),
 
 	        ///begin pneumatics crap
-	        rsRatchet(PN_R3_ID), sDumperR(PN_S1R_ID), sDumperE(PN_S1E_ID), sClipsR(PN_S3R_ID), sClipsE(PN_S3E_ID), sArmR(PN_S4R_ID), sArmE(PN_S4E_ID), loggerObj(), _stick4(4)
+	        rsRatchet(PN_R3_ID), sDumperR(PN_S1R_ID), sDumperE(PN_S1E_ID), sClipsR(PN_S3R_ID), sClipsE(PN_S3E_ID), sArmR(PN_S4R_ID), sArmE(PN_S4E_ID), loggerObj(), _stick1(1)
 {
 	ds = DriverStation::GetInstance(); /// Pulls driver station information
 	state = INITIAL_STATE;
@@ -30,7 +30,7 @@ int TKOClimber::Decide(int s)
 		{ ///if you press a button to continue climbing
 			return s;
 		}
-		if (_stick4.GetRawButton(6))
+		if (_stick1.GetRawButton(6))
 		{
 			printf("OPERATOR WENT TO NEXT STATE");
 			return s + 1;

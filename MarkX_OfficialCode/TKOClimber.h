@@ -27,7 +27,7 @@ class TKOClimber
 		TKORelay rsRatchet;
 		Solenoid sDumperR, sDumperE, sClipsR, sClipsE, sArmR, sArmE;
 		TKOLogger loggerObj;
-		Joystick _stick4;
+		Joystick _stick1;
 
 		int state;
 		float topOfBar;

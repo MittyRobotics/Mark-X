@@ -158,6 +158,7 @@ const int TIMEOUT10 = 2;
 const int DECIDE_TIMEOUT = 5;
 
 //Autonomous Constants
+const float DRIVE_CURRENT_CUTOFF = 7.0;
 const float RAMP_RATE = 0.005;
 const float RAMP_RATE_2 = 0.0005;
 
