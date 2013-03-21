@@ -145,29 +145,17 @@ const double TOLERANCE = .2;
 const double LIFT_INCREMENT = .75;
 const double LIFT_INCREMENT_RATCHET = LIFT_INCREMENT / 20;
 
-//const int TIMEOUT2 = 15;
-//const int TIMEOUT3 = 1;
-//const int TIMEOUT4 = 3;
-//const int TIMEOUT5 = 1;
-//const int TIMEOUT6 = 10;
-//const int TIMEOUT7 = 1;
-//const int TIMEOUT8 = 5;
-//const double TIMEOUT8DELTA = .25;
-//const int TIMEOUT9 = 1;
-//const int TIMEOUT10 = 2;
-//const int DECIDE_TIMEOUT = 5;
-
-const int TIMEOUT2 = 9001;
-const int TIMEOUT3 = 9001;
-const int TIMEOUT4 = 9001;
-const int TIMEOUT5 = 9001;
-const int TIMEOUT6 = 9001;
+const int TIMEOUT2 = 15;
+const int TIMEOUT3 = 1;
+const int TIMEOUT4 = 3;
+const int TIMEOUT5 = 1;
+const int TIMEOUT6 = 10;
 const int TIMEOUT7 = 1;
-const int TIMEOUT8 = 9001;
-const double TIMEOUT8DELTA = 9001.;
-const int TIMEOUT9 = 9001;
-const int TIMEOUT10 = 9001;
-const int DECIDE_TIMEOUT = 9001;
+const int TIMEOUT8 = 5;
+const double TIMEOUT8DELTA = .25;
+const int TIMEOUT9 = 1;
+const int TIMEOUT10 = 2;
+const int DECIDE_TIMEOUT = 5;
 
 //Autonomous Constants
 const float RAMP_RATE = 0.005;
