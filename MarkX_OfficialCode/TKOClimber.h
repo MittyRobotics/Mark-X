@@ -29,9 +29,7 @@ class TKOClimber
 		Solenoid sDumperR, sDumperE, sClipsR, sClipsE, sArmR, sArmE;
 		Joystick _stick1;
 
-		int state;
-		float topOfBar;
-		float bottomOfBar;
+		int state; /*!< The state variable for the state machine. 1 is Operator control, 13 is Emergency State */
 		float setpointtest;
 	public:
 	///Constructor for the TKOClimber class
@@ -73,17 +71,61 @@ class TKOClimber
 		int Decide(int s);
     ///The print method for TKOClimber class
     /*!
-
+        Prints out all information to netlogger
     */
 		void print();
+    ///The climbing method for TKOCLimber class
+    /*!
+        Makes the robot climb up the pyramid via state machine
+    */
 		void Climb();
+
+    ///The test method for TKOClimber class
+    /*!
+        Tests pneumatics and winch positions.
+    */
 		void Test();
+
+    ///The dumper pneumatic extend method for TKOClimber class
+    /*!
+        Extends the top dumper pneumatic, dumping the frisbees into the top goal
+    */
 		void Dump();
+
+    ///The arm pneumatic retract method for TKOClimber class
+    /*!
+        Retracts the arm pneumatic, moving the lift arm back
+    */
 		void ArmBack();
+
+    ///The arm pneumatic extend method for TKOClimber class
+    /*!
+        Extends the arm pneumatic, moving the lift arm forward
+    */
 		void ArmForward();
+
+    ///The clip pneumatic retract method for TKOClimber class
+    /*!
+        Retracts the clip pneumatic, moving the clips up
+    */
 		void ClipBack();
+
+    ///The clip pneumatic extend method for TKOClimber class
+    /*!
+        Extends the clip pneumatic, moving the clips down
+    */
 		void ClipForward();
+
+    ///The ratchet pneumatic retract method for TKOClimber class
+    /*!
+        Retracts the ratchet pneumatic, disengaging the safety
+    */
 		void RatchetBack();
+
+    ///The ratchet pneumatic extend method for TKOClimber class
+    /*!
+        Extends the ratchet pneumatic, engaging the safety
+    */
 		void RatchetForward();
 };
 
