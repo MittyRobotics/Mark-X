@@ -4,7 +4,6 @@
 #include "TKOAutonomous.h"
 #include "TKOClimber.h"
 #include "TKORelay.h"
-#include "Logger.h"
 
 /*---------------MarkX-Thing-to-Do(TODO)---------------------*
  * Implement logger!!!
@@ -108,8 +107,8 @@ void MarkX::Test()
  */
 void MarkX::Disabled()
 {
-	ofstream logFile;
-	logFile.open("log.txt", ofstream::trunc);
+	std::ofstream logFile;
+	logFile.open("log.txt", std::ofstream::trunc);
 
 	//this part in robot disabled
 	int i = 0;

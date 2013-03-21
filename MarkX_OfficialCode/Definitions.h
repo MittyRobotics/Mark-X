@@ -9,7 +9,6 @@
 #include "Vision/RGBImage.h"
 #include "Math.h"
 #include "stdlib.h"
-#include "Logger.h"
 
 /*!
  \def DSClear()
