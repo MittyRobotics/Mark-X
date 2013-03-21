@@ -89,12 +89,20 @@ void TKOAutonomous::stopAutonomous()
 }
 void TKOAutonomous::autonSetup1() //right corner
 {
+	/*
+	 * 21, autonSetup atom 1, turn to data
+	 * 22, autonSetup atom 2, drive to data
+	 * 23, autonSetup atom 1, turn to data
+	 * 24, dump front loader
+	 * 25, crashed into wall, data = 1 means while driving, data = 2 means while turning
+	 */
 	if (ds->IsDisabled())
 		stopAutonomous();
 	if (!ds->IsAutonomous())
 		stopAutonomous();
 
 	{ //this is one "Atom" that performs one task, in this case turns 90 degrees
+		writeMD(21, 30.);
 		setTargetAngle(30);
 		if (not turn(targetAngle) and not autonOption[0])
 			return;
@@ -102,6 +110,7 @@ void TKOAutonomous::autonSetup1() //right corner
 			autonOption[0] = true;
 	}
 	//second "Atom"
+	writeMD(22, 3 * REVS_PER_METER);
 	setDriveTargetStraight(3 * REVS_PER_METER);
 	if (not PIDDriveStraight() and not autonOption[1])
 		return;
@@ -110,6 +119,7 @@ void TKOAutonomous::autonSetup1() //right corner
 
 	//third "Atom"
 	setTargetAngle(30);
+	writeMD(23, 30.);
 	if (not turn(targetAngle) and not autonOption[2])
 		return;
 	else
@@ -117,6 +127,7 @@ void TKOAutonomous::autonSetup1() //right corner
 
 	if (not autonOption[3])
 	{
+		writeM(24);
 		rsFrontLoaderWrist.SetOn(1);
 		rsFrontLoaderLift.SetOn(1);
 		Wait(1);
@@ -303,6 +314,7 @@ bool TKOAutonomous::PIDDriveStraight()
 	if (drive1.GetOutputCurrent() > DRIVE_CURRENT_CUTOFF or drive3.GetOutputCurrent() > DRIVE_CURRENT_CUTOFF)
 	{
 		printf("Crashed into wall...");
+		writeMD(25, 1);
 		return true;
 	}
 
@@ -320,6 +332,7 @@ bool TKOAutonomous::turn(double target)//takes negative values
 	if (drive1.GetOutputCurrent() > DRIVE_CURRENT_CUTOFF or drive3.GetOutputCurrent() > DRIVE_CURRENT_CUTOFF)
 	{
 		printf("Crashed into wall...");
+		writeMD(25, 2);
 		return true;
 	}
 
