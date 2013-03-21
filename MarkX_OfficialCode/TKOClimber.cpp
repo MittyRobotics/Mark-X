@@ -758,8 +758,7 @@ void TKOClimber::Climb()
 				}
 
 			case OH_SHIT:
-				writeM(1)
-				writeMD(2, 13.51) //instead of 13.51 add reason for OH_SHIT state
+				//add log write with case as number in data	
 				ratchetForward()
 				clipForward()
 				winch1.DisableControl();

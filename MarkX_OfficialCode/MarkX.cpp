@@ -120,14 +120,17 @@ void MarkX::Disabled()
 			case 1:
 				if (logFile.is_open())
 				{
+					if (ds->IsOperatorControl())
+						logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
 					logFile << "Log message 1" << endl;
 					logFile << "Data: " << data[i] << endl;
 				}
 				break;
-			case 15:
+			case 2:
 				if (logFile.is_open())
 				{
-					logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
+					if (ds->IsOperatorControl())
+						logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
 					logFile << "Average Drive Current" << endl;
 					logFile << "Data: " << data[i] << endl;
 				}
@@ -194,7 +197,7 @@ void MarkX::OperatorControl()
 		MarkX::Operator();
 		MarkX::TKODrive();
 		DSLog(4, "Avr d1,3 cur: %f", ((drive1.GetOutputCurrent() + drive3.GetOutputCurrent()) / 2));
-		writeMD(15, (drive1.GetOutputCurrent() + drive3.GetOutputCurrent()) / 2)
+		writeMD(2, (drive1.GetOutputCurrent() + drive3.GetOutputCurrent()) / 2)
 
 		endLoopT = loopTimer.Get();
 		loopTime = endLoopT - startLoopT;
