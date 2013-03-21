@@ -70,9 +70,9 @@ const float SPINNER_kP = 0.2; //working P: 0.20, working I: .0034
 const float SPINNER_kI = 0.004;
 const float SPINNER_kD = 0.0;
 const float DRIVE_kP = 0.2; //working P: 0.20, working I: .0034
-const float DRIVE_kI = 0.0015;
+const float DRIVE_kI = 0.004;
 const float DRIVE_kD = 0.0;
-const float WINCH_kP = -30;
+const float WINCH_kP = 30;
 const float WINCH_kI = 0.001;
 const float WINCH_kD = 0.0;
 const float REVS_PER_METER = 2.51;
@@ -93,7 +93,7 @@ const int GYRO_PORT = 1;
 // Pneumatics constants
 //PN stands for pneumatics, R stands for relay, S stands for solenoid
 const int COMPRESSOR_ID = 1; //Compressor ID
-const int PRESSURE_SWITCH_PORT = 1;
+const int PRESSURE_SWITCH_PORT = 14;
 
 //const int PN_R1_ID = 4; //Loader Wrist
 //const int PN_R2_ID = 3; //Loader Lift
@@ -163,7 +163,7 @@ const int TIMEOUT10 = 2;
 const int DECIDE_TIMEOUT = 5;
 
 //Autonomous Constants
-const float DRIVE_CURRENT_CUTOFF = 20.0;
+const float DRIVE_CURRENT_CUTOFF = 7.0;
 const float RAMP_RATE = 0.005;
 const float RAMP_RATE_2 = 0.0005;
 

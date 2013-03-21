@@ -38,7 +38,6 @@ class MarkX: public SimpleRobot
 		void JukeL();
 		void JukeR();
 		void Test();
-		void writeLog();
 		MarkX() :
 			drive1(DRIVE_L1_ID, CANJaguar::kSpeed), // initialize motor 1 < first left drive motor
 			        drive2(DRIVE_L2_ID, CANJaguar::kPercentVbus), // initialize motor 2 < second left drive motor
@@ -81,212 +80,35 @@ void MarkX::Test()
 	printf("Calling test function \n");
 	climber.Test();
 
-//	while (IsEnabled())
-//	{
-//		if (!ds->IsEnabled())
-//			return;
-//		/*DSLog(2, "LStick %f", stick1.GetY());
-//		 DSLog(3, "RStick %f", stick2.GetY());
-//		 DSLog(4, "LPos %f", drive1.GetPosition());
-//		 DSLog(5, "RPos %f", drive3.GetPosition());
-//		 drive1.Set(kMAX_DRIVE_RPM);
-//		 drive3.Set(kMAX_DRIVE_RPM);*/
-//
-//		if (stick3.GetRawButton(3))
-//			auton.rsFrontLoaderLift.SetOn(1);
-//		else if (stick3.GetRawButton(2))
-//			auton.rsFrontLoaderLift.SetOn(0);
-//
-//		if (stick3.GetRawButton(5))
-//			auton.rsFrontLoaderWrist.SetOn(1);
-//		else if (stick3.GetRawButton(4))
-//			auton.rsFrontLoaderWrist.SetOn(0);
-//
-//	}
+	return;
+	while (IsEnabled())
+	{
+		/*DSLog(2, "LStick %f", stick1.GetY());
+		 DSLog(3, "RStick %f", stick2.GetY());
+		 DSLog(4, "LPos %f", drive1.GetPosition());
+		 DSLog(5, "RPos %f", drive3.GetPosition());
+		 drive1.Set(kMAX_DRIVE_RPM);
+		 drive3.Set(kMAX_DRIVE_RPM);*/
+
+		if (stick3.GetRawButton(3))
+			auton.rsFrontLoaderLift.SetOn(1);
+		else if (stick3.GetRawButton(2))
+			auton.rsFrontLoaderLift.SetOn(0);
+
+		if (stick3.GetRawButton(5))
+			auton.rsFrontLoaderWrist.SetOn(1);
+		else if (stick3.GetRawButton(4))
+			auton.rsFrontLoaderWrist.SetOn(0);
+
+	}
 }
 //! Notifies driver if robot is disabled. Prints "Robot Died!" to console if it is disabled
 /*!
  */
 void MarkX::Disabled()
 {
-	writeLog();
-	printf("Robot Died!");
-}
-
-//! Autonomous code
-/*!
- */
-void MarkX::Autonomous(void) //Choose autonomous mode between 4 options though DS
-{
-	printf("Starting Autonomous \n");
-	auton.initAutonomous();
-	auton.setDrivePID(DRIVE_kP, DRIVE_kP, DRIVE_kI);
-	//	auton.setDriveTargetStraight(ds->GetAnalogIn(1) * 10 * REVS_PER_METER);
-	auton.startAutonomous();
-
-	while (auton.autonTimer.Get() < 15 && auton.runningAuton)
-	{
-		if (!ds->IsAutonomous())
-			auton.stopAutonomous();
-
-		//auton.autonomousCode();
-//		if (ds->GetDigitalIn(1))
-//			auton.autonSetup1();
-//		else if (ds->GetDigitalIn(2))
-//			auton.autonSetup2();
-//		else if (ds->GetDigitalIn(3))
-//			auton.autonSetup3();
-//		else
-//		{
-//			printf("Error, no starting setup selected");
-//			DSLog(1, "Error, no starting setup selected");
-//		}
-	}
-	auton.stopAutonomous();
-	printf("Ending Autonomous \n");
-}
-//! Operator Control Initialize and runs the Operator Control loop
-/*!
- Initializes drive motors, Prints number and location of balls and shooter's speed to DSLog
- */
-
-void MarkX::OperatorControl()
-{
-	printf("Starting OperatorControl \n");
-	Timer loopTimer;
-	float startLoopT, endLoopT, loopTime;
-	loopTimer.Start();
-	globalOCTimer.Start();
-	climber.RetractDump();
-	climber.ClipBack();
-	climber.ArmBack();
-	climber.RatchetBack();
-	while (IsOperatorControl() && ds->IsEnabled())
-	{
-		startLoopT = loopTimer.Get();
-		DSClear();
-
-		MarkX::Operator();
-		MarkX::TKODrive();
-		DSLog(4, "Avr d1,3 cur: %f", ((drive1.GetOutputCurrent() + drive3.GetOutputCurrent()) / 2));
-		writeMD(2, (drive2.GetOutputCurrent() + drive4.GetOutputCurrent()) / 2)
-
-		endLoopT = loopTimer.Get();
-		loopTime = endLoopT - startLoopT;
-		printf("Operator Loop Time, excluding Wait: %f", endLoopT);
-		space
-		loopTimer.Reset();
-	}
-	globalOCTimer.Stop();
-	printf("Ending OperatorControl \n");
-}
-//! Driving and EVOM code
-/*!
- */
-void MarkX::Operator()
-{
-	//TEST
-//	if (stick1.GetTrigger())
-//		return;
-//	if (stick1.GetRawButton(4))
-//		climber.ClipBack();
-//	if (stick1.GetRawButton(5))
-//		climber.ClipForward();
-//	if (stick1.GetRawButton(2))
-//		climber.ArmBack();
-//	if (stick1.GetRawButton(3))
-//		climber.ArmForward();
-//	if (stick1.GetRawButton(8))
-//		climber.RatchetBack();
-//	if (stick1.GetRawButton(9))
-//		climber.RatchetForward();
-	if (stick1.GetRawButton(6))
-		climber.Dump();
-	if (stick1.GetRawButton(11))
-		climber.RetractDump();
-	//END OF TEST STATEMENT
-
-	if (stick2.GetRawButton(6))
-		controllerDrive = not controllerDrive;
-	if (stick3.GetRawButton(3))
-		auton.rsFrontLoaderLift.SetOn(1);
-	else if (stick3.GetRawButton(2))
-		auton.rsFrontLoaderLift.SetOn(0);
-
-	if (stick3.GetRawButton(5))
-		auton.rsFrontLoaderWrist.SetOn(1);
-	else if (stick3.GetRawButton(4))
-		auton.rsFrontLoaderWrist.SetOn(0);
-
-	if (stick3.GetRawButton(10) and stick3.GetX() > 0)
-		cameraServo.SetRaw(cameraServo.GetRaw() + CAMERA_PWM_INCREMENT);
-
-	if (stick3.GetRawButton(10) and stick3.GetX() < 0)
-		cameraServo.SetRaw(cameraServo.GetRaw() - CAMERA_PWM_INCREMENT);
-
-	if (stick1.GetRawButton(10))
-		JukeR();
-	if (stick1.GetRawButton(7))
-		JukeL();
-
-	if (stick1.GetTrigger())
-	{
-		kDRIVE_STRAIGHT = 0.4;
-		kDRIVE_ROTATION = 0.2;
-	}
-	else if (stick1.GetRawButton(2))
-	{
-		kDRIVE_STRAIGHT = 0.2;
-	}
-	else
-	{
-		kDRIVE_STRAIGHT = 1.2;
-		kDRIVE_ROTATION = 0.7;
-	}
-
-	if (stick2.GetTrigger())
-	{
-		kDRIVE_STRAIGHT = -kDRIVE_STRAIGHT;
-		kDRIVE_ROTATION = -kDRIVE_ROTATION;
-	}
-	else
-	{
-		kDRIVE_STRAIGHT = fabs(kDRIVE_STRAIGHT);
-		kDRIVE_ROTATION = fabs(kDRIVE_ROTATION);
-	}
-	if (stick3.GetTrigger())
-	{
-		drive1.Set(kMAX_DRIVE_RPM);
-		drive3.Set(kMAX_DRIVE_RPM);
-	}
-	if (stick4.GetTrigger())
-	{
-		drive2.Set(1);
-		drive4.Set(1);
-	}
-
-	if (stick3.GetRawButton(4))
-	{
-		//TKOShooter.shoot(-stick3.GetY());
-		DSLog(6, "Manual shoot pow: %f", -stick3.GetY());
-	}
-	if (stick4.GetRawButton(6))
-	{
-		//TKOShooter.autoShoot();
-		DSLog(6, "Autoshoot");
-	}
-	if (stick3.GetRawButton(9) and stick4.GetRawButton(9))
-	{
-		climber.ArmForward();
-		climber.Climb();
-		DSLog(6, "Autoclimbing");
-	}
-}
-
-void MarkX::writeLog()
-{
 	std::ofstream logFile;
-	logFile.open("log.txt", std::ofstream::app);
+	logFile.open("log.txt", std::ofstream::trunc);
 
 	//this part in robot disabled
 	int i = 0;
@@ -534,6 +356,169 @@ void MarkX::writeLog()
 		}
 
 		logFile.close();
+		printf("Robot Died!");
+	}
+}
+
+//! Autonomous code
+/*!
+ */
+void MarkX::Autonomous(void) //Choose autonomous mode between 4 options though DS
+{
+	printf("Starting Autonomous \n");
+	auton.initAutonomous();
+	auton.setDrivePID(DRIVE_kP, DRIVE_kP, DRIVE_kI);
+	//	auton.setDriveTargetStraight(ds->GetAnalogIn(1) * 10 * REVS_PER_METER);
+	auton.startAutonomous();
+
+	while (auton.autonTimer.Get() < 15 && auton.runningAuton)
+	{
+		if (!ds->IsAutonomous())
+			auton.stopAutonomous();
+
+		//auton.autonomousCode();
+		if (ds->GetDigitalIn(1))
+			auton.autonSetup1();
+		else if (ds->GetDigitalIn(2))
+			auton.autonSetup2();
+		else if (ds->GetDigitalIn(3))
+			auton.autonSetup3();
+		else
+		{
+			printf("Error, no starting setup selected");
+			DSLog(1, "Error, no starting setup selected");
+		}
+	}
+	auton.stopAutonomous();
+	printf("Ending Autonomous \n");
+}
+//! Operator Control Initialize and runs the Operator Control loop
+/*!
+ Initializes drive motors, Prints number and location of balls and shooter's speed to DSLog
+ */
+
+void MarkX::OperatorControl()
+{
+	printf("Starting OperatorControl \n");
+	Timer loopTimer;
+	float startLoopT, endLoopT, loopTime;
+	loopTimer.Start();
+	globalOCTimer.Start();
+	while (IsOperatorControl() && ds->IsEnabled())
+	{
+		startLoopT = loopTimer.Get();
+		DSClear();
+
+		MarkX::Operator();
+		MarkX::TKODrive();
+		DSLog(4, "Avr d1,3 cur: %f", ((drive1.GetOutputCurrent() + drive3.GetOutputCurrent()) / 2));
+		writeMD(2, (drive1.GetOutputCurrent() + drive3.GetOutputCurrent()) / 2)
+
+		endLoopT = loopTimer.Get();
+		loopTime = endLoopT - startLoopT;
+		printf("Operator Loop Time, excluding Wait: %f", endLoopT);
+		space
+		loopTimer.Reset();
+	}
+	globalOCTimer.Stop();
+	printf("Ending OperatorControl \n");
+}
+//! Driving and EVOM code
+/*!
+ */
+void MarkX::Operator()
+{
+	//TEST
+	//	if (stick1.GetTrigger())
+	//		return;
+	//	if (stick1.GetRawButton(4))
+	//		climber.ClipBack();
+	//	if (stick1.GetRawButton(5))
+	//		climber.ClipForward();
+	//	if (stick1.GetRawButton(2))
+	//		climber.ArmBack();
+	//	if (stick1.GetRawButton(3))
+	//		climber.ArmForward();
+	//	if (stick1.GetRawButton(8))
+	//		climber.RatchetBack();
+	//	if (stick1.GetRawButton(9))
+	//		climber.RatchetForward();
+	//END OF TEST STATEMENT
+
+	if (stick2.GetRawButton(6))
+		controllerDrive = not controllerDrive;
+	if (stick3.GetRawButton(3))
+		auton.rsFrontLoaderLift.SetOn(1);
+	else if (stick3.GetRawButton(2))
+		auton.rsFrontLoaderLift.SetOn(0);
+
+	if (stick3.GetRawButton(5))
+		auton.rsFrontLoaderWrist.SetOn(1);
+	else if (stick3.GetRawButton(4))
+		auton.rsFrontLoaderWrist.SetOn(0);
+
+	if (stick3.GetRawButton(10) and stick3.GetX() > 0)
+		cameraServo.SetRaw(cameraServo.GetRaw() + CAMERA_PWM_INCREMENT);
+
+	if (stick3.GetRawButton(10) and stick3.GetX() < 0)
+		cameraServo.SetRaw(cameraServo.GetRaw() - CAMERA_PWM_INCREMENT);
+
+	if (stick1.GetRawButton(10))
+		JukeR();
+	if (stick1.GetRawButton(7))
+		JukeL();
+
+	if (stick1.GetTrigger())
+	{
+		kDRIVE_STRAIGHT = 0.4;
+		kDRIVE_ROTATION = 0.2;
+	}
+	else if (stick1.GetRawButton(2))
+	{
+		kDRIVE_STRAIGHT = 0.2;
+	}
+	else
+	{
+		kDRIVE_STRAIGHT = 1.2;
+		kDRIVE_ROTATION = 0.7;
+	}
+
+	if (stick2.GetTrigger())
+	{
+		kDRIVE_STRAIGHT = -kDRIVE_STRAIGHT;
+		kDRIVE_ROTATION = -kDRIVE_ROTATION;
+	}
+	else
+	{
+		kDRIVE_STRAIGHT = fabs(kDRIVE_STRAIGHT);
+		kDRIVE_ROTATION = fabs(kDRIVE_ROTATION);
+	}
+	if (stick3.GetTrigger())
+	{
+		drive1.Set(kMAX_DRIVE_RPM);
+		drive3.Set(kMAX_DRIVE_RPM);
+	}
+	if (stick4.GetTrigger())
+	{
+		drive2.Set(1);
+		drive4.Set(1);
+	}
+
+	if (stick3.GetRawButton(4))
+	{
+		//TKOShooter.shoot(-stick3.GetY());
+		DSLog(6, "Manual shoot pow: %f", -stick3.GetY());
+	}
+	if (stick4.GetRawButton(6))
+	{
+		//TKOShooter.autoShoot();
+		DSLog(6, "Autoshoot");
+	}
+	if (stick3.GetRawButton(9) and stick4.GetRawButton(9))
+	{
+		climber.ArmForward();
+		climber.Climb();
+		DSLog(6, "Autoclimbing");
 	}
 }
 
@@ -645,16 +630,15 @@ void MarkX::TKODrive()
 	/*inches in feet*// 60;
 	float speedRight = drive3.GetSpeed() * 3.14159 * 6 / 12 / 60;
 	DSLog(1, "Speed F/s: %f", fabs(((speedLeft + speedRight) / 2)));
-	//	DSLog(2, "Sonar 1 in: %f", sonar1.GetVoltage() * 100);
-	//	DSLog(3, "Sonar 2 in: %f", sonar2.GetVoltage() * 100);
-	DSLog(2, "Left target %f", final_velocity_left);
+	DSLog(2, "Sonar 1 in: %f", sonar1.GetVoltage() * 100);
+	DSLog(3, "Sonar 2 in: %f", sonar2.GetVoltage() * 100);
 
 	// implement processing for left_joystick_x, left_joystick_y, right_joystick_x, and right_joystick_y to account for PID and other factors
 	// then we pass these values to the SetLeftRightMotorsOutput() function of TKODrive
-	drive1.Set(-final_velocity_left);
-	drive2.Set(drive1.GetOutputVoltage() / drive1.GetBusVoltage());
+	drive1.Set(final_velocity_left);
+	drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
 	drive3.Set(final_velocity_right);
-	drive4.Set(drive3.GetOutputVoltage() / drive3.GetBusVoltage());
+	drive4.Set(-drive3.GetOutputVoltage() / drive3.GetBusVoltage());
 
 }
 void MarkX::JukeR(void)

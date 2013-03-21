@@ -4,7 +4,7 @@
 #define __TKOAUTONOMOUS_H
 
 #include "Definitions.h"
-//#include "TKOGyro.h"
+#include "TKOGyro.h"
 #include "TKOClimber.h"
 #include "Logger.h"
 #include <iostream>
@@ -40,7 +40,7 @@ class TKOAutonomous
 	private:
 		CANJaguar drive1, drive2, drive3, drive4;
 		DriverStation *ds;
-//		TKOGyro* _gyro;
+		TKOGyro* _gyro;
 		float rampTargetLeft;
 		float rampTargetRight;
 		float rightTarget;
