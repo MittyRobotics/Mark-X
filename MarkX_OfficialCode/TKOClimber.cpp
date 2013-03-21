@@ -241,12 +241,32 @@ void TKOClimber::Climb()
 	clipBack()
 	time.Start();
 	time2.Start(); //THIS IS THE DECIDE TIMER
+	while(not clipLeft.Get() and not clipRight.Get())
+	{
+	    winch1.Set(SETPOINT_RATCHET_RETRACT);
+	    if(winch1.GetPosition() <= SETPOINT_RATCHET_RETRACT)
+	    {
+	        winch1.Set(SETPOINT_TOP);
+	        armBack();
+	        break;
+	    }
+	    if((clipLeft.Get() and not clipRight.Get()) or (not clipLeft.Get() and clipRight.Get()) //If only one clip is on,
+        {
+            time2.Reset();
+            if(time2.Get() > .1)
+            {
+                winch1.Set(SETPOINT_TOP);
+                armBack();
+                break;
+            }
+        }
+	}
 	while (level < PYRAMID_SIZE)
 	{
 		DSLog(1, "Winch1 pos: %f", winch1.GetPosition());
 		if (!ds->IsEnabled())
 			return;
-		Wait(.1); //FOR TESTING
+		//Wait(.1); //FOR TESTING
 		winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
 		print();
 		counter++;
@@ -758,7 +778,7 @@ void TKOClimber::Climb()
 				}
 
 			case OH_SHIT:
-				//add log write with case as number in data	
+				//add log write with case as number in data
 				ratchetForward()
 				clipForward()
 				winch1.DisableControl();

@@ -301,7 +301,7 @@ void MarkX::Operator()
 	}
 	if (stick3.GetRawButton(9) and stick4.GetRawButton(9))
 	{
-		
+		climber.armForward();
 		climber.Climb();
 		DSLog(6, "Autoclimbing");
 	}
