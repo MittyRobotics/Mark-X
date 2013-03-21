@@ -7,10 +7,9 @@
 #include "TKOLogger.h"
 
 /*---------------MarkX-Thing-to-Do(TODO)---------------------*
- * Keep working on adding multiple autonomous setups for different positions on the field.
- * CRITICAL!!!!!! ADD FRONT DUMPER TO AUTONOMOUS!!! Probably move the dumper to autonomous because it has to be acessed from auton and markX
  * Implement logger!!!
  * Test implementing a global timer/using system time to timestamp logger messages
+ * Add system that realizes when robot hits a wall
  */
 
 class MarkX: public SimpleRobot
@@ -29,7 +28,6 @@ class MarkX: public SimpleRobot
 		TKOLogger logger;
 		TKOAutonomous auton;
 		TKOClimber climber;
-		TKORelay rsFrontLoaderWrist, rsFrontLoaderLift;
 		PWM cameraServo;
 		Compressor comp;
 
@@ -55,7 +53,7 @@ class MarkX: public SimpleRobot
 
 			        sonar1(3), sonar2(4), logger(), auton(DRIVE_L1_ID, DRIVE_L2_ID, DRIVE_R1_ID, DRIVE_R2_ID),
 
-			        climber(WINCH_1_PORT, WINCH_2_PORT), rsFrontLoaderWrist(PN_R1_ID), rsFrontLoaderLift(PN_R2_ID), cameraServo(CAMERA_SERVO_PORT), comp(PRESSURE_SWITCH_PORT, COMPRESSOR_ID)
+			        climber(WINCH_1_PORT, WINCH_2_PORT), cameraServo(CAMERA_SERVO_PORT), comp(PRESSURE_SWITCH_PORT, COMPRESSOR_ID)
 		{
 			ds = DriverStation::GetInstance(); // Pulls driver station information
 			drive1.EnableControl(); //critical for these jags because they are in speed mode
@@ -70,6 +68,8 @@ class MarkX: public SimpleRobot
 			drive3.SetSpeedReference(JAG_SPEEDREF);
 			drive3.ConfigEncoderCodesPerRev(ENCODER_REVS);
 			drive3.SetPID(DRIVE_kP, DRIVE_kI, DRIVE_kD);
+			auton.rsFrontLoaderLift.SetOn(0);
+			auton.rsFrontLoaderWrist.SetOn(0);
 			controllerDrive = false;
 			comp.Start();
 			printf("Initialized the MarkX class \n");
@@ -96,18 +96,15 @@ void MarkX::Test()
 		 drive3.Set(kMAX_DRIVE_RPM);*/
 
 		if (stick3.GetRawButton(3))
-			rsFrontLoaderLift.SetOn(1);
+			auton.rsFrontLoaderLift.SetOn(1);
 		else if (stick3.GetRawButton(2))
-			rsFrontLoaderLift.SetOn(-1);
-		else
-			rsFrontLoaderLift.SetOn(0);
+			auton.rsFrontLoaderLift.SetOn(0);
 
 		if (stick3.GetRawButton(5))
-			rsFrontLoaderLift.SetOn(1);
+			auton.rsFrontLoaderWrist.SetOn(1);
 		else if (stick3.GetRawButton(4))
-			rsFrontLoaderLift.SetOn(-1);
-		else
-			rsFrontLoaderLift.SetOn(0);
+			auton.rsFrontLoaderWrist.SetOn(0);
+
 	}
 }
 void MarkX::Disabled()
@@ -123,7 +120,7 @@ void MarkX::Autonomous(void) //Choose autonomous mode between 4 options though D
 	printf("Starting Autonomous \n");
 	auton.initAutonomous();
 	auton.setDrivePID(DRIVE_kP, DRIVE_kP, DRIVE_kI);
-	auton.setDriveTargetStraight(ds->GetAnalogIn(1) * 10 * REVS_PER_METER);
+	//	auton.setDriveTargetStraight(ds->GetAnalogIn(1) * 10 * REVS_PER_METER);
 	auton.startAutonomous();
 
 	while (auton.autonTimer.Get() < 15 && auton.runningAuton)
@@ -132,7 +129,17 @@ void MarkX::Autonomous(void) //Choose autonomous mode between 4 options though D
 			auton.stopAutonomous();
 
 		//auton.autonomousCode();
-		auton.autonSetup1();
+		if (ds->GetDigitalIn(1))
+			auton.autonSetup1();
+		else if (ds->GetDigitalIn(2))
+			auton.autonSetup2();
+		else if (ds->GetDigitalIn(3))
+			auton.autonSetup3();
+		else
+		{
+			printf("Error, no starting setup selected");
+			DSLog(1, "Error, no starting setup selected");
+		}
 	}
 	auton.stopAutonomous();
 	printf("Ending Autonomous \n");
@@ -155,6 +162,7 @@ void MarkX::OperatorControl()
 
 		MarkX::Operator();
 		MarkX::TKODrive();
+		DSLog(4, "Avr d1,3 cur: %f", ((drive1.GetOutputCurrent() + drive3.GetOutputCurrent()) / 2));
 
 		endLoopT = loopTimer.Get();
 		loopTime = endLoopT - startLoopT;
@@ -189,18 +197,14 @@ void MarkX::Operator()
 	if (stick2.GetRawButton(6))
 		controllerDrive = not controllerDrive;
 	if (stick3.GetRawButton(3))
-		rsFrontLoaderLift.SetOn(1);
+		auton.rsFrontLoaderLift.SetOn(1);
 	else if (stick3.GetRawButton(2))
-		rsFrontLoaderLift.SetOn(-1);
-	else
-		rsFrontLoaderLift.SetOn(0);
+		auton.rsFrontLoaderLift.SetOn(0);
 
 	if (stick3.GetRawButton(5))
-		rsFrontLoaderLift.SetOn(1);
+		auton.rsFrontLoaderWrist.SetOn(1);
 	else if (stick3.GetRawButton(4))
-		rsFrontLoaderLift.SetOn(-1);
-	else
-		rsFrontLoaderLift.SetOn(0);
+		auton.rsFrontLoaderWrist.SetOn(0);
 
 	if (stick3.GetRawButton(10) and stick3.GetX() > 0)
 		cameraServo.SetRaw(cameraServo.GetRaw() + CAMERA_PWM_INCREMENT);

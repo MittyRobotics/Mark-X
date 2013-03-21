@@ -5,7 +5,7 @@
 ///Constructor for the TKOAutonomous class
 
 TKOAutonomous::TKOAutonomous(int port1, int port2, int port3, int port4) :
-	drive1(port1, CANJaguar::kPosition), drive2(port2, CANJaguar::kPercentVbus), drive3(port3, CANJaguar::kPosition), drive4(port4, CANJaguar::kPercentVbus)
+	rsFrontLoaderWrist(PN_R1_ID), rsFrontLoaderLift(PN_R2_ID), drive1(port1, CANJaguar::kPosition), drive2(port2, CANJaguar::kPercentVbus), drive3(port3, CANJaguar::kPosition), drive4(port4, CANJaguar::kPercentVbus)
 {
 	initAutonomous();
 }
@@ -87,7 +87,98 @@ void TKOAutonomous::stopAutonomous()
 	printf("Stopped Autonomous \n");
 	//stop evom tasks
 }
-void TKOAutonomous::autonSetup1() //left corner
+void TKOAutonomous::autonSetup1() //right corner
+{
+	if (ds->IsDisabled())
+		stopAutonomous();
+	if (!ds->IsAutonomous())
+		stopAutonomous();
+
+	{ //this is one "Atom" that performs one task, in this case turns 90 degrees
+		setTargetAngle(30);
+		if (not turn(targetAngle) and not autonOption[0])
+			return;
+		else
+			autonOption[0] = true;
+	}
+	//second "Atom"
+	setDriveTargetStraight(3 * REVS_PER_METER);
+	if (not PIDDriveStraight() and not autonOption[1])
+		return;
+	else
+		autonOption[1] = true;
+
+	//third "Atom"
+	setTargetAngle(30);
+	if (not turn(targetAngle) and not autonOption[2])
+		return;
+	else
+		autonOption[2] = true;
+
+	if (not autonOption[3])
+	{
+		rsFrontLoaderWrist.SetOn(1);
+		rsFrontLoaderLift.SetOn(1);
+		Wait(1);
+		rsFrontLoaderWrist.SetOn(0);
+		rsFrontLoaderLift.SetOn(0);
+		autonOption[3] = false;
+	}
+	printf("Finished autonSetup 1\n");
+	DSLog(3, "Finished autonSetup 1\n");
+
+	//Stringing them in a row like so
+}
+void TKOAutonomous::autonSetup2() //right corner
+{
+	if (ds->IsDisabled())
+		stopAutonomous();
+	if (!ds->IsAutonomous())
+		stopAutonomous();
+
+	{ //this is one "Atom" that performs one task, in this case turns 90 degrees
+		setTargetAngle(45);
+		if (not turn(targetAngle) and not autonOption[0])
+			return;
+		else
+			autonOption[0] = true;
+	}
+	//second "Atom"
+	setDriveTargetStraight(2 * REVS_PER_METER);
+	if (not PIDDriveStraight() and not autonOption[1])
+		return;
+	else
+		autonOption[1] = true;
+
+	//third "Atom"
+	setTargetAngle(30);
+	if (not turn(targetAngle) and not autonOption[2])
+		return;
+	else
+		autonOption[2] = true;
+
+	//fourth "Atom"
+	setDriveTargetStraight(1 * REVS_PER_METER);
+	if (not PIDDriveStraight() and not autonOption[3])
+		return;
+	else
+		autonOption[3] = true;
+
+	if (not autonOption[4])
+	{
+		rsFrontLoaderWrist.SetOn(1);
+		rsFrontLoaderLift.SetOn(1);
+		Wait(1);
+		rsFrontLoaderWrist.SetOn(0);
+		rsFrontLoaderLift.SetOn(0);
+		autonOption[4] = false;
+	}
+	printf("Finished autonSetup 2\n");
+	DSLog(3, "Finished autonSetup 2\n");
+
+	//Stringing them in a row like so
+}
+void TKOAutonomous::autonSetup3() //right corner
 {
 	if (ds->IsDisabled())
 		stopAutonomous();
@@ -102,7 +193,7 @@ void TKOAutonomous::autonSetup1() //left corner
 			autonOption[0] = true;
 	}
 	//second "Atom"
-	setDriveTargetStraight(10);
+	setDriveTargetStraight(1 * REVS_PER_METER);
 	if (not PIDDriveStraight() and not autonOption[1])
 		return;
 	else
@@ -114,7 +205,39 @@ void TKOAutonomous::autonSetup1() //left corner
 		return;
 	else
 		autonOption[2] = true;
-	
+
+	//fourth "Atom"
+	setDriveTargetStraight(3 * REVS_PER_METER);
+	if (not PIDDriveStraight() and not autonOption[3])
+		return;
+	else
+		autonOption[3] = true;
+
+	//fifth "Atom"
+	setTargetAngle(35);
+	if (not turn(targetAngle) and not autonOption[4])
+		return;
+	else
+		autonOption[4] = true;
+
+	//sixth "Atom"
+	setDriveTargetStraight(1.5 * REVS_PER_METER);
+	if (not PIDDriveStraight() and not autonOption[5])
+		return;
+	else
+		autonOption[5] = true;
+
+	if (not autonOption[6])
+	{
+		rsFrontLoaderWrist.SetOn(1);
+		rsFrontLoaderLift.SetOn(1);
+		Wait(1);
+		rsFrontLoaderWrist.SetOn(0);
+		rsFrontLoaderLift.SetOn(0);
+		autonOption[6] = false;
+	}
+	printf("Finished autonSetup 2\n");
+	DSLog(3, "Finished autonSetup 2\n");
 
 	//Stringing them in a row like so
 }
@@ -177,6 +300,8 @@ bool TKOAutonomous::PIDDriveStraight()
 	printf("Driving straight!\n");
 	driveLeft();
 	driveRight();
+//	if (drive1.GetOutputCurrent() > )
+	
 	if (driveLeft() and driveRight())
 	{
 		resetEncoders();

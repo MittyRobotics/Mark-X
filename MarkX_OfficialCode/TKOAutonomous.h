@@ -16,6 +16,8 @@ class TKOAutonomous
 		~TKOAutonomous();
 		void autonomousCode();
 		void autonSetup1();
+		void autonSetup2();
+		void autonSetup3();
 		void startAutonomous();
 		void stopAutonomous();
 		void setDrivePID(float P, float I, float D);
@@ -33,6 +35,7 @@ class TKOAutonomous
 		bool runningAuton;
 		bool autonOption[15];
 		Timer autonTimer;
+		TKORelay rsFrontLoaderWrist, rsFrontLoaderLift; //Front loader
 	private:
 		CANJaguar drive1, drive2, drive3, drive4;
 		DriverStation *ds;
