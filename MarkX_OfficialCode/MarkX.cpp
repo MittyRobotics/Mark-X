@@ -30,7 +30,7 @@ class MarkX: public SimpleRobot
 		PWM cameraServo;
 		Compressor comp;
 
-		Timer timer;
+		Timer jukeTimer, globalOCTimer;
 		void Disabled();
 		void Autonomous();
 		void OperatorControl();
@@ -120,7 +120,16 @@ void MarkX::Disabled()
 			case 1:
 				if (logFile.is_open())
 				{
-					logFile << "Log message 1";
+					logFile << "Log message 1" << endl;
+					logFile << "Data: " << data[i] << endl;
+				}
+				break;
+			case 15:
+				if (logFile.is_open())
+				{
+					logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
+					logFile << "Average Drive Current" << endl;
+					logFile << "Data: " << data[i] << endl;
 				}
 				break;
 
@@ -176,6 +185,7 @@ void MarkX::OperatorControl()
 	Timer loopTimer;
 	float startLoopT, endLoopT, loopTime;
 	loopTimer.Start();
+	globalOCTimer.Start();
 	while (IsOperatorControl() && ds->IsEnabled())
 	{
 		startLoopT = loopTimer.Get();
@@ -184,6 +194,7 @@ void MarkX::OperatorControl()
 		MarkX::Operator();
 		MarkX::TKODrive();
 		DSLog(4, "Avr d1,3 cur: %f", ((drive1.GetOutputCurrent() + drive3.GetOutputCurrent()) / 2));
+		writeMD(15, (drive1.GetOutputCurrent() + drive3.GetOutputCurrent()) / 2)
 
 		endLoopT = loopTimer.Get();
 		loopTime = endLoopT - startLoopT;
@@ -191,6 +202,7 @@ void MarkX::OperatorControl()
 		space
 		loopTimer.Reset();
 	}
+	globalOCTimer.Stop();
 	printf("Ending OperatorControl \n");
 }
 //! Driving and EVOM code
@@ -413,117 +425,117 @@ void MarkX::TKODrive()
 void MarkX::JukeR(void)
 {
 	printf("Juke manuever started\n");
-	timer.Start();
-	while (timer.Get() < 0.6 + 0.65 + 0.3 + 0.6 + 1 + 0.15 + 1.2 && IsEnabled())
+	jukeTimer.Start();
+	while (jukeTimer.Get() < 0.6 + 0.65 + 0.3 + 0.6 + 1 + 0.15 + 1.2 && IsEnabled())
 	{
-		if (timer.Get() < 0.6)
+		if (jukeTimer.Get() < 0.6)
 		{
 			drive1.Set(-kMAX_DRIVE_RPM);
 			drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
 			drive3.Set(-kMAX_DRIVE_RPM);
 			drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
 		}
-		else if (timer.Get() < 0.6 + 0.65)
+		else if (jukeTimer.Get() < 0.6 + 0.65)
 		{
 			drive1.Set(-kMAX_DRIVE_RPM);
 			drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
 		}
-		else if (timer.Get() < 0.6 + 0.65 + 0.3)
+		else if (jukeTimer.Get() < 0.6 + 0.65 + 0.3)
 		{
 			drive1.Set(-kMAX_DRIVE_RPM);
 			drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
 			drive3.Set(-kMAX_DRIVE_RPM);
 			drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
 		}
-		else if (timer.Get() < 0.6 + 0.65 + 0.3 + 0.6)
+		else if (jukeTimer.Get() < 0.6 + 0.65 + 0.3 + 0.6)
 		{
 			drive1.Set(kMAX_DRIVE_RPM);
 			drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
 			drive3.Set(kMAX_DRIVE_RPM);
 			drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
 		}
-		else if (timer.Get() < 0.6 + 0.65 + 0.3 + 0.6 + 1)
+		else if (jukeTimer.Get() < 0.6 + 0.65 + 0.3 + 0.6 + 1)
 		{
 			drive3.Set(kMAX_DRIVE_RPM);
 			drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
 		}
-		else if (timer.Get() < 0.6 + 0.65 + 0.3 + 0.6 + 1 + 0.15)
+		else if (jukeTimer.Get() < 0.6 + 0.65 + 0.3 + 0.6 + 1 + 0.15)
 		{
 			drive1.Set(kMAX_DRIVE_RPM);
 			drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
 			drive3.Set(kMAX_DRIVE_RPM);
 			drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
 		}
-		else if (timer.Get() < 0.6 + 0.65 + 0.3 + 0.6 + 1 + 0.15 + 1.2)
+		else if (jukeTimer.Get() < 0.6 + 0.65 + 0.3 + 0.6 + 1 + 0.15 + 1.2)
 		{
 			drive1.Set(kMAX_DRIVE_RPM);
 			drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
 			drive3.Set(-kMAX_DRIVE_RPM);
 			drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
 		}
-		timer.Stop();
+		jukeTimer.Stop();
 	}
 }
 
 void MarkX::JukeL(void)
 {
 	printf("Juke manuever started\n");
-	timer.Start();
-	timer.Reset();
-	while (timer.Get() < .6)
+	jukeTimer.Start();
+	jukeTimer.Reset();
+	while (jukeTimer.Get() < .6)
 	{
 		drive1.Set(-kMAX_DRIVE_RPM);
 		drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
 		drive3.Set(-kMAX_DRIVE_RPM);
 		drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
 	}
-	timer.Reset();
-	while (timer.Get() < .65)
+	jukeTimer.Reset();
+	while (jukeTimer.Get() < .65)
 	{
 		drive3.Set(-kMAX_DRIVE_RPM);
 		drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
 	}
-	timer.Reset();
-	while (timer.Get() < .3)
+	jukeTimer.Reset();
+	while (jukeTimer.Get() < .3)
 	{
 		drive1.Set(-kMAX_DRIVE_RPM);
 		drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
 		drive3.Set(-kMAX_DRIVE_RPM);
 		drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
 	}
-	timer.Reset();
-	while (timer.Get() < .6)
+	jukeTimer.Reset();
+	while (jukeTimer.Get() < .6)
 	{
 		drive1.Set(kMAX_DRIVE_RPM);
 		drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
 		drive3.Set(kMAX_DRIVE_RPM);
 		drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
 	}
-	timer.Reset();
-	while (timer.Get() < 1)
+	jukeTimer.Reset();
+	while (jukeTimer.Get() < 1)
 	{
 		drive1.Set(kMAX_DRIVE_RPM);
 		drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
 	}
-	timer.Reset();
-	while (timer.Get() < .15)
+	jukeTimer.Reset();
+	while (jukeTimer.Get() < .15)
 	{
 		drive1.Set(kMAX_DRIVE_RPM);
 		drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
 		drive3.Set(kMAX_DRIVE_RPM);
 		drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
 	}
-	timer.Reset();
-	while (timer.Get() < 1.2)
+	jukeTimer.Reset();
+	while (jukeTimer.Get() < 1.2)
 	{
 		drive1.Set(kMAX_DRIVE_RPM);
 		drive2.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
 		drive3.Set(-kMAX_DRIVE_RPM);
 		drive4.Set(-drive1.GetOutputVoltage() / drive1.GetBusVoltage());
 	}
-	timer.Reset();
+	jukeTimer.Reset();
 
-	timer.Stop();
+	jukeTimer.Stop();
 }
 
 START_ROBOT_CLASS(MarkX)
