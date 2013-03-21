@@ -8,7 +8,7 @@ TKOClimber::TKOClimber(int port1, int port2) :
 	        winch1(port1, CANJaguar::kPosition), winch2(port2, CANJaguar::kPercentVbus), hookLeft(1), hookRight(2), clipLeft(3), clipRight(4), armTop(5), armBottom(6), ratchet(7),
 
 	        ///begin pneumatics crap
-	        rsRatchet(PN_R3_ID), sDumperR(PN_S1R_ID), sDumperE(PN_S1E_ID), sClipsR(PN_S3R_ID), sClipsE(PN_S3E_ID), sArmR(PN_S4R_ID), sArmE(PN_S4E_ID), loggerObj(), _stick1(1)
+	        rsRatchet(PN_R3_ID), sDumperR(PN_S1R_ID), sDumperE(PN_S1E_ID), sClipsR(PN_S3R_ID), sClipsE(PN_S3E_ID), sArmR(PN_S4R_ID), sArmE(PN_S4E_ID), _stick1(1)
 {
 	ds = DriverStation::GetInstance(); /// Pulls driver station information
 	state = INITIAL_STATE;
@@ -231,7 +231,7 @@ void TKOClimber::Climb()
 	ratchetForward()
 	armBack()
 	clipBack()
-    time.Start();
+	time.Start();
 	time2.Start(); ///THIS IS THE DECIDE TIMER
 	while (level < PYRAMID_SIZE)
 	{
@@ -242,9 +242,9 @@ void TKOClimber::Climb()
 		winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
 		print();
 		counter++;
-		if(_stick1.GetRawButton(1))
+		if (_stick1.GetRawButton(1))
 		{
-		    state = OH_SHIT;
+			state = OH_SHIT;
 		}
 		switch (state)
 		{
@@ -590,7 +590,7 @@ void TKOClimber::Climb()
 				if (armTop.Get())
 				{
 					state = WTF;
-                    printf("--------You somehow hit the top of the arm----------\n");
+					printf("--------You somehow hit the top of the arm----------\n");
 					continue;
 				}
 
@@ -750,10 +750,10 @@ void TKOClimber::Climb()
 				}
 
 			case OH_SHIT:
+				writeM(1)
+				writeMD(2, 13.51) //instead of 13.51 add reason for OH_SHIT state
 				ratchetForward()
-				;
 				clipForward()
-				;
 				winch1.DisableControl();
 				winch1.Disable();
 				winch2.DisableControl();

@@ -117,6 +117,10 @@ SimpleTemplate/$(MODE_DIR)/% : LIBPATH =
 SimpleTemplate/$(MODE_DIR)/% : LIBS = 
 SimpleTemplate/$(MODE_DIR)/% : OBJ_DIR := SimpleTemplate/$(MODE_DIR)
 
+SimpleTemplate/$(MODE_DIR)/Objects/MarkX_OfficialCode/Logger.o : $(PRJ_ROOT_DIR)/Logger.cpp $(FORCE_FILE_BUILD)
+	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP -mlongcall $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
+
+
 SimpleTemplate/$(MODE_DIR)/Objects/MarkX_OfficialCode/MarkX.o : $(PRJ_ROOT_DIR)/MarkX.cpp $(FORCE_FILE_BUILD)
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP -mlongcall $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
@@ -145,7 +149,8 @@ SimpleTemplate/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOShooter.o : $(PRJ_ROOT_
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP -mlongcall $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
-OBJECTS_SimpleTemplate = SimpleTemplate/$(MODE_DIR)/Objects/MarkX_OfficialCode/MarkX.o \
+OBJECTS_SimpleTemplate = SimpleTemplate/$(MODE_DIR)/Objects/MarkX_OfficialCode/Logger.o \
+	 SimpleTemplate/$(MODE_DIR)/Objects/MarkX_OfficialCode/MarkX.o \
 	 SimpleTemplate/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOAutonomous.o \
 	 SimpleTemplate/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOClimber.o \
 	 SimpleTemplate/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOGyro.o \
@@ -196,6 +201,10 @@ SimpleTemplate_partialImage/$(MODE_DIR)/% : LIBPATH =
 SimpleTemplate_partialImage/$(MODE_DIR)/% : LIBS = 
 SimpleTemplate_partialImage/$(MODE_DIR)/% : OBJ_DIR := SimpleTemplate_partialImage/$(MODE_DIR)
 
+SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/Logger.o : $(PRJ_ROOT_DIR)/Logger.cpp $(FORCE_FILE_BUILD)
+	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP -mlongcall $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
+
+
 SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/MarkX.o : $(PRJ_ROOT_DIR)/MarkX.cpp $(FORCE_FILE_BUILD)
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP -mlongcall $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
@@ -224,7 +233,8 @@ SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOShooter.o 
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP -mlongcall $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
-OBJECTS_SimpleTemplate_partialImage = SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/MarkX.o \
+OBJECTS_SimpleTemplate_partialImage = SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/Logger.o \
+	 SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/MarkX.o \
 	 SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOAutonomous.o \
 	 SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOClimber.o \
 	 SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOGyro.o \
@@ -244,11 +254,12 @@ SimpleTemplate_partialImage/$(MODE_DIR)/SimpleTemplate_partialImage_clean :
 
 force : 
 
-DEP_FILES := SimpleTemplate/$(MODE_DIR)/Objects/MarkX_OfficialCode/MarkX.d SimpleTemplate/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOAutonomous.d SimpleTemplate/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOClimber.d \
-	 SimpleTemplate/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOGyro.d SimpleTemplate/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOLogger.d SimpleTemplate/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKORelay.d \
-	 SimpleTemplate/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOShooter.d SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/MarkX.d SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOAutonomous.d \
-	 SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOClimber.d SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOGyro.d SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOLogger.d \
-	 SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKORelay.d SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOShooter.d
+DEP_FILES := SimpleTemplate/$(MODE_DIR)/Objects/MarkX_OfficialCode/Logger.d SimpleTemplate/$(MODE_DIR)/Objects/MarkX_OfficialCode/MarkX.d SimpleTemplate/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOAutonomous.d \
+	 SimpleTemplate/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOClimber.d SimpleTemplate/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOGyro.d SimpleTemplate/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOLogger.d \
+	 SimpleTemplate/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKORelay.d SimpleTemplate/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOShooter.d SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/Logger.d \
+	 SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/MarkX.d SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOAutonomous.d SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOClimber.d \
+	 SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOGyro.d SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOLogger.d SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKORelay.d \
+	 SimpleTemplate_partialImage/$(MODE_DIR)/Objects/MarkX_OfficialCode/TKOShooter.d
 -include $(DEP_FILES)
 
 

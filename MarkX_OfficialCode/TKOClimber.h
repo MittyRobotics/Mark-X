@@ -14,6 +14,7 @@
 
 #include "Definitions.h"
 #include "TKORelay.h"
+#include "Logger.h"
 
 class TKOClimber
 {
@@ -26,7 +27,6 @@ class TKOClimber
 		DriverStation *ds;
 		TKORelay rsRatchet;
 		Solenoid sDumperR, sDumperE, sClipsR, sClipsE, sArmR, sArmE;
-		TKOLogger loggerObj;
 		Joystick _stick1;
 
 		int state;
@@ -46,7 +46,6 @@ class TKOClimber
 		void ClipForward();
 		void RatchetBack();
 		void RatchetForward();
-		TKOLogger* logger;
 };
 
 #endif

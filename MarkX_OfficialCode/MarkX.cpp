@@ -4,7 +4,7 @@
 #include "TKOAutonomous.h"
 #include "TKOClimber.h"
 #include "TKORelay.h"
-#include "TKOLogger.h"
+#include "Logger.h"
 
 /*---------------MarkX-Thing-to-Do(TODO)---------------------*
  * Implement logger!!!
@@ -108,6 +108,21 @@ void MarkX::Test()
 }
 void MarkX::Disabled()
 {
+	//this part in robot disabled
+	int i = 0;
+	for (; i <= indx; i++)
+	{
+		switch (message[i])
+		{
+			case 1:
+				//print 1st message here
+				break;
+
+			default:
+				//do nothing
+				break;
+		}
+	}
 	printf("Robot Died!");
 }
 

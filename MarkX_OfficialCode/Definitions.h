@@ -9,7 +9,7 @@
 #include "Vision/RGBImage.h"
 #include "Math.h"
 #include "stdlib.h"
-#include "TKOLogger.h"
+#include "Logger.h"
 
 /*!
  \def DSClear()
@@ -26,6 +26,12 @@
 
 #define space printf("\n");
 #define GO_AWAY NULL;
+
+extern char message[10240];
+extern float data[10240];
+extern short indx;
+#define writeM(c) message[indx++] = c;
+#define writeMD(c,f) message[indx] = c; data[indx++] = f;
 
 //#define setMessage(c) message[logger->i++]=c
 //#define setMessageData(c, v) message[logger->i]=c; logger->data[logger->i++]=v;
