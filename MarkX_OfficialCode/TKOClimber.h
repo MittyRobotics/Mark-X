@@ -36,6 +36,8 @@ class TKOClimber
 		double SETPOINT_TOP;
 		double SETPOINT_BOTTOM;
 		double SETPOINT_LAST;
+		double SETPOINT_RATCHET_RETRACT;
+		bool ranCalibration;
 		///Constructor for the TKOClimber class
 		/*!
 

@@ -15,6 +15,7 @@ TKOClimber::TKOClimber(int port1, int port2) :
 	winch1.ConfigEncoderCodesPerRev(ENCODER_REVS);
 	winch1.SetPID(WINCH_kP, WINCH_kI, WINCH_kD);
 	winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
+	ranCalibration = false;
 	clipBack()
 	armBack()
 	ratchetBack()
@@ -123,10 +124,15 @@ void TKOClimber::calibrateWinch()
 			break;
 		}
 	}
+	SETPOINT_RATCHET_RETRACT = SETPOINT_BOTTOM + 2.0;
+	SETPOINT_LAST = SETPOINT_TOP - 2.0;
+	ranCalibration = true;
 	printf("Reached top of arm \n");
 	printf("Finished calibration of arm \n");
 	printf("Bottom of winch is 0 and top is %f", SETPOINT_TOP);
 	printf("\n");
+	writeM(1);
+
 }
 
 void TKOClimber::print()
@@ -214,11 +220,16 @@ void TKOClimber::Climb()
 	int level = 0;
 	double baseTime = 0;
 	int counter = 0;
-	ratchetForward()
+	if(ranCalibration == false)
+	{
+	    calibrateWinch();
+	}
 	ArmForward();
-	ClipBack();
+    ClipBack();
+	ratchetForward()
 	time.Start();
-	time2.Start(); //THIS IS THE DECIDE TIMER
+	time2.Start(); //THIS IS THE DECIDE TIME
+
 	while (not clipLeft.Get() or not clipRight.Get())
 	{
 		winch1.Set(SETPOINT_RATCHET_RETRACT);

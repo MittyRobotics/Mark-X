@@ -40,15 +40,14 @@ class MarkX: public SimpleRobot
 		void OperatorControl();
 		void Operator();
 		void TKODrive();
-		void TankDrive();
 		void JukeL();
 		void JukeR();
 		void Test();
 		void writeLog();
 		MarkX() :
-			drive1(DRIVE_L1_ID, CANJaguar::kPercentVbus), // initialize motor 1 < first left drive motor
+			drive1(DRIVE_L1_ID, CANJaguar::kSpeed), // initialize motor 1 < first left drive motor
 			        drive2(DRIVE_L2_ID, CANJaguar::kPercentVbus), // initialize motor 2 < second left drive motor
-			        drive3(DRIVE_R1_ID, CANJaguar::kPercentVbus), // initialize motor 3 < first right drive motor
+			        drive3(DRIVE_R1_ID, CANJaguar::kSpeed), // initialize motor 3 < first right drive motor
 			        drive4(DRIVE_R2_ID, CANJaguar::kPercentVbus), // initialize motor 4 < second right drive motor
 
 			        stick1(STICK_1_PORT), // initialize joystick 1 < first drive joystick
@@ -68,20 +67,6 @@ void MarkX::Test()
 {
 	printf("Calling test function \n");
 	climber.Test();
-	//	while (true)
-	//	{
-	//		if (stick1.GetRawButton(2))
-	//			drive1.Set(1);
-	//		if (stick2.GetRawButton(2))
-	//			drive2.Set(1);
-	//		if (stick3.GetRawButton(2))
-	//			drive3.Set(1);
-	//		if (stick4.GetRawButton(2))
-	//			drive4.Set(1);
-	//		if (stick1.GetRawButton(3))
-	//			climber.calibrateWinch();
-	//	}
-	//	climber.Test();
 }
 //! Notifies driver if robot is disabled. Prints "Robot Died!" to console if it is disabled
 /*!
@@ -89,11 +74,19 @@ void MarkX::Test()
 void MarkX::RobotInit()
 {
 	printf("Initializing MarkX class \n");
-	ds = DriverStation::GetInstance();
+	ds = DriverStation::GetInstance(); // Pulls driver station information
+	drive1.EnableControl(); //critical for these jags because they are in speed mode
 	drive1.SetSafetyEnabled(false);
 	drive2.SetSafetyEnabled(false);
+	drive3.EnableControl(); //critical for these jags because they are in speed mode
 	drive3.SetSafetyEnabled(false);
 	drive4.SetSafetyEnabled(false);
+	drive1.SetSpeedReference(JAG_SPEEDREF);
+	drive1.ConfigEncoderCodesPerRev(ENCODER_REVS);
+	drive1.SetPID(DRIVE_kP, DRIVE_kI, DRIVE_kD);
+	drive3.SetSpeedReference(JAG_SPEEDREF);
+	drive3.ConfigEncoderCodesPerRev(ENCODER_REVS);
+	drive3.SetPID(DRIVE_kP, DRIVE_kI, DRIVE_kD);
 	auton.rsFrontLoaderLift.SetOn(0);
 	auton.rsFrontLoaderWrist.SetOn(0);
 	controllerDrive = false;
@@ -102,39 +95,8 @@ void MarkX::RobotInit()
 }
 void MarkX::Disabled()
 {
-	writeLog();
+	//	writeLog();
 	printf("Robot Died!");
-}
-void MarkX::TankDrive()
-{
-	if (stick1.GetTrigger())
-	{
-		drive1.Set(-stick1.GetY() * 0.4);
-		drive2.Set(-stick1.GetY() * 0.4);
-		drive3.Set(stick2.GetY() * 0.4);
-		drive4.Set(stick2.GetY() * 0.4);
-	}
-	else if (stick1.GetRawButton(2))
-	{
-		drive1.Set(-stick1.GetY() * 0.2);
-		drive2.Set(-stick1.GetY() * 0.2);
-		drive3.Set(stick2.GetY() * 0.2);
-		drive4.Set(stick2.GetY() * 0.2);
-	}
-	else if (stick1.GetRawButton(4))
-	{
-		drive1.Set(-stick1.GetY());
-		drive2.Set(-stick1.GetY());
-		drive3.Set(stick2.GetY());
-		drive4.Set(stick2.GetY());
-	}
-	else
-	{
-		drive1.Set(-stick1.GetY() * 0.8);
-		drive2.Set(-stick1.GetY() * 0.8);
-		drive3.Set(stick2.GetY() * 0.8);
-		drive4.Set(stick2.GetY() * 0.8);
-	}
 }
 
 //! Autonomous code
@@ -142,32 +104,32 @@ void MarkX::TankDrive()
  */
 void MarkX::Autonomous(void) //Choose autonomous mode between 4 options though DS
 {
-	//	printf("Starting Autonomous \n");
-	//	auton.initAutonomous();
-	//	auton.setDrivePID(DRIVE_kP, DRIVE_kP, DRIVE_kI);
-	//	//	auton.setDriveTargetStraight(ds->GetAnalogIn(1) * 10 * REVS_PER_METER);
-	//	auton.startAutonomous();
-	//
-	//	while (auton.autonTimer.Get() < 15 && auton.runningAuton)
-	//	{
-	//		if (!ds->IsAutonomous())
-	//			auton.stopAutonomous();
-	//
-	//		//auton.autonomousCode();
-	//		//		if (ds->GetDigitalIn(1))
-	//		//			auton.autonSetup1();
-	//		//		else if (ds->GetDigitalIn(2))
-	//		//			auton.autonSetup2();
-	//		//		else if (ds->GetDigitalIn(3))
-	//		//			auton.autonSetup3();
-	//		//		else
-	//		//		{
-	//		//			printf("Error, no starting setup selected");
-	//		//			DSLog(1, "Error, no starting setup selected");
-	//		//		}
-	//	}
-	//	auton.stopAutonomous();
-	//	printf("Ending Autonomous \n");
+	printf("Starting Autonomous \n");
+	auton.initAutonomous();
+	auton.setDrivePID(DRIVE_kP, DRIVE_kP, DRIVE_kI);
+	//	auton.setDriveTargetStraight(ds->GetAnalogIn(1) * 10 * REVS_PER_METER);
+	auton.startAutonomous();
+
+	while (auton.autonTimer.Get() < 15 && auton.runningAuton)
+	{
+		if (!ds->IsAutonomous())
+			auton.stopAutonomous();
+
+		//auton.autonomousCode();
+		//		if (ds->GetDigitalIn(1))
+		//			auton.autonSetup1();
+		//		else if (ds->GetDigitalIn(2))
+		//			auton.autonSetup2();
+		//		else if (ds->GetDigitalIn(3))
+		//			auton.autonSetup3();
+		//		else
+		//		{
+		//			printf("Error, no starting setup selected");
+		//			DSLog(1, "Error, no starting setup selected");
+		//		}
+	}
+	auton.stopAutonomous();
+	printf("Ending Autonomous \n");
 }
 //! Operator Control Initialize and runs the Operator Control loop
 /*!
@@ -191,16 +153,14 @@ void MarkX::OperatorControl()
 		DSClear();
 
 		MarkX::Operator();
-		MarkX::TankDrive();
-		//		MarkX::TKODrive();
+		MarkX::TKODrive();
 		DSLog(4, "Avr d1,3 cur: %f", ((drive1.GetOutputCurrent() + drive3.GetOutputCurrent()) / 2));writeMD(2, (drive2.GetOutputCurrent() + drive4.GetOutputCurrent()) / 2)
 
 		endLoopT = loopTimer.Get();
 		loopTime = endLoopT - startLoopT;
-		//		printf("Operator Loop Time, excluding Wait: %f", endLoopT);
+		printf("Operator Loop Time, excluding Wait: %f", endLoopT);
 		space
 		loopTimer.Reset();
-		Wait(0.005);
 	}
 	globalOCTimer.Stop();
 	printf("Ending OperatorControl \n");
@@ -217,26 +177,19 @@ void MarkX::Operator()
 	//		climber.ClipBack();
 	//	if (stick1.GetRawButton(5))
 	//		climber.ClipForward();
-	//	if (stick2.GetRawButton(4))
-	//		climber.ArmBack();
-	//	if (stick2.GetRawButton(5))
-	//		climber.ArmForward();
-	//	if (stick2.GetRawButton(3))
-	//		climber.calibrateWinch();
+		if (stick2.GetRawButton(4))
+			climber.ArmBack();
+		if (stick2.GetRawButton(5))
+			climber.ArmForward();
 	//	if (stick1.GetRawButton(8))
 	//		climber.RatchetBack();
 	//	if (stick1.GetRawButton(9))
 	//		climber.RatchetForward();
-	//	if (stick1.GetRawButton(6))
-	//		climber.Dump();
-	//	if (stick1.GetRawButton(11))
-	//		climber.RetractDump();
+	if (stick1.GetRawButton(6))
+		climber.Dump();
+	if (stick1.GetRawButton(11))
+		climber.RetractDump();
 	//END OF TEST STATEMENT
-	
-	while (stick2.GetRawButton(3))
-	{
-		climber.MoveWinchWithStick();
-	}
 
 	if (stick2.GetRawButton(6))
 		controllerDrive = not controllerDrive;
@@ -266,20 +219,20 @@ void MarkX::Operator()
 		climber.Test();
 	}
 
-	//	if (stick1.GetTrigger())
-	//	{
-	//		kDRIVE_STRAIGHT = 0.4;
-	//		kDRIVE_ROTATION = 0.2;
-	//	}
-	//	else if (stick1.GetRawButton(2))
-	//	{
-	//		kDRIVE_STRAIGHT = 0.2;
-	//	}
-	//	else
-	//	{
-	//		kDRIVE_STRAIGHT = 1.2;
-	//		kDRIVE_ROTATION = 0.7;
-	//	}
+	if (stick1.GetTrigger())
+	{
+		kDRIVE_STRAIGHT = 0.4;
+		kDRIVE_ROTATION = 0.2;
+	}
+	else if (stick1.GetRawButton(2))
+	{
+		kDRIVE_STRAIGHT = 0.2;
+	}
+	else
+	{
+		kDRIVE_STRAIGHT = 1.2;
+		kDRIVE_ROTATION = 0.7;
+	}
 
 	if (stick2.GetTrigger())
 	{
@@ -315,356 +268,195 @@ void MarkX::Operator()
 	if (stick3.GetRawButton(9) and stick4.GetRawButton(9))
 	{
 		climber.ArmForward();
-		climber.LevelOneClimb();
+		climber.Climb();
 		DSLog(6, "Autoclimbing");
 	}
 }
 
 void MarkX::writeLog()
 {
-	std::ofstream logFile;
-	logFile.open("log.txt", std::ofstream::app);
+		std::ofstream logFile;
+		logFile.open("log.txt", std::ofstream::app);
 
-	//this part in robot disabled
-	int i = 0;
-	for (; i <= indx; i++)
-	{
-		switch (message[i])
+		//this part in robot disabled
+		int i = 0;
+		for (; i <= indx; i++)
 		{
-			case 2:
-				if (logFile.is_open())
-				{
-					if (ds->IsOperatorControl())
-						logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
-					logFile << "Average Drive Current" << endl;
-					logFile << "Data: " << data[i] << endl;
-				}
-				break;
-			case 52:
-				if (logFile.is_open())
-				{
-					if (ds->IsOperatorControl())
-						logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
-					logFile << "State 2" << endl;
-					if (data[i] == 1.0)
+			switch (message[i])
+			{
+			    case 1:
+                    if (logFile.is_open())
 					{
-						logFile << "SUCCESS: Setpoint reached, retracting ratchet" << endl;
-					}
-					if (data[i] == 2.0)
+						if (ds->IsOperatorControl())
+							logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
+						logFile << "Ran Calibration" << endl;					}
+					break;
+
+				case 2:
+					if (logFile.is_open())
 					{
-						logFile << "SHIT: Your clip limit switches were triggered while they were retracted. Broken switch" << endl;
+						if (ds->IsOperatorControl())
+							logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
+						logFile << "Average Drive Current" << endl;
+						logFile << "Data: " << data[i] << endl;
 					}
-					if (data[i] == 3.0)
-					{
-						logFile << "SHIT: One of your hooks jumped off" << endl;
-					}
-					if (data[i] == 4.0)
-					{
-						logFile << "SHIT: Your hooks reached the bottom, and its too late to remove ratchet" << endl;
-					}
-					if (data[i] == 5.0)
-					{
-						logFile << "UH OH; Ratchet was disengaged. Re-engaging ratchet" << endl;
-					}
-					if (data[i] == 5.1)
-					{
-						logFile << "SHIT: Ratchet did not engage in half a second" << endl;
-					}
-					if (data[i] == 6.0)
-					{
-						logFile << "DECIDE: Your hooks took too long to reach the bottom" << endl;
-					}
-				}
+					break;
+				case 52:
+                    if (logFile.is_open())
+                    {
+                        if (ds->IsOperatorControl())
+                            logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
+                        logFile << "State 2" << endl;
+                        if(data[i] == 1.0){logFile << "SUCCESS: Setpoint reached, retracting ratchet"<< endl;}
+                        if(data[i] == 2.0){logFile << "SHIT: Your clip limit switches were triggered while they were retracted. Broken switch"<< endl;}
+                        if(data[i] == 3.0){logFile << "SHIT: One of your hooks jumped off"<< endl;}
+                        if(data[i] == 4.0){logFile << "SHIT: Your hooks reached the bottom, and its too late to remove ratchet"<< endl;}
+                        if(data[i] == 5.0){logFile << "UH OH; Ratchet was disengaged. Re-engaging ratchet"<< endl;}
+                        if(data[i] == 5.1){logFile << "SHIT: Ratchet did not engage in half a second"<< endl;}
+                        if(data[i] == 6.0){logFile << "DECIDE: Your hooks took too long to reach the bottom"<< endl;}
+                    }
 				break;
 
-			case 53:
-				if (logFile.is_open())
-				{
-					if (ds->IsOperatorControl())
-						logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
-					logFile << "State 2" << endl;
-					if (data[i] == 1.0)
+				case 53:
+					if (logFile.is_open())
 					{
-						logFile << "SUCCESS: Ratchet retracted, continuing to move down" << endl;
+						if (ds->IsOperatorControl())
+							logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
+						logFile << "State 2" << endl;
+                        if(data[i] == 1.0){logFile << "SUCCESS: Ratchet retracted, continuing to move down"<< endl;}
+                        if(data[i] == 2.0){logFile << "SHIT: One of the hooks came off"<< endl;}
+                        if(data[i] == 3.0){logFile << "SHIT: One of the clips sensed the bar; broken limit switch"<< endl;}
+                        if(data[i] == 4.0){logFile << "SHIT: Top switch is broken"<< endl;}
+                        if(data[i] == 5.0){logFile << "SHIT; Hit the bottom of the bar"<< endl;}
+                        if(data[i] == 6.0){logFile << "SHIT: Timeout error"<< endl;}
 					}
-					if (data[i] == 2.0)
-					{
-						logFile << "SHIT: One of the hooks came off" << endl;
-					}
-					if (data[i] == 3.0)
-					{
-						logFile << "SHIT: One of the clips sensed the bar; broken limit switch" << endl;
-					}
-					if (data[i] == 4.0)
-					{
-						logFile << "SHIT: Top switch is broken" << endl;
-					}
-					if (data[i] == 5.0)
-					{
-						logFile << "SHIT; Hit the bottom of the bar" << endl;
-					}
-					if (data[i] == 6.0)
-					{
-						logFile << "SHIT: Timeout error" << endl;
-					}
-				}
-				break;
+                break;
 
-			case 54:
-				if (logFile.is_open())
-				{
-					if (ds->IsOperatorControl())
-						logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
-					logFile << "State 2" << endl;
-					if (data[i] == 1.0)
+				case 54:
+					if (logFile.is_open())
 					{
-						logFile << "SUCCESS: Setpoint reached, deploying clips" << endl;
+						if (ds->IsOperatorControl())
+							logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
+						logFile << "State 2" << endl;
+                            if(data[i] == 1.0){logFile << "SUCCESS: Setpoint reached, deploying clips"<< endl;}
+                            if(data[i] == 2.0){logFile << "SHIT: Timeout error"<< endl;}
+                            if(data[i] == 3.0){logFile << "SHIT: One of the hooks came off"<< endl;}
+                            if(data[i] == 4.0){logFile << "SHIT: One of the clips sensed the bar. Broken switch"<< endl;}
+                            if(data[i] == 5.0){logFile << "SHIT; Hit the bottom of the bar"<< endl;}
+                            if(data[i] == 6.0){logFile << "REWIND: Ratchet was re-engaged. Went back a state and try to retract ratchet again"<< endl;}
 					}
-					if (data[i] == 2.0)
-					{
-						logFile << "SHIT: Timeout error" << endl;
-					}
-					if (data[i] == 3.0)
-					{
-						logFile << "SHIT: One of the hooks came off" << endl;
-					}
-					if (data[i] == 4.0)
-					{
-						logFile << "SHIT: One of the clips sensed the bar. Broken switch" << endl;
-					}
-					if (data[i] == 5.0)
-					{
-						logFile << "SHIT; Hit the bottom of the bar" << endl;
-					}
-					if (data[i] == 6.0)
-					{
-						logFile << "REWIND: Ratchet was re-engaged. Went back a state and try to retract ratchet again" << endl;
-					}
-				}
-				break;
+					break;
 
-			case 55:
-				if (logFile.is_open())
-				{
-					if (ds->IsOperatorControl())
-						logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
-					logFile << "State 2" << endl;
-					if (data[i] == 1.0)
+				case 55:
+					if (logFile.is_open())
 					{
-						logFile << "SUCCESS: Clips deployed, moving hooks up" << endl;
+						if (ds->IsOperatorControl())
+							logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
+						logFile << "State 2" << endl;
+                        if(data[i] == 1.0){logFile << "SUCCESS: Clips deployed, moving hooks up"<< endl;}
+                        if(data[i] == 2.0){logFile << "SHIT: Timeout error"<< endl;}
+                        if(data[i] == 3.0){logFile << "SHIT: One of the hooks came off"<< endl;}
+                        if(data[i] == 4.0){logFile << "SHIT: Hit bottom or top of bar"<< endl;}
+                        if(data[i] == 5.0){logFile << "UH OH: Ratchet was re-engaged, attempting to retract"<< endl;}
+                        if(data[i] == 5.1){logFile << "WHEW: Ratchet was retracted successfully, moving on"<< endl;}
 					}
-					if (data[i] == 2.0)
-					{
-						logFile << "SHIT: Timeout error" << endl;
-					}
-					if (data[i] == 3.0)
-					{
-						logFile << "SHIT: One of the hooks came off" << endl;
-					}
-					if (data[i] == 4.0)
-					{
-						logFile << "SHIT: Hit bottom or top of bar" << endl;
-					}
-					if (data[i] == 5.0)
-					{
-						logFile << "UH OH: Ratchet was re-engaged, attempting to retract" << endl;
-					}
-					if (data[i] == 5.1)
-					{
-						logFile << "WHEW: Ratchet was retracted successfully, moving on" << endl;
-					}
-				}
-				break;
+					break;
 
-			case 56:
-				if (logFile.is_open())
-				{
-					if (ds->IsOperatorControl())
-						logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
-					logFile << "State 2" << endl;
-					if (data[i] == 1.0)
+				case 56:
+					if (logFile.is_open())
 					{
-						logFile << "SUCCESS: Hooks reached top, arm moving forward" << endl;
+						if (ds->IsOperatorControl())
+							logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
+						logFile << "State 2" << endl;
+                            if(data[i] == 1.0){logFile << "SUCCESS: Hooks reached top, arm moving forward"<< endl;}
+                            if(data[i] == 2.0){logFile << "SHIT: Timeout error"<< endl;}
+                            if(data[i] == 3.0){logFile << "SHIT: One of the clips came off"<< endl;}
+                            if(data[i] == 4.0){logFile << "SHIT: Hit bottom or top of bar"<< endl;}
+                            if(data[i] == 5.0){logFile << "UH OH: Ratchet was re-engaged, attempting to retract"<< endl;}
+                            if(data[i] == 5.1){logFile << "WHEW: Ratchet was retracted successfully, moving on"<< endl;}
 					}
-					if (data[i] == 2.0)
-					{
-						logFile << "SHIT: Timeout error" << endl;
-					}
-					if (data[i] == 3.0)
-					{
-						logFile << "SHIT: One of the clips came off" << endl;
-					}
-					if (data[i] == 4.0)
-					{
-						logFile << "SHIT: Hit bottom or top of bar" << endl;
-					}
-					if (data[i] == 5.0)
-					{
-						logFile << "UH OH: Ratchet was re-engaged, attempting to retract" << endl;
-					}
-					if (data[i] == 5.1)
-					{
-						logFile << "WHEW: Ratchet was retracted successfully, moving on" << endl;
-					}
-				}
-				break;
+					break;
 
-			case 57:
-				if (logFile.is_open())
-				{
-					if (ds->IsOperatorControl())
-						logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
-					logFile << "State 2" << endl;
-					if (data[i] == 1.0)
+				case 57:
+					if (logFile.is_open())
 					{
-						logFile << "SUCCESS: Arm was (hopefully) moved forward (No switch to detect it). Engaging ratchet" << endl;
+						if (ds->IsOperatorControl())
+							logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
+						logFile << "State 2" << endl;
+                            if(data[i] ==  1.0){logFile << "SUCCESS: Arm was (hopefully) moved forward (No switch to detect it). Engaging ratchet"<< endl;}
+                            if(data[i] ==  2.0){logFile << "SHIT: Clips disengaged"<< endl;}
+                            if(data[i] ==  4.0){logFile << "SHIT: Hit bottom or top of bar"<< endl;}
+                            if(data[i] ==  5.0){logFile << "UH OH: Ratchet was re-engaged, attempting to retract"<< endl;}
+                            if(data[i] ==  5.1){logFile << "WHEW: Ratchet was retracted successfully, moving on"<< endl;}
 					}
-					if (data[i] == 2.0)
-					{
-						logFile << "SHIT: Clips disengaged" << endl;
-					}
-					if (data[i] == 4.0)
-					{
-						logFile << "SHIT: Hit bottom or top of bar" << endl;
-					}
-					if (data[i] == 5.0)
-					{
-						logFile << "UH OH: Ratchet was re-engaged, attempting to retract" << endl;
-					}
-					if (data[i] == 5.1)
-					{
-						logFile << "WHEW: Ratchet was retracted successfully, moving on" << endl;
-					}
-				}
-				break;
+					break;
 
-			case 58:
-				if (logFile.is_open())
-				{
-					if (ds->IsOperatorControl())
-						logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
-					logFile << "State 2" << endl;
-					if (data[i] == 1.0)
+				case 58:
+					if (logFile.is_open())
 					{
-						logFile << "SUCCESS: Ratchet successfully engaged, moving hooks down" << endl;
+						if (ds->IsOperatorControl())
+							logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
+						logFile << "State 2" << endl;
+                            if(data[i] ==  1.0){logFile << "SUCCESS: Ratchet successfully engaged, moving hooks down"<< endl;}
+                            if(data[i] ==  2.0){logFile << "SHIT: Timeout error"<< endl;}
+                            if(data[i] ==  3.0){logFile << "SHIT: One of the hooks is engaged, probably a broken limit switch"<< endl;}
+                            if(data[i] ==  4.0){logFile << "SHIT: One of the clips disengaged"<< endl;}
+                            if(data[i] ==  5.0){logFile << "SHIT: You hit either the top or bottom of the lift"<< endl;}
+                            if(data[i] ==  6.0){logFile << "SHIT: You hit either the top or bottom of the lift"<< endl;}
 					}
-					if (data[i] == 2.0)
-					{
-						logFile << "SHIT: Timeout error" << endl;
-					}
-					if (data[i] == 3.0)
-					{
-						logFile << "SHIT: One of the hooks is engaged, probably a broken limit switch" << endl;
-					}
-					if (data[i] == 4.0)
-					{
-						logFile << "SHIT: One of the clips disengaged" << endl;
-					}
-					if (data[i] == 5.0)
-					{
-						logFile << "SHIT: You hit either the top or bottom of the lift" << endl;
-					}
-					if (data[i] == 6.0)
-					{
-						logFile << "SHIT: You hit either the top or bottom of the lift" << endl;
-					}
-				}
-				break;
+					break;
 
-			case 59:
-				if (logFile.is_open())
-				{
-					if (ds->IsOperatorControl())
-						logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
-					logFile << "State 2" << endl;
-					if (data[i] == 1.0)
+				case 59:
+					if (logFile.is_open())
 					{
-						logFile << "SUCCESS: Both hooks clipped on, retracting clips" << endl;
+						if (ds->IsOperatorControl())
+							logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
+						logFile << "State 2" << endl;
+                            if(data[i] ==  1.0){logFile << "SUCCESS: Both hooks clipped on, retracting clips"<< endl;}
+                            if(data[i] ==  2.0){logFile << "SHIT: Timeout error"<< endl;}
+                            if(data[i] ==  3.0){logFile << "UH OH: Only one of your hooks engaged. Continuing to move for a bit"<< endl;}
+                            if(data[i] ==  3.1){logFile << "WHEW: Got both hooks on. Moving on "<< endl;}
+                            if(data[i] ==  3.2){logFile << "SHIT: Couldn't get both hooks on in a safe amount of time"<< endl;}
+                            if(data[i] ==  4.0){logFile << "SHIT: One of the clips disengaged"<< endl;}
+                            if(data[i] ==  5.0){logFile << "SHIT: You hit either the top or bottom of the lift"<< endl;}
+                            if(data[i] ==  6.0){logFile << "REWIND: Your hooks missed the bar completely, going back to state 6 (Move hooks up)"<< endl;}
 					}
-					if (data[i] == 2.0)
-					{
-						logFile << "SHIT: Timeout error" << endl;
-					}
-					if (data[i] == 3.0)
-					{
-						logFile << "UH OH: Only one of your hooks engaged. Continuing to move for a bit" << endl;
-					}
-					if (data[i] == 3.1)
-					{
-						logFile << "WHEW: Got both hooks on. Moving on " << endl;
-					}
-					if (data[i] == 3.2)
-					{
-						logFile << "SHIT: Couldn't get both hooks on in a safe amount of time" << endl;
-					}
-					if (data[i] == 4.0)
-					{
-						logFile << "SHIT: One of the clips disengaged" << endl;
-					}
-					if (data[i] == 5.0)
-					{
-						logFile << "SHIT: You hit either the top or bottom of the lift" << endl;
-					}
-					if (data[i] == 6.0)
-					{
-						logFile << "REWIND: Your hooks missed the bar completely, going back to state 6 (Move hooks up)" << endl;
-					}
-				}
-				break;
+					break;
 
-			case 60:
-				if (logFile.is_open())
-				{
-					if (ds->IsOperatorControl())
-						logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
-					logFile << "State 2" << endl;
-					if (data[i] == 1.0)
+				case 60:
+					if (logFile.is_open())
 					{
-						logFile << "LEVEL UP: Clips retracted, going back to state 2" << endl;
+						if (ds->IsOperatorControl())
+							logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
+						logFile << "State 2" << endl;
+                            if(data[i] ==  1.0){logFile << "LEVEL UP: Clips retracted, going back to state 2"<< endl;}
+                            if(data[i] ==  1.1){logFile << "VICTORY: We made it to the top. Moving on to dumping"<< endl;}
+                            if(data[i] ==  2.0){logFile << "SHIT: Timeout error"<< endl;}
+                            if(data[i] ==  3.0){logFile << "SHIT: One of your hooks came off"<< endl;}
+                            if(data[i] ==  4.0){logFile << "SHIT: You hit either the top or bottom of the lift"<< endl;}
+                            if(data[i] ==  5.0){logFile << "SHIT: Ratchet came out"<< endl;}
 					}
-					if (data[i] == 1.1)
-					{
-						logFile << "VICTORY: We made it to the top. Moving on to dumping" << endl;
-					}
-					if (data[i] == 2.0)
-					{
-						logFile << "SHIT: Timeout error" << endl;
-					}
-					if (data[i] == 3.0)
-					{
-						logFile << "SHIT: One of your hooks came off" << endl;
-					}
-					if (data[i] == 4.0)
-					{
-						logFile << "SHIT: You hit either the top or bottom of the lift" << endl;
-					}
-					if (data[i] == 5.0)
-					{
-						logFile << "SHIT: Ratchet came out" << endl;
-					}
-				}
-				break;
+					break;
 
-			case 62:
-				if (logFile.is_open())
-				{
-					if (ds->IsOperatorControl())
-						logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
-					logFile << "State 2" << endl;
-					if (data[i] == 1.0)
+				case 62:
+					if (logFile.is_open())
 					{
-						logFile << "SUCCESS: We dumped the frisbees" << endl;
+						if (ds->IsOperatorControl())
+							logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
+						logFile << "State 2" << endl;
+                            if(data[i] ==  1.0){
+                                logFile << "SUCCESS: We dumped the frisbees"<< endl;
+                            }
 					}
-				}
-				break;
+					break;
 
-			default:
-				//do nothing
-				break;
+				default:
+					//do nothing
+					break;
+			}
+
+			logFile.close();
 		}
-
-		logFile.close();
-	}
 }
 
 void MarkX::TKODrive()
@@ -752,19 +544,19 @@ void MarkX::TKODrive()
 		burnoutIndexRight = 0;
 	}
 
-	//	if (burnoutIndexLeft > kBURNOUT_CYCLES)
-	//	{
-	//		final_velocity_left = 0;
-	//		printf("Burnout Left");
-	//		DSLog(5, "Burnout Left");
-	//	}
-	//
-	//	if (burnoutIndexRight > kBURNOUT_CYCLES)
-	//	{
-	//		final_velocity_right = 0;
-	//		printf("Burnout Right");
-	//		DSLog(5, "Burnout Right");
-	//	}
+	if (burnoutIndexLeft > kBURNOUT_CYCLES)
+	{
+		final_velocity_left = 0;
+		printf("Burnout Left");
+		DSLog(5, "Burnout Left");
+	}
+
+	if (burnoutIndexRight > kBURNOUT_CYCLES)
+	{
+		final_velocity_right = 0;
+		printf("Burnout Right");
+		DSLog(5, "Burnout Right");
+	}
 	printf("Finished processing joystick inputs. \n");
 	printf("Left velocity to set: %f", final_velocity_left);
 	space
@@ -774,7 +566,7 @@ void MarkX::TKODrive()
 	float speedLeft = drive1.GetSpeed() * 3.14159 * 6/*wheel size*// 12
 	/*inches in feet*// 60;
 	float speedRight = drive3.GetSpeed() * 3.14159 * 6 / 12 / 60;
-	DSLog(1, "Speed F/s: %f", fabs(((fabs(speedLeft) + fabs(speedRight)) / 2)));
+	DSLog(1, "Speed F/s: %f", fabs(((speedLeft + speedRight) / 2)));
 	//	DSLog(2, "Sonar 1 in: %f", sonar1.GetVoltage() * 100);
 	//	DSLog(3, "Sonar 2 in: %f", sonar2.GetVoltage() * 100);
 	DSLog(2, "Left target %f", final_velocity_left);
