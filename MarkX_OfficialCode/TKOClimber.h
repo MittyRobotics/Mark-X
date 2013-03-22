@@ -5,13 +5,12 @@
 
 #define armBack() sArmE.Set(false);/*Wait(0.1);*/sArmR.Set(true);/*Wait(0.1);*/
 #define armForward() sArmR.Set(false); /*Wait(0.1);*/sArmE.Set(true);/*Wait(0.1);*/
-#define ratchetBack() rsRatchet.SetOn(1);/*Wait(0.1);*/
-#define ratchetForward() rsRatchet.SetOn(0);/*Wait(0.1);*/
-#define clipForward() sClipsE.Set(false); /*Wait(0.3);*/ sClipsR.Set(true); /*Wait(0.3);*/
-#define clipBack() sClipsR.Set(false);/*Wait(0.3);*/sClipsE.Set(true);/*Wait(0.3);*/
+#define ratchetBack() rsRatchet.SetOn(0);/*Wait(0.1);*/
+#define ratchetForward() rsRatchet.SetOn(1);/*Wait(0.1);*/
+#define clipForward() sClipsR.Set(false); /*Wait(0.3);*/ sClipsE.Set(true); /*Wait(0.3);*/
+#define clipBack() sClipsE.Set(false);/*Wait(0.3);*/sClipsR.Set(true);/*Wait(0.3);*/
 #define topDumperForward() sDumperR.Set(false);/*Wait(0.1);*/sDumperE.Set(true);/*Wait(0.1);*/
 #define topDumperBackward() sDumperE.Set(false);sDumperR.Set(true);
-#define winchTop() RatchetBack();winch1.Set(SETPOINT_TOP);
 #define gg ;
 
 #include "Definitions.h"
@@ -37,8 +36,6 @@ class TKOClimber
 		double SETPOINT_TOP;
 		double SETPOINT_BOTTOM;
 		double SETPOINT_LAST;
-		double SETPOINT_RATCHET_RETRACT;
-		bool ranCalibration;
 		///Constructor for the TKOClimber class
 		/*!
 
@@ -62,8 +59,6 @@ class TKOClimber
 		/*!
 		 */
 		~TKOClimber();
-		
-		void MoveWinchWithStick();
 		///Decide method for TKOCLimber class
 		/*!
 		 Lets the driver decide whether they are going to continue climbing or not
@@ -141,7 +136,6 @@ class TKOClimber
 		 Extends the ratchet pneumatic, engaging the safety
 		 */
 		void RatchetForward();
-		void LevelOneClimb();
 };
 
 #endif
