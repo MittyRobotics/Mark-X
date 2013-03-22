@@ -226,8 +226,14 @@ void TKOClimber::LevelOneClimb()
 
 	while (not clipLeft.Get() or not clipRight.Get())
 	{
+	    time2.Reset();
 		winch1.Set(SETPOINT_RATCHET_RETRACT);
 		//winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
+		if(time2.Get() > 5)
+		{
+		    winch1.Set(SETPOINT_RATCHET_RETRACT);
+		    armBack();
+		}
 		if (winch1.GetPosition() <= SETPOINT_RATCHET_RETRACT)
 		{
             winchTop;
