@@ -12,6 +12,7 @@
  * Add system that realizes when robot hits a wall
  * Fix logger
  * add autocalibration system for winch
+ * Make sure that auto turn and drive slaves volatage is setup right
  */
 
 class MarkX: public SimpleRobot

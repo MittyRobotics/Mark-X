@@ -312,7 +312,7 @@ bool TKOAutonomous::turn(double target)//takes negative values
 	{
 		printf("Turning right \n");
 		drive2.Set(0.7);
-		drive4.Set(-0.7);
+		drive4.Set(0.7);
 	}
 	if (currAngle + 2.0 >= target)
 	{
@@ -336,7 +336,7 @@ bool TKOAutonomous::turn(double target)//takes negative values
 	{
 		printf("Past target \n");
 		drive2.Set(-0.8);
-		drive4.Set(0.8);
+		drive4.Set(-0.8);
 	}
 	return false;
 }
