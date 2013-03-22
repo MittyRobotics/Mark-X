@@ -273,256 +273,180 @@ void MarkX::Operator()
 
 void MarkX::writeLog()
 {
-	//	std::ofstream logFile;
-	//	logFile.open("log.txt", std::ofstream::trunc);
-	//
-	//	//this part in robot disabled
-	//	int i = 0;
-	//	for (; i <= indx; i++)
-	//	{
-	//		switch (message[i])
-	//		{
-	//			case 2:
-	//				if (logFile.is_open())
-	//				{
-	//					if (ds->IsOperatorControl())
-	//						logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
-	//					logFile << "Average Drive Current" << endl;
-	//					logFile << "Data: " << data[i] << endl;
-	//				}
-	//				break;
-	//
-	//			case 52:
-	//				if (logFile.is_open())
-	//				{
-	//					if (ds->IsOperatorControl())
-	//						logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
-	//					logFile << "State 2" << endl;
-	//					//					switch(data[i]){
-	//					//                        case 1.0:
-	//					//                            logFile << "SUCCESS: Setpoint reached, retracting ratchet"<< endl; break;
-	//					//                        case 2.0:
-	//					//                            logFile << "SHIT: Your clip limit switches were triggered while they were retracted. Broken switch"<< endl; break;
-	//					//                        case 3.0:
-	//					//                            logFile << "SHIT: One of your hooks jumped off"<< endl; break;
-	//					//                        case 4.0:
-	//					//                            logFile << "SHIT: Your hooks reached the bottom, and its too late to remove ratchet"<< endl; break;
-	//					//                        case 5.0:
-	//					//                            logFile << "UH OH; Ratchet was disengaged. Re-engaging ratchet"<< endl; break;
-	//					//                        case 5.1:
-	//					//                            logFile << "SHIT: Ratchet did not engage in half a second"<< endl; break;
-	//					//                        case 6.0:
-	//					//                            logFile << "DECIDE: Your hooks took too long to reach the bottom"<< endl; break;
-	//					//                    }
-	//				}
-	//				break;
-	//
-	//			case 53:
-	//				if (logFile.is_open())
-	//				{
-	//					if (ds->IsOperatorControl())
-	//						logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
-	//					logFile << "State 2" << endl;
-	//					//					switch(data[i]){
-	//					//                        case 1.0:
-	//					//                            logFile << "SUCCESS: Ratchet retracted, continuing to move down"<< endl; break;
-	//					//                        case 2.0:
-	//					//                            logFile << "SHIT: One of the hooks came off"<< endl; break;
-	//					//                        case 3.0:
-	//					//                            logFile << "SHIT: One of the clips sensed the bar; broken limit switch"<< endl; break;
-	//					//                        case 4.0:
-	//					//                            logFile << "SHIT: Top switch is broken"<< endl; break;
-	//					//                        case 5.0:
-	//					//                            logFile << "SHIT; Hit the bottom of the bar"<< endl; break;
-	//					//                        case 6.0:
-	//					//                            logFile << "SHIT: Timeout error"<< endl; break;
-	//					//                    }
-	//				}
-	//				break;
-	//
-	//			case 54:
-	//				if (logFile.is_open())
-	//				{
-	//					if (ds->IsOperatorControl())
-	//						logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
-	//					logFile << "State 2" << endl;
-	//					//					switch(data[i]){
-	//					//                        case 1.0:
-	//					//                            logFile << "SUCCESS: Setpoint reached, deploying clips"<< endl; break;
-	//					//                        case 2.0:
-	//					//                            logFile << "SHIT: Timeout error"<< endl; break;
-	//					//                        case 3.0:
-	//					//                            logFile << "SHIT: One of the hooks came off"<< endl; break;
-	//					//                        case 4.0:
-	//					//                            logFile << "SHIT: One of the clips sensed the bar. Broken switch"<< endl; break;
-	//					//                        case 5.0:
-	//					//                            logFile << "SHIT; Hit the bottom of the bar"<< endl; break;
-	//					//                        case 6.0:
-	//					//                            logFile << "REWIND: Ratchet was re-engaged. Went back a state and try to retract ratchet again"<< endl; break;
-	//					//                    }
-	//				}
-	//				break;
-	//
-	//			case 55:
-	//				if (logFile.is_open())
-	//				{
-	//					if (ds->IsOperatorControl())
-	//						logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
-	//					logFile << "State 2" << endl;
-	//					//					switch(data[i]){
-	//					//                        case 1.0:
-	//					//                            logFile << "SUCCESS: Clips deployed, moving hooks up"<< endl; break;
-	//					//                        case 2.0:
-	//					//                            logFile << "SHIT: Timeout error"<< endl; break;
-	//					//                        case 3.0:
-	//					//                            logFile << "SHIT: One of the hooks came off"<< endl; break;
-	//					//                        case 4.0:
-	//					//                            logFile << "SHIT: Hit bottom or top of bar"<< endl; break;
-	//					//                        case 5.0:
-	//					//                            logFile << "UH OH: Ratchet was re-engaged, attempting to retract"<< endl; break;
-	//					//                        case 5.1:
-	//					//                            logFile << "WHEW: Ratchet was retracted successfully, moving on"<< endl; break;
-	//					//                    }
-	//				}
-	//				break;
-	//
-	//			case 56:
-	//				if (logFile.is_open())
-	//				{
-	//					if (ds->IsOperatorControl())
-	//						logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
-	//					logFile << "State 2" << endl;
-	//					//					switch(data[i]){
-	//					//                        case 1.0:
-	//					//                            logFile << "SUCCESS: Hooks reached top, arm moving forward"<< endl; break;
-	//					//                        case 2.0:
-	//					//                            logFile << "SHIT: Timeout error"<< endl; break;
-	//					//                        case 3.0:
-	//					//                            logFile << "SHIT: One of the clips came off"<< endl; break;
-	//					//                        case 4.0:
-	//					//                            logFile << "SHIT: Hit bottom or top of bar"<< endl; break;
-	//					//                        case 5.0:
-	//					//                            logFile << "UH OH: Ratchet was re-engaged, attempting to retract"<< endl; break;
-	//					//                        case 5.1:
-	//					//                            logFile << "WHEW: Ratchet was retracted successfully, moving on"<< endl; break;
-	//					//                    }
-	//				}
-	//				break;
-	//
-	//			case 57:
-	//				if (logFile.is_open())
-	//				{
-	//					if (ds->IsOperatorControl())
-	//						logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
-	//					logFile << "State 2" << endl;
-	//					//					switch(data[i]){
-	//					//                        case 1.0:
-	//					//                            logFile << "SUCCESS: Arm was (hopefully) moved forward (No switch to detect it). Engaging ratchet"<< endl; break;
-	//					//                        case 2.0:
-	//					//                            logFile << "SHIT: Clips disengaged"<< endl; break;
-	//					//                        case 4.0:
-	//					//                            logFile << "SHIT: Hit bottom or top of bar"<< endl; break;
-	//					//                        case 5.0:
-	//					//                            logFile << "UH OH: Ratchet was re-engaged, attempting to retract"<< endl; break;
-	//					//                        case 5.1:
-	//					//                            logFile << "WHEW: Ratchet was retracted successfully, moving on"<< endl; break;
-	//					//                    }
-	//				}
-	//				break;
-	//
-	//			case 58:
-	//				if (logFile.is_open())
-	//				{
-	//					if (ds->IsOperatorControl())
-	//						logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
-	//					logFile << "State 2" << endl;
-	//					//					switch(data[i]){
-	//					//                        case 1.0:
-	//					//                            logFile << "SUCCESS: Ratchet successfully engaged, moving hooks down"<< endl; break;
-	//					//                        case 2.0:
-	//					//                            logFile << "SHIT: Timeout error"<< endl; break;
-	//					//                        case 3.0:
-	//					//                            logFile << "SHIT: One of the hooks is engaged, probably a broken limit switch"<< endl; break;
-	//					//                        case 4.0:
-	//					//                            logFile << "SHIT: One of the clips disengaged"<< endl; break;
-	//					//                        case 5.0:
-	//					//                            logFile << "SHIT: You hit either the top or bottom of the lift"<< endl; break;
-	//					//                        case 6.0:
-	//					//                            logFile << "SHIT: You hit either the top or bottom of the lift"<< endl; break;
-	//					//                    }
-	//				}
-	//				break;
-	//
-	//			case 59:
-	//				if (logFile.is_open())
-	//				{
-	//					if (ds->IsOperatorControl())
-	//						logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
-	//					logFile << "State 2" << endl;
-	//					//					switch(data[i]){
-	//					//                        case 1.0:
-	//					//                            logFile << "SUCCESS: Both hooks clipped on, retracting clips"<< endl; break;
-	//					//                        case 2.0:
-	//					//                            logFile << "SHIT: Timeout error"<< endl; break;
-	//					//                        case 3.0:
-	//					//                            logFile << "UH OH: Only one of your hooks engaged. Continuing to move for a bit"<< endl; break;
-	//					//                        case 3.1:
-	//					//                            logFile << "WHEW: Got both hooks on. Moving on "<< endl; break;
-	//					//                        case 3.2:
-	//					//                            logFile << "SHIT: Couldn't get both hooks on in a safe amount of time"<< endl; break;
-	//					//                        case 4.0:
-	//					//                            logFile << "SHIT: One of the clips disengaged"<< endl; break;
-	//					//                        case 5.0:
-	//					//                            logFile << "SHIT: You hit either the top or bottom of the lift"<< endl; break;
-	//					//                        case 6.0:
-	//					//                            logFile << "REWIND: Your hooks missed the bar completely, going back to state 6 (Move hooks up)"<< endl; break;
-	//					//                    }
-	//				}
-	//				break;
-	//
-	//			case 60:
-	//				if (logFile.is_open())
-	//				{
-	//					if (ds->IsOperatorControl())
-	//						logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
-	//					logFile << "State 2" << endl;
-	//					//					switch(data[i]){
-	//					//                        case 1.0:
-	//					//                            logFile << "LEVEL UP: Clips retracted, going back to state 2"<< endl; break;
-	//					//                        case 1.1:
-	//					//                            logFile << "VICTORY: We made it to the top. Moving on to dumping"<< endl; break;
-	//					//                        case 2.0:
-	//					//                            logFile << "SHIT: Timeout error"<< endl; break;
-	//					//                        case 3.0:
-	//					//                            logFile << "SHIT: One of your hooks came off"<< endl; break;
-	//					//                        case 4.0:
-	//					//                            logFile << "SHIT: You hit either the top or bottom of the lift"<< endl; break;
-	//					//                        case 5.0:
-	//					//                            logFile << "SHIT: Ratchet came out"<< endl; break;
-	//					//                    }
-	//				}
-	//				break;
-	//
-	//			case 62:
-	//				if (logFile.is_open())
-	//				{
-	//					if (ds->IsOperatorControl())
-	//						logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
-	//					logFile << "State 2" << endl;
-	//					//					switch(data[i]){
-	//					//                        case 1.0:
-	//					//                            logFile << "SUCCESS: We dumped the frisbees"<< endl; break;
-	//					//                    }
-	//				}
-	//				break;
-	//
-	//			default:
-	//				//do nothing
-	//				break;
-	//		}
-	//
-	//		logFile.close();
-	//	}
+		std::ofstream logFile;
+		logFile.open("log.txt", std::ofstream::trunc);
+
+		//this part in robot disabled
+		int i = 0;
+		for (; i <= indx; i++)
+		{
+			switch (message[i])
+			{
+				case 2:
+					if (logFile.is_open())
+					{
+						if (ds->IsOperatorControl())
+							logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
+						logFile << "Average Drive Current" << endl;
+						logFile << "Data: " << data[i] << endl;
+					}
+					break;
+				case 52:
+                    if (logFile.is_open())
+                    {
+                        if (ds->IsOperatorControl())
+                            logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
+                        logFile << "State 2" << endl;
+                        if(data[i] == 1.0){logFile << "SUCCESS: Setpoint reached, retracting ratchet"<< endl;}
+                        if(data[i] == 2.0){logFile << "SHIT: Your clip limit switches were triggered while they were retracted. Broken switch"<< endl;}
+                        if(data[i] == 3.0){logFile << "SHIT: One of your hooks jumped off"<< endl;}
+                        if(data[i] == 4.0){logFile << "SHIT: Your hooks reached the bottom, and its too late to remove ratchet"<< endl;}
+                        if(data[i] == 5.0){logFile << "UH OH; Ratchet was disengaged. Re-engaging ratchet"<< endl;}
+                        if(data[i] == 5.1){logFile << "SHIT: Ratchet did not engage in half a second"<< endl;}
+                        if(data[i] == 6.0){logFile << "DECIDE: Your hooks took too long to reach the bottom"<< endl;}
+                    }
+				break;
+
+				case 53:
+					if (logFile.is_open())
+					{
+						if (ds->IsOperatorControl())
+							logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
+						logFile << "State 2" << endl;
+                        if(data[i] == 1.0){logFile << "SUCCESS: Ratchet retracted, continuing to move down"<< endl;}
+                        if(data[i] == 2.0){logFile << "SHIT: One of the hooks came off"<< endl;}
+                        if(data[i] == 3.0){logFile << "SHIT: One of the clips sensed the bar; broken limit switch"<< endl;}
+                        if(data[i] == 4.0){logFile << "SHIT: Top switch is broken"<< endl;}
+                        if(data[i] == 5.0){logFile << "SHIT; Hit the bottom of the bar"<< endl;}
+                        if(data[i] == 6.0){logFile << "SHIT: Timeout error"<< endl;}
+					}
+                break;
+
+				case 54:
+					if (logFile.is_open())
+					{
+						if (ds->IsOperatorControl())
+							logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
+						logFile << "State 2" << endl;
+                            if(data[i] == 1.0){logFile << "SUCCESS: Setpoint reached, deploying clips"<< endl;}
+                            if(data[i] == 2.0){logFile << "SHIT: Timeout error"<< endl;}
+                            if(data[i] == 3.0){logFile << "SHIT: One of the hooks came off"<< endl;}
+                            if(data[i] == 4.0){logFile << "SHIT: One of the clips sensed the bar. Broken switch"<< endl;}
+                            if(data[i] == 5.0){logFile << "SHIT; Hit the bottom of the bar"<< endl;}
+                            if(data[i] == 6.0){logFile << "REWIND: Ratchet was re-engaged. Went back a state and try to retract ratchet again"<< endl;}
+					}
+					break;
+
+				case 55:
+					if (logFile.is_open())
+					{
+						if (ds->IsOperatorControl())
+							logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
+						logFile << "State 2" << endl;
+                        if(data[i] == 1.0){logFile << "SUCCESS: Clips deployed, moving hooks up"<< endl;}
+                        if(data[i] == 2.0){logFile << "SHIT: Timeout error"<< endl;}
+                        if(data[i] == 3.0){logFile << "SHIT: One of the hooks came off"<< endl;}
+                        if(data[i] == 4.0){logFile << "SHIT: Hit bottom or top of bar"<< endl;}
+                        if(data[i] == 5.0){logFile << "UH OH: Ratchet was re-engaged, attempting to retract"<< endl;}
+                        if(data[i] == 5.1){logFile << "WHEW: Ratchet was retracted successfully, moving on"<< endl;}
+					}
+					break;
+
+				case 56:
+					if (logFile.is_open())
+					{
+						if (ds->IsOperatorControl())
+							logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
+						logFile << "State 2" << endl;
+                            if(data[i] == 1.0){logFile << "SUCCESS: Hooks reached top, arm moving forward"<< endl;}
+                            if(data[i] == 2.0){logFile << "SHIT: Timeout error"<< endl;}
+                            if(data[i] == 3.0){logFile << "SHIT: One of the clips came off"<< endl;}
+                            if(data[i] == 4.0){logFile << "SHIT: Hit bottom or top of bar"<< endl;}
+                            if(data[i] == 5.0){logFile << "UH OH: Ratchet was re-engaged, attempting to retract"<< endl;}
+                            if(data[i] == 5.1){logFile << "WHEW: Ratchet was retracted successfully, moving on"<< endl;}
+					}
+					break;
+
+				case 57:
+					if (logFile.is_open())
+					{
+						if (ds->IsOperatorControl())
+							logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
+						logFile << "State 2" << endl;
+                            if(data[i] ==  1.0){logFile << "SUCCESS: Arm was (hopefully) moved forward (No switch to detect it). Engaging ratchet"<< endl;}
+                            if(data[i] ==  2.0){logFile << "SHIT: Clips disengaged"<< endl;}
+                            if(data[i] ==  4.0){logFile << "SHIT: Hit bottom or top of bar"<< endl;}
+                            if(data[i] ==  5.0){logFile << "UH OH: Ratchet was re-engaged, attempting to retract"<< endl;}
+                            if(data[i] ==  5.1){logFile << "WHEW: Ratchet was retracted successfully, moving on"<< endl;}
+					}
+					break;
+
+				case 58:
+					if (logFile.is_open())
+					{
+						if (ds->IsOperatorControl())
+							logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
+						logFile << "State 2" << endl;
+                            if(data[i] ==  1.0){logFile << "SUCCESS: Ratchet successfully engaged, moving hooks down"<< endl;}
+                            if(data[i] ==  2.0){logFile << "SHIT: Timeout error"<< endl;}
+                            if(data[i] ==  3.0){logFile << "SHIT: One of the hooks is engaged, probably a broken limit switch"<< endl;}
+                            if(data[i] ==  4.0){logFile << "SHIT: One of the clips disengaged"<< endl;}
+                            if(data[i] ==  5.0){logFile << "SHIT: You hit either the top or bottom of the lift"<< endl;}
+                            if(data[i] ==  6.0){logFile << "SHIT: You hit either the top or bottom of the lift"<< endl;}
+					}
+					break;
+
+				case 59:
+					if (logFile.is_open())
+					{
+						if (ds->IsOperatorControl())
+							logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
+						logFile << "State 2" << endl;
+                            if(data[i] ==  1.0){logFile << "SUCCESS: Both hooks clipped on, retracting clips"<< endl;}
+                            if(data[i] ==  2.0){logFile << "SHIT: Timeout error"<< endl;}
+                            if(data[i] ==  3.0){logFile << "UH OH: Only one of your hooks engaged. Continuing to move for a bit"<< endl;}
+                            if(data[i] ==  3.1){logFile << "WHEW: Got both hooks on. Moving on "<< endl;}
+                            if(data[i] ==  3.2){logFile << "SHIT: Couldn't get both hooks on in a safe amount of time"<< endl;}
+                            if(data[i] ==  4.0){logFile << "SHIT: One of the clips disengaged"<< endl;}
+                            if(data[i] ==  5.0){logFile << "SHIT: You hit either the top or bottom of the lift"<< endl;}
+                            if(data[i] ==  6.0){logFile << "REWIND: Your hooks missed the bar completely, going back to state 6 (Move hooks up)"<< endl;}
+					}
+					break;
+
+				case 60:
+					if (logFile.is_open())
+					{
+						if (ds->IsOperatorControl())
+							logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
+						logFile << "State 2" << endl;
+                            if(data[i] ==  1.0){logFile << "LEVEL UP: Clips retracted, going back to state 2"<< endl;}
+                            if(data[i] ==  1.1){logFile << "VICTORY: We made it to the top. Moving on to dumping"<< endl;}
+                            if(data[i] ==  2.0){logFile << "SHIT: Timeout error"<< endl;}
+                            if(data[i] ==  3.0){logFile << "SHIT: One of your hooks came off"<< endl;}
+                            if(data[i] ==  4.0){logFile << "SHIT: You hit either the top or bottom of the lift"<< endl;}
+                            if(data[i] ==  5.0){logFile << "SHIT: Ratchet came out"<< endl;}
+					}
+					break;
+
+				case 62:
+					if (logFile.is_open())
+					{
+						if (ds->IsOperatorControl())
+							logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
+						logFile << "State 2" << endl;
+                            if(data[i] ==  1.0){
+                                logFile << "SUCCESS: We dumped the frisbees"<< endl;
+                            }
+					}
+					break;
+
+				default:
+					do nothing
+					break;
+			}
+
+			logFile.close();
+		}
 }
 
 void MarkX::TKODrive()
