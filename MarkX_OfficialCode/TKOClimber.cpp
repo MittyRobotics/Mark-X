@@ -214,6 +214,51 @@ void TKOClimber::Test() //pneumatics test
 	}
 }
 
+void TKOClimber::LevelOneClimb()
+{
+    if(ranCalibration == false)
+	{
+	    calibrateWinch();
+	}
+	ArmForward();
+    //ClipBack();
+	RatchetForward();
+
+	while (not clipLeft.Get() or not clipRight.Get())
+	{
+		winch1.Set(SETPOINT_RATCHET_RETRACT);
+		winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
+		if (winch1.GetPosition() <= SETPOINT_RATCHET_RETRACT)
+		{
+			winch1.Set(SETPOINT_TOP);
+			armBack();
+			break;
+		}
+		if (clipLeft.Get() and clipRight.Get())
+		{
+			break;
+		}
+		if ((clipLeft.Get() and not clipRight.Get()) or (not clipLeft.Get() and clipRight.Get())) //If only one clip is on,
+		{
+			time2.Reset();
+			if (time2.Get() > .1)
+			{
+				winch1.Set(SETPOINT_TOP);
+				armBack();
+				break;
+			}
+		}
+	}
+
+	if (hookLeft.Get() and hookRight.Get())
+	{
+	    winch1.Set(SETPOINT_RATCHET_RETRACT);
+	}
+
+
+
+}
+
 void TKOClimber::Climb()
 {
 	state = ROBOT_PULLED_UP;
