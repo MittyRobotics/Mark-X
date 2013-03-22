@@ -33,6 +33,8 @@ class TKOClimber
 		TKORelay rsRatchet;
 		CANJaguar winch1, winch2;
 		DigitalInput hookLeft, hookRight, clipLeft, clipRight, armTop, armBottom, ratchet;
+		double WINCH_ACTUAL_TOP;
+		double WINCH_ACTUAL_BOTTOM;
 		///Constructor for the TKOClimber class
 		/*!
 
@@ -91,6 +93,8 @@ class TKOClimber
 		/*!
 		 Extends the top dumper pneumatic, dumping the frisbees into the top goal
 		 */
+		void calibrateWinch();
+		
 		void Dump();
 
 		void RetractDump();

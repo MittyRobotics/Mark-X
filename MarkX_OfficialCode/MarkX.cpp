@@ -10,7 +10,7 @@
  * Test implementing a global timer/using system time to timestamp logger messages
  * Add system that realizes when robot hits a wall
  * Fix logger
- * add autocalibration system
+ * add autocalibration system for winch
  */
 
 class MarkX: public SimpleRobot

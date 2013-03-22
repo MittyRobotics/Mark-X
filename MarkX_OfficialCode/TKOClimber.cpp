@@ -94,6 +94,41 @@ void TKOClimber::Dump()
 	}
 }
 
+void TKOClimber::calibrateWinch()
+{
+	printf("Starting to autoCalibrate \n");
+	while (true)
+	{
+		winch1.Set(winch1.GetPosition() - 0.3);
+		winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
+		if (not armBottom.Get())
+		{
+			winch1.Set(winch1.GetPosition());
+			winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
+			WINCH_ACTUAL_BOTTOM = 0;
+			break;
+		}
+	}
+	printf("Hit bottom of arm \n");
+	winch1.EnableControl(WINCH_ACTUAL_BOTTOM);
+	while (true)
+	{
+		winch1.Set(winch1.GetPosition() + 0.3);
+		winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
+		if (not armTop.Get())
+		{
+			winch1.Set(winch1.GetPosition());
+			winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
+			WINCH_ACTUAL_TOP = winch1.GetPosition();
+			break;
+		}
+	}
+	printf("Reached top of arm \n");
+	printf("Finished calibration of arm \n");
+	printf("Bottom of winch is 0 and top is %f", WINCH_ACTUAL_TOP);
+	printf("\n");
+}
+
 void TKOClimber::print()
 {
 	printf("Winch 1 pos: %f \n", winch1.GetPosition());
@@ -112,6 +147,7 @@ void TKOClimber::Test() //pneumatics test
 {
 	DSClear();
 	printf("Starting winch/climber test. \n");
+	calibrateWinch();
 	while (true)
 	{
 		if (!ds->IsEnabled())
@@ -168,7 +204,7 @@ void TKOClimber::Test() //pneumatics test
 			}
 		}
 
-		winch2.Set(winch1.GetOutputVoltage());
+		winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
 	}
 }
 
@@ -186,6 +222,7 @@ void TKOClimber::Climb()
 	while (not clipLeft.Get() or not clipRight.Get())
 	{
 		winch1.Set(SETPOINT_RATCHET_RETRACT);
+		winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
 		if (winch1.GetPosition() <= SETPOINT_RATCHET_RETRACT)
 		{
 			winch1.Set(SETPOINT_TOP);
