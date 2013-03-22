@@ -15,7 +15,7 @@
 
 #include "Definitions.h"
 #include "TKORelay.h"
-//#include "Logger.h"
+#include "Logger.h"
 
 class TKOClimber
 {
@@ -94,7 +94,7 @@ class TKOClimber
 		 Extends the top dumper pneumatic, dumping the frisbees into the top goal
 		 */
 		void calibrateWinch();
-		
+
 		void Dump();
 
 		void RetractDump();

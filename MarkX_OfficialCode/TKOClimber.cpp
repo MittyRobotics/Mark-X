@@ -259,9 +259,7 @@ void TKOClimber::Climb()
 			{
 				state = OH_SHIT;
 			}
-			switch (state)
-			{
-				case ROBOT_PULLED_UP: //state 2
+				while(state == ROBOT_PULLED_UP){ //state 2
 					//begin pulling up robot
 					armBack()
 					;
@@ -329,9 +327,9 @@ void TKOClimber::Climb()
 						state = Decide(state);
 						continue;
 					}
-					break;
+				}
 
-				case RETRACTING_RATCHET: //state 3
+				while(state == RETRACTING_RATCHET){ //state 3
 					//retract ratchet
 					//arm is back
 					if (winch1.GetPosition() > SETPOINT_BOTTOM and ratchet.Get()) //MOVE MOTORS
@@ -388,11 +386,12 @@ void TKOClimber::Climb()
 						state = OH_SHIT;
 						continue;
 					}
-					break;
+		}
 
-				case CHANGE_SETPOINT_MOVE_HOOKS_DOWN: //state 4
+				while(state == CHANGE_SETPOINT_MOVE_HOOKS_DOWN) //state 4
 					//change setpoint to very bottom, keep moving hooks
 					//arm is back
+					{
 					if (winch1.GetPosition() > SETPOINT_BOTTOM - TOLERANCE and not armBottom.Get())
 					{
 						winch1.Set(winch1.GetPosition() - LIFT_INCREMENT);
@@ -447,9 +446,10 @@ void TKOClimber::Climb()
 						continue;
 					}
 
-					break;
+		}
 
-				case DEPLOY_CLIPS: //state 5
+				while(state == DEPLOY_CLIPS)
+				{//state 5
 					//deploying clips
 					//arm is back
 					ClipForward();
@@ -500,9 +500,9 @@ void TKOClimber::Climb()
 						state = OH_SHIT;
 						continue;
 					}
-					break;
+		}
 
-				case MOVE_HOOKS_UP: //state 6
+					while(state == MOVE_HOOKS_UP){ //state 6
 					//Hooks begin moving up
 					//arm is back
 					if (winch1.GetPosition() < SETPOINT_TOP - TOLERANCE)
@@ -565,7 +565,7 @@ void TKOClimber::Climb()
 						}
 					}
 
-					break;
+		}
 
 				case MOVE_ARM_FORWARD: //state 7
 					//move arm forward
@@ -614,8 +614,8 @@ void TKOClimber::Climb()
 					state = MOVE_HOOKS_DOWN;
 					break;
 
-				case DEPLOYING_RATCHET: //state 8
-					//push down ratchet
+				while(state == DEPLOYING_RATCHET) //state 8
+					{ //push down ratchet
 					//arm is forward
 					ratchetForward()
 
@@ -675,9 +675,10 @@ void TKOClimber::Climb()
 						writeMD(50 + state, 2.0);
 						continue;
 					}
-					break;
+		}
 
-				case MOVE_HOOKS_DOWN: //state 9
+				while(state == MOVE_HOOKS_DOWN)
+				{//state 9
 					//move hooks down
 					//arm is forward
 					winch1.Set(SETPOINT_BOTTOM);
@@ -756,9 +757,8 @@ void TKOClimber::Climb()
 						state = OH_SHIT;
 						continue;
 					}
-					break;
-
-				case RETRACTING_CLIPS: //state 10
+				}
+				while(state == RETRACTING_CLIPS){ //state 10
 					//retract clips
 					//hook motors are stopped
 					//arm is forward
@@ -812,7 +812,7 @@ void TKOClimber::Climb()
 						writeMD(50 + state, 2.0);
 						state = OH_SHIT;
 					}
-					break;
+				}
 
 				case WE_MADE_IT:
 					while (true)
@@ -827,7 +827,8 @@ void TKOClimber::Climb()
 						winch2.Disable();
 					}
 
-				case OH_SHIT:
+				while(state == OH_SHIT)
+				{
 					//add log write with case as number in data
 					ratchetForward()
 					clipForward()
@@ -836,7 +837,7 @@ void TKOClimber::Climb()
 					winch2.DisableControl();
 					winch2.Disable();
 					printf("OH GOD THINGS WENT WRONG OH GOD OH GOD \n");
-			}
+				}
 		}
 	}
 }
