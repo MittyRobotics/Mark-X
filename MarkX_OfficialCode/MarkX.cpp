@@ -274,7 +274,7 @@ void MarkX::Operator()
 void MarkX::writeLog()
 {
 		std::ofstream logFile;
-		logFile.open("log.txt", std::ofstream::trunc);
+		logFile.open("log.txt", std::ofstream::app);
 
 		//this part in robot disabled
 		int i = 0;
