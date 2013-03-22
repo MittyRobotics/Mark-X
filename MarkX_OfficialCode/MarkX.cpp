@@ -441,7 +441,7 @@ void MarkX::writeLog()
 					break;
 
 				default:
-					do nothing
+					//do nothing
 					break;
 			}
 
