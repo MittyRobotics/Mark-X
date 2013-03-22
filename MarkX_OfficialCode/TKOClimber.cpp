@@ -106,7 +106,7 @@ void TKOClimber::calibrateWinch()
 		{
 			winch1.Set(winch1.GetPosition());
 			winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
-			SETPOINT_BOTTOM = 0;
+			SETPOINT_BOTTOM = .1;
 			break;
 		}
 	}
@@ -120,7 +120,8 @@ void TKOClimber::calibrateWinch()
 		{
 			winch1.Set(winch1.GetPosition());
 			winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
-			SETPOINT_TOP = winch1.GetPosition();
+			SETPOINT_TOP = winch1.GetPosition() - .1;
+			winch1.Set(SETPOINT_TOP);
 			break;
 		}
 	}
