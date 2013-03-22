@@ -243,11 +243,11 @@ void TKOClimber::LevelOneClimb()
 		}
 
 		//neither hook for a second, move the arm back
-		if (clipLeft.Get() and clipRight.Get())
+		if (hookLeftLeft.Get() and hookRight.Get())
 		{
 			break;
 		}
-		if ((clipLeft.Get() and not clipRight.Get()) or (not clipLeft.Get() and clipRight.Get())) //If only one clip is on,
+		if ((hookLeft.Get() and not hookRight.Get()) or (not hookLeft.Get() and hookRight.Get())) //If only one clip is on,
 		{
 			time2.Reset();
 			if (time2.Get() > .1)
