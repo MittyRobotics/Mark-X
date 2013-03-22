@@ -259,12 +259,13 @@ void TKOClimber::LevelOneClimb()
 		}
 	}
 
-	if (hookLeft.Get() and hookRight.Get())
-	{
-	    winch1.Set(SETPOINT_RATCHET_RETRACT);
-	}
-
-
+    while (hookLeft.Get() and hookRight.Get() and winch1.GetPosition() > SETPOINT_BOTTOM and ratchet.Get()) //MOVE MOTORS
+        {
+            ratchetBack();
+            winch1.Set(winch1.GetPosition() - LIFT_INCREMENT_RATCHET);
+            if (winch1.GetPosition() <= SETPOINT_BOTTOM)
+                winch1.Set(SETPOINT_BOTTOM);
+        }
 
 }
 
