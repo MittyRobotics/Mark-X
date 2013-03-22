@@ -4,13 +4,10 @@
 //Constructor for the TKOAutonomous class
 
 TKOClimber::TKOClimber(int port1, int port2) :
-	//lift crap
-	        winch1(port1, CANJaguar::kPosition), winch2(port2, CANJaguar::kPercentVbus), hookLeft(7), hookRight(8), clipLeft(5), clipRight(6), armTop(4), armBottom(3), ratchet(2),
-
-	        //begin pneumatics crap
-	        rsRatchet(PN_R3_ID), sDumperR(PN_S1R_ID), sDumperE(PN_S1E_ID), sClipsR(PN_S3R_ID), sClipsE(PN_S3E_ID), sArmR(PN_S4R_ID), sArmE(PN_S4E_ID), _stick1(1)
+	_stick1(1), sDumperR(PN_S1R_ID), sDumperE(PN_S1E_ID), sClipsR(PN_S3R_ID), sClipsE(PN_S3E_ID), sArmR(PN_S4R_ID), sArmE(PN_S4E_ID), rsRatchet(PN_R3_ID), winch1(port1, CANJaguar::kPosition), winch2(port2, CANJaguar::kPercentVbus), hookLeft(7),
+	        hookRight(8), clipLeft(5), clipRight(6), armTop(4), armBottom(3), ratchet(2)
 {
-	printf("Initializing climber");
+	printf("Initializing climber \n");
 	ds = DriverStation::GetInstance(); // Pulls driver station information
 	state = INITIAL_STATE;
 	winch1.EnableControl(0); // set to top value
@@ -22,7 +19,7 @@ TKOClimber::TKOClimber(int port1, int port2) :
 	armBack()
 	ratchetBack()
 	setpointtest = 0;
-	printf("Finished Initializing climber");
+	printf("Finished Initializing climber \n");
 }
 
 int TKOClimber::Decide(int s)
@@ -113,9 +110,12 @@ void TKOClimber::print()
 
 void TKOClimber::Test() //pneumatics test
 {
-	printf("Starting pneumatics test. \n");
+	DSClear();
+	printf("Starting winch/climber test. \n");
 	while (true)
 	{
+		if (!ds->IsEnabled())
+			return;
 
 		DSLog(1, "Encoder Value = %f", winch1.GetPosition());
 		DSLog(2, "Target: %f", setpointtest);
@@ -123,44 +123,49 @@ void TKOClimber::Test() //pneumatics test
 		DSLog(5, "Top: %i", armTop.Get());
 		DSLog(6, "Bottom: %i", armBottom.Get());
 		printf("Encoder Value = %f", winch1.GetPosition());
-		space
+		printf("\n");
 		printf("Target: %f", setpointtest);
-		space
+		printf("\n");
 		printf("Stick1: %f", _stick1.GetY());
-		space
+		printf("\n");
 		printf("Top: %i", armTop.Get());
-		space
+		printf("\n");
 		printf("Bottom: %i", armBottom.Get());
-		space
-		if (!ds->IsEnabled())
-			return;
+		printf("\n");
 
-        if (armTop.Get() && _stick1.GetY() >= 0)
-        {
-                winch1.Set(winch1.GetPosition());
-        }
-        else if (armTop.Get() && _stick1.GetY() < 0)
-        {
-            setpointtest = setpointtest + _stick1.GetY();
-            winch1.Set(setpointtest);
-        }
-        else if (armBottom.Get() && _stick1.GetY() <= 0)
-        {
-            winch1.Set(winch1.GetPosition());
-        }
-        else if (armBottom.Get() && _stick1.GetY() > 0)
-        {
-            setpointtest = setpointtest + _stick1.GetY();
-            winch1.Set(setpointtest);
-        }
-        else
+		if (not armBottom.Get())
 		{
-			//			setpointtest = setpointtest + (_stick1.GetY() / 10);
-			if (_stick1.GetY() < 0.5)
-				setpointtest -= 0.01;
 			if (_stick1.GetY() > 0.5)
-				setpointtest += 0.01;
-			winch1.Set(setpointtest);
+			{
+				DSLog(5, "Going up");
+				winch1.Set(winch1.GetPosition() + 1);
+			}
+		}
+		else if (not armTop.Get())
+		{
+			if (_stick1.GetY() < -0.5)
+			{
+				DSLog(5, "Going down");
+				winch1.Set(winch1.GetPosition() - 1);
+			}
+		}
+		else
+		{
+			if (_stick1.GetY() < -0.5)
+			{
+				DSLog(5, "Going down");
+				winch1.Set(winch1.GetPosition() - 1);
+			}
+			else if (_stick1.GetY() > 0.5)
+			{
+				DSLog(5, "Going up");
+				winch1.Set(winch1.GetPosition() + 1);
+			}
+			else
+			{
+				DSLog(5, "Staying");
+				winch1.Set(winch1.GetPosition());
+			}
 		}
 
 		winch2.Set(winch1.GetOutputVoltage());
@@ -739,8 +744,7 @@ void TKOClimber::Climb()
 							while (winch1.GetPosition() < SETPOINT_LAST)
 							{
 								winch1.Set(SETPOINT_LAST);
-							}
-							writeMD(50 + state, 1.1);
+							}writeMD(50 + state, 1.1);
 							state = WE_MADE_IT;
 						}
 					}

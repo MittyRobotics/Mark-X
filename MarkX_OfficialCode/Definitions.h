@@ -26,11 +26,13 @@
 #define space printf("\n");
 #define GO_AWAY NULL;
 
-extern char message[10240];
-extern float data[10240];
-extern short indx;
-#define writeM(c) message[indx++] = c;
-#define writeMD(c,f) message[indx] = c; data[indx++] = f;
+//extern char message[100];
+//extern float data[100];
+//extern short indx;
+//#define writeM(c) message[indx++] = c;
+//#define writeMD(c,f) message[indx] = c; data[indx++] = f;
+#define writeM(c) ;
+#define writeMD(c,f) ;
 
 //#define setMessage(c) message[logger->i++]=c
 //#define setMessageData(c, v) message[logger->i]=c; logger->data[logger->i++]=v;

@@ -15,24 +15,24 @@
 
 #include "Definitions.h"
 #include "TKORelay.h"
-#include "Logger.h"
+//#include "Logger.h"
 
 class TKOClimber
 {
 
 	private:
-		CANJaguar winch1, winch2;
-		DigitalInput hookLeft, hookRight, clipLeft, clipRight, armTop, armBottom, ratchet;
 		Timer time;
 		Timer time2;
 		DriverStation *ds;
-		TKORelay rsRatchet;
-		Solenoid sDumperR, sDumperE, sClipsR, sClipsE, sArmR, sArmE;
 		Joystick _stick1;
 
 		int state; /*!< The state variable for the state machine. 1 is Operator control, 13 is Emergency State */
 		float setpointtest;
 	public:
+		Solenoid sDumperR, sDumperE, sClipsR, sClipsE, sArmR, sArmE;
+		TKORelay rsRatchet;
+		CANJaguar winch1, winch2;
+		DigitalInput hookLeft, hookRight, clipLeft, clipRight, armTop, armBottom, ratchet;
 		///Constructor for the TKOClimber class
 		/*!
 

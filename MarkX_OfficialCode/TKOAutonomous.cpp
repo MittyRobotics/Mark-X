@@ -42,35 +42,6 @@ void TKOAutonomous::initAutonomous()
 
 void TKOAutonomous::startAutonomous()
 {
-
-	ifstream autoMode;
-	autoMode.open("mode.txt");
-	if (autoMode.is_open())
-	{
-
-		int length;
-		int * buffer2;
-		char * buffer;
-
-		// get length of file:
-		autoMode.seekg(0, ios::end);
-		length = autoMode.tellg();
-		autoMode.seekg(0, ios::beg);
-
-		// allocate memory:
-		buffer = new char[length];
-		buffer2 = new int[length];
-
-		// read data as a block:
-		autoMode.read(buffer, length);
-
-		for (int i = 0; i < length; i++)
-		{
-			buffer2[i] = (int) buffer[i];
-		}
-
-		autoMode.close();
-	}
 	autonTimer.Reset();
 	autonTimer.Start();
 //	_gyro->reset();
