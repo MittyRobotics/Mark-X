@@ -36,7 +36,7 @@ void TKOAutonomous::initAutonomous()
 	rampRate2 = RAMP_RATE_2;
 	reachedTarget = false;
 	ds = DriverStation::GetInstance();
-//	_gyro = _gyro->getInstance();
+	_gyro = _gyro->getInstance();
 	printf("Initialized Autonomous Class\n");
 }
 
@@ -44,7 +44,7 @@ void TKOAutonomous::startAutonomous()
 {
 	autonTimer.Reset();
 	autonTimer.Start();
-//	_gyro->reset();
+	_gyro->reset();
 	rightTarget = 0;
 	leftTarget = 0;
 	runningAuton = true;
@@ -298,8 +298,8 @@ bool TKOAutonomous::PIDDriveStraight()
 }
 bool TKOAutonomous::turn(double target)//takes negative values
 {
-//	double currAngle = _gyro->GetAngle();
-	double currAngle = 0;
+	double currAngle = _gyro->GetAngle();
+//	double currAngle = 0;
 
 	if (drive1.GetOutputCurrent() > DRIVE_CURRENT_CUTOFF or drive3.GetOutputCurrent() > DRIVE_CURRENT_CUTOFF)
 	{

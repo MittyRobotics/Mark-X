@@ -4,6 +4,7 @@
 #include "TKOAutonomous.h"
 #include "TKOClimber.h"
 #include "TKORelay.h"
+#include "Logger.h"
 
 /*---------------MarkX-Thing-to-Do(TODO)---------------------*
  * Implement logger!!!
