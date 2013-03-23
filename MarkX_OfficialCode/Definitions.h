@@ -72,7 +72,7 @@ const float SPINNER_kD = 0.0;
 const float DRIVE_kP = 0.2; //working P: 0.20, working I: .0034
 const float DRIVE_kI = 0.0015;
 const float DRIVE_kD = 0.0;
-const float WINCH_kP = -30;
+const float WINCH_kP = -10;
 const float WINCH_kI = 0.001;
 const float WINCH_kD = 0.0;
 const float REVS_PER_METER = 2.51;
@@ -111,12 +111,12 @@ const int PN_R1_ID = 4; //Loader Wrist
 const int PN_R2_ID = 3; //Loader Lift
 const int PN_R3_ID = 2; //Loader Ratchet
 
-const int PN_S1R_ID = 8; //Top Dumper Retract
-const int PN_S1E_ID = 7; //Top Dumper Extend
-const int PN_S3R_ID = 3; //Clips Retract
-const int PN_S3E_ID = 4; //Clips Extend
-const int PN_S4R_ID = 1; //Arm Retract
-const int PN_S4E_ID = 2; //Arm Extend
+const int PN_S1R_ID = 7; //Top Dumper Retract
+const int PN_S1E_ID = 8; //Top Dumper Extend
+const int PN_S3R_ID = 4; //Clips Retract
+const int PN_S3E_ID = 3; //Clips Extend
+const int PN_S4R_ID = 2; //Arm Retract
+const int PN_S4E_ID = 1; //Arm Extend
 
 // Camera Constants
 const int BORDER_SIZE = 3;

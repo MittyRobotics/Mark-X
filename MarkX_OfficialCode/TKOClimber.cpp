@@ -58,18 +58,12 @@ void TKOClimber::ArmForward()
 
 void TKOClimber::ClipBack()
 {
-	if (sClipsE.Get() and not sClipsR.Get())
-	{
 		clipBack()
-	}
 }
 
 void TKOClimber::ClipForward()
 {
-	if (sClipsR.Get() and not sClipsE.Get())
-	{
 		clipForward()
-	}
 }
 
 void TKOClimber::RatchetBack()
@@ -223,7 +217,8 @@ void TKOClimber::Test() //pneumatics test
 {
 	DSClear();
 	printf("Starting winch/climber test. \n");
-	calibrateWinch();
+	if (not ranCalibration)
+		calibrateWinch();
 	while (true)
 	{
 		if (!ds->IsEnabled())
@@ -245,49 +240,14 @@ void TKOClimber::Test() //pneumatics test
 		printf("Bottom: %i", armBottom.Get());
 		printf("\n");
 
-		if (not armBottom.Get())
-		{
-			if (_stick1.GetY() > 0.5)
-			{
-				DSLog(5, "Going up");
-				winch1.Set(winch1.GetPosition() + LIFT_INCREMENT);
-			}
-		}
-		else if (not armTop.Get())
-		{
-			if (_stick1.GetY() < -0.5)
-			{
-				DSLog(5, "Going down");
-				winch1.Set(winch1.GetPosition() - LIFT_INCREMENT);
-			}
-		}
-		else
-		{
-			if (_stick1.GetY() < -0.5)
-			{
-				DSLog(5, "Going down");
-				winch1.Set(winch1.GetPosition() - LIFT_INCREMENT);
-			}
-			else if (_stick1.GetY() > 0.5)
-			{
-				DSLog(5, "Going up");
-				winch1.Set(winch1.GetPosition() + LIFT_INCREMENT);
-			}
-			else
-			{
-				DSLog(5, "Staying");
-				winch1.Set(winch1.GetPosition());
-			}
-		}
-
-		winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
+		MoveWinchWithStick();
 	}
 }
 
 void TKOClimber::winchMove(double SP) //
 {
 	if (SP > winch1.GetPosition())
-	{ //MOVE WINCH UP
+	{ //MOVE WINCH UP6
 		RatchetBack();
 		while (SP - winch1.GetPosition() > MAXSPEED)
 		{
