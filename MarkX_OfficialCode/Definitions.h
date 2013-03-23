@@ -144,6 +144,7 @@ const int WTF = 13;
 const int PYRAMID_SIZE = 3;
 //const double SETPOINT_RATCHET_RETRACT = .9;
 const double TOLERANCE = .2;
+const double MAXSPEED = 3;
 const double LIFT_INCREMENT = .00005; //POTENTIALLY CHANGE TO .0001
 const double LIFT_INCREMENT_RATCHET = LIFT_INCREMENT / 20;
 

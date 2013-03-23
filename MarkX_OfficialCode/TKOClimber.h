@@ -88,6 +88,9 @@ class TKOClimber
 		 */
 		void Climb();
 
+		void winchUp(double SP);
+
+        void winchDown(double SP);
 		///The test method for TKOClimber class
 		/*!
 		 Tests pneumatics and winch positions.
