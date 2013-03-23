@@ -221,6 +221,8 @@ void TKOClimber::LevelOneClimb()
 	{
 	    calibrateWinch();
 	}
+	ClipForward();
+	Wait(.5);
 	ArmForward();
     //ClipBack();
 	RatchetForward();
@@ -247,7 +249,7 @@ void TKOClimber::LevelOneClimb()
 		{
 			break;
 		}
-		if ((hookLeft.Get() and not hookRight.Get()) or (not hookLeft.Get() and hookRight.Get())) //If only one clip is on,
+		if ((hookLeft.Get() and not hookRight.Get()) or (not hookLeft.Get() and hookRight.Get())) //If only one HOOK is on,
 		{
 			time2.Reset();
 			if (time2.Get() > .1)
@@ -261,8 +263,7 @@ void TKOClimber::LevelOneClimb()
 
     while (hookLeft.Get() and hookRight.Get() and winch1.GetPosition() > SETPOINT_BOTTOM and ratchet.Get()) //MOVE MOTORS
         {
-            ratchetBack();
-            winch1.Set(winch1.GetPosition() - LIFT_INCREMENT_RATCHET);
+            winch1.Set(winch1.GetPosition() - LIFT_INCREMENT);
             if (winch1.GetPosition() <= SETPOINT_BOTTOM)
                 winch1.Set(SETPOINT_BOTTOM);
         }
