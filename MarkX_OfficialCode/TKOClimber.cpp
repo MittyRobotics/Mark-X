@@ -153,13 +153,13 @@ void TKOClimber::print()
 void TKOClimber::MoveWinchWithStick()
 {
 	/*
-	 * ratchet back, 
-	 * clip forward, 
+	 * ratchet back,
+	 * clip forward,
 	 * arm forward,
 	 * ratchet down once surely alligned
-	 * pull forward, 
-	 * midway arm back, 
-	 * clip back, 
+	 * pull forward,
+	 * midway arm back,
+	 * clip back,
 	 * pull down*/
 
 	if (_stick1.GetRawButton(4))
@@ -284,32 +284,41 @@ void TKOClimber::Test() //pneumatics test
 	}
 }
 
-void TKOClimber::winchUp(double SP)
+void TKOClimber::winchMove(double SP)  //
 {
-    while(SP - winch1.GetPosition() > MAXSPEED)
-    {
-        winch1.Set(winch1.GetPosition + MAXSPEED);
-        if(_stick1.GetRawTrigger()){return;}
+    if(SP > winch1.GetPosition()){  //MOVE WINCH UP
+        while(SP - winch1.GetPosition() > MAXSPEED)
+        {
+            winch1.Set(winch1.GetPosition + MAXSPEED);
+            if(_stick1.GetRawTrigger()){return;}
+        }
+        while(SP - winch1.GetPosition() > 0)
+        {
+            winch1.Set(winch1.GetPosition + SP);
+            if(_stick1.GetRawTrigger()){return;}
+        }
+        return;
     }
-    while(SP - winch1.GetPosition() > 0)
+    else if (SP < winch1.GetPosition())  //MOVE WINCH DOWN
     {
-        winch1.Set(winch1.GetPosition + SP);
-        if(_stick1.GetRawTrigger()){return;}
+        while(winch1.GetPosition() - SP > MAXSPEED)
+        {
+            winch1.Set(winch1.GetPosition - MAXSPEED);
+            if(_stick1.GetRawTrigger()){return;}
+        }
+        while(winch1.GetPosition() - SP > 0)
+        {
+            winch1.Set(winch1.GetPosition - SP);
+            if(_stick1.GetRawTrigger()){return;}
+        }
     }
+
+
 }
 
 void TKOClimber::winchDown(double SP)
 {
-    while(winch1.GetPosition() - SP > MAXSPEED)
-    {
-        winch1.Set(winch1.GetPosition - MAXSPEED);
-        if(_stick1.GetRawTrigger()){return;}
-    }
-    while(winch1.GetPosition() - SP > 0)
-    {
-        winch1.Set(winch1.GetPosition - SP);
-        if(_stick1.GetRawTrigger()){return;}
-    }
+
 }
 
 void TKOClimber::LevelOneClimb()
@@ -326,7 +335,7 @@ void TKOClimber::LevelOneClimb()
 	while (not hookLeft.Get() or not hookRight.Get())
 	{
 	    time2.Reset();
-		winch1.Set(SETPOINT_RATCHET_RETRACT);
+		winchMove(SETPOINT_RATCHET_RETRACT);
 		//winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
 		if(time2.Get() > 5 and not hookLeft.Get() and not hookRight.Get())
 		{
