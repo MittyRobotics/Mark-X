@@ -950,7 +950,7 @@ void TKOClimber::Climb()
 					}
 				}
 
-				case WE_MADE_IT:
+				if(state == WE_MADE_IT){
 					while (true)
 					{
 						ratchetForward();
@@ -962,6 +962,7 @@ void TKOClimber::Climb()
 						winch2.DisableControl();
 						winch2.Disable();
 					}
+				}
 
 				while(state == OH_SHIT)
 				{
