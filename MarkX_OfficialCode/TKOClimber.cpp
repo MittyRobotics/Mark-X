@@ -361,8 +361,18 @@ void TKOClimber::Climb()
 						continue;
 					}
 
-					if (armTop.Get() or armBottom.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
+					if (armTop.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 					{
+					    winch1.Set(winch1.GetPosition() - 1.0);
+						printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
+						writeMD(50 + state, 4.0);
+						state = OH_SHIT;
+						continue;
+					}
+
+                    if (armBottom.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
+					{
+					    winch1.Set(winch1.GetPosition() + 1.0);
 						printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
 						writeMD(50 + state, 4.0);
 						state = OH_SHIT;
@@ -431,16 +441,20 @@ void TKOClimber::Climb()
 						continue;
 					}
 
-					if (armTop.Get()) //if top switch senses something, then WTF
+					if (armTop.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 					{
-						printf("--------------You somehow hit the top. What. oh NO.-------------- \n");
+					    winch1.Set(winch1.GetPosition() - 1.0);
+						printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
 						writeMD(50 + state, 4.0);
 						state = OH_SHIT;
 						continue;
 					}
-					if (armBottom.Get())
+
+                    if (armBottom.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 					{
-						writeMD(50 + state, 5.0);
+					    winch1.Set(winch1.GetPosition() + 1.0);
+						printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
+						writeMD(50 + state, 4.0);
 						state = OH_SHIT;
 						continue;
 					}
@@ -488,10 +502,20 @@ void TKOClimber::Climb()
 						continue;
 					}
 
-					if (armBottom.Get())
-					{ //if hook hit the bottom of the bar
-						printf("--------------your hook hit the bottom of the bar.------------------ \n");
-						writeMD(50 + state, 5.0);
+					if (armTop.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
+					{
+					    winch1.Set(winch1.GetPosition() - 1.0);
+						printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
+						writeMD(50 + state, 4.0);
+						state = OH_SHIT;
+						continue;
+					}
+
+                    if (armBottom.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
+					{
+					    winch1.Set(winch1.GetPosition() + 1.0);
+						printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
+						writeMD(50 + state, 4.0);
 						state = OH_SHIT;
 						continue;
 					}
@@ -519,6 +543,7 @@ void TKOClimber::Climb()
 					//deploying clips
 					//arm is back
 					ClipForward();
+					winch1.Set(SETPOINT_LAST);
 					if (clipLeft.Get() && clipRight.Get()) //if clips engage and are down, move on to state 5
 					{
 						printf("----------------Your clips are engaged and are all the way down, move on to next state------------------ \n");
@@ -536,9 +561,19 @@ void TKOClimber::Climb()
 						continue;
 					}
 
-					if (armTop.Get() || armBottom.Get()) //if top or bottom limit switches are triggered, limit switch doesn't work
+					if (armTop.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 					{
-						printf("----------------if either of the bottom or top limit switches is triggered, then broke limit switch------------------ \n");
+					    winch1.Set(winch1.GetPosition() - 1.0);
+						printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
+						writeMD(50 + state, 4.0);
+						state = OH_SHIT;
+						continue;
+					}
+
+                    if (armBottom.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
+					{
+					    winch1.Set(winch1.GetPosition() + 1.0);
+						printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
 						writeMD(50 + state, 4.0);
 						state = OH_SHIT;
 						continue;
@@ -573,7 +608,7 @@ void TKOClimber::Climb()
 					//arm is back
 					if (winch1.GetPosition() < SETPOINT_TOP - TOLERANCE)
 					{
-						winch1.Set(SETPOINT_TOP);
+						winchTop();
 					}
 					if (winch1.GetPosition() > SETPOINT_TOP and (not hookLeft.Get() and not hookRight.Get()))
 					{
@@ -600,19 +635,21 @@ void TKOClimber::Climb()
 						continue;
 					}
 
-					if (armTop.Get())
+					if (armTop.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 					{
-						printf("-----------You hit the top-------------- \n");
+					    winch1.Set(winch1.GetPosition() - 1.0);
+						printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
 						writeMD(50 + state, 4.0);
 						state = OH_SHIT;
 						continue;
 					}
 
-					if (armBottom.Get())
+                    if (armBottom.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 					{
-						printf("-----------ARMBOTTOM---------------- \n");
+					    winch1.Set(winch1.GetPosition() + 1.0);
+						printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
 						writeMD(50 + state, 4.0);
-						state = WTF;
+						state = OH_SHIT;
 						continue;
 					}
 
@@ -633,7 +670,7 @@ void TKOClimber::Climb()
 
 		}
 
-				case MOVE_ARM_FORWARD: //state 7
+				if(state == MOVE_ARM_FORWARD){ //state 7
 					//move arm forward
 					while (time.Get() < TIMEOUT7)
 					{
@@ -654,13 +691,23 @@ void TKOClimber::Climb()
 							state = OH_SHIT;
 							continue;
 						}
-						if (armTop.Get() or armBottom.Get())
-						{
-							printf("---------HOOKS HIT THE TOP OR THE BOTTOM..----------- \n");
-							writeMD(50 + state,4.0);
-							state = WTF;
-							continue;
-						}
+					if (armTop.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
+					{
+					    winch1.Set(winch1.GetPosition() - 1.0);
+						printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
+						writeMD(50 + state, 4.0);
+						state = OH_SHIT;
+						continue;
+					}
+
+                    if (armBottom.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
+					{
+					    winch1.Set(winch1.GetPosition() + 1.0);
+						printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
+						writeMD(50 + state, 4.0);
+						state = OH_SHIT;
+						continue;
+					}
 						if (ratchet.Get())
 						{
 							rsRatchet.SetOn(-1);
@@ -678,7 +725,7 @@ void TKOClimber::Climb()
 					}
 					time.Reset();
 					state = MOVE_HOOKS_DOWN;
-					break;
+				}
 
 				while(state == DEPLOYING_RATCHET) //state 8
 					{ //push down ratchet
@@ -710,19 +757,21 @@ void TKOClimber::Climb()
 						continue;
 					}
 
-					if (armTop.Get())
+					if (armTop.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 					{
-						state = WTF;
-						printf("--------You somehow hit the top of the arm----------\n");
-						writeMD(50 + state, 5.0);
+					    winch1.Set(winch1.GetPosition() - 1.0);
+						printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
+						writeMD(50 + state, 4.0);
+						state = OH_SHIT;
 						continue;
 					}
 
-					if (armBottom.Get()) //if arm hits bottom, that means its too late to remove ratchet
+                    if (armBottom.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 					{
+					    winch1.Set(winch1.GetPosition() + 1.0);
+						printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
+						writeMD(50 + state, 4.0);
 						state = OH_SHIT;
-						printf("--------You reached the bottom of the arm's movement.----------\n");
-						writeMD(50 + state, 5.0);
 						continue;
 					}
 
@@ -748,7 +797,7 @@ void TKOClimber::Climb()
 					//move hooks down
 					//arm is forward
 					winch1.Set(SETPOINT_BOTTOM);
-					if (hookLeft.Get() && hookRight.Get() && not ratchet.Get()) //both hooks clip on
+					if (hookLeft.Get() && hookRight.Get() && ratchet.Get()) //both hooks clip on
 					{
 						time.Reset();
 						printf("---------Both hooks clipped on. Moving on to next stage.----------- \n");
@@ -791,18 +840,20 @@ void TKOClimber::Climb()
 						continue;
 					}
 
-					if (armTop.Get())
+					if (armTop.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 					{
-						printf("---------YOU SOMEHOW HIT THE TOP WHEN MOVING YOUR HOOKS DOWN. ERROR TIME----------- \n");
-						writeMD(50 + state, 5.0);
-						state = WTF;
+					    winch1.Set(winch1.GetPosition() - 1.0);
+						printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
+						writeMD(50 + state, 4.0);
+						state = OH_SHIT;
 						continue;
 					}
 
-					if (armBottom.Get())
+                    if (armBottom.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 					{
-						printf("---------YOUR HOOKS HIT THE BOTTOM OF THE ARM. ERRORING OUT----------- \n");
-						writeMD(50 + state, 5.0);
+					    winch1.Set(winch1.GetPosition() + 1.0);
+						printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
+						writeMD(50 + state, 4.0);
 						state = OH_SHIT;
 						continue;
 					}
@@ -819,8 +870,18 @@ void TKOClimber::Climb()
 
 					if (time.Get() > TIMEOUT8)
 					{
+					    winch1.Set(SETPOINT_BOTTOM);
+					    ArmBack();
+					    time2.Reset();
 						writeMD(50 + state, 2.0);
-						state = OH_SHIT;
+						////////////////////////////////////////////////////////////////////INCORRECT ERROR MESSAGE
+						if(time2.Get() > TIMEOUT8)
+                            state = OH_SHIT;  //////////////////////////////////////////////////////INSERT ERROR MESSAGES
+                        if(hookLeft.Get() && hookRight.Get() && ratchet.Get())
+                        {
+                            state = RETRACTING_CLIPS;   /////////////////////////////////////////////INSERT ERROR MESSAGES
+                            writeMD(50 + state, 1.0);
+                        }
 						continue;
 					}
 				}
@@ -858,14 +919,23 @@ void TKOClimber::Climb()
 						state = OH_SHIT;
 						continue;
 					}
-
-					if (armTop.Get() or armBottom.Get())
+					if (armTop.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 					{
+					    winch1.Set(winch1.GetPosition() - 1.0);
+						printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
 						writeMD(50 + state, 4.0);
-						state = WTF;
+						state = OH_SHIT;
 						continue;
 					}
 
+                    if (armBottom.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
+					{
+					    winch1.Set(winch1.GetPosition() + 1.0);
+						printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
+						writeMD(50 + state, 4.0);
+						state = OH_SHIT;
+						continue;
+					}
 					if (not ratchet.Get())
 					{
 						writeMD(50 + state, 5.0);
