@@ -11,7 +11,8 @@
 #define clipBack() sClipsE.Set(false);/*Wait(0.3);*/sClipsR.Set(true);/*Wait(0.3);*/
 #define topDumperForward() sDumperR.Set(false);/*Wait(0.1);*/sDumperE.Set(true);/*Wait(0.1);*/
 #define topDumperBackward() sDumperE.Set(false);sDumperR.Set(true);
-#define winchTop() RatchetBack();winch1.Set(SETPOINT_TOP)
+#define winchStop() winch1.Set(winch1.GetPosition());winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
+
 
 #define gg ;
 
