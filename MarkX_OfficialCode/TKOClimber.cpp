@@ -106,7 +106,7 @@ void TKOClimber::calibrateWinch()
 		{
 			winch1.Set(winch1.GetPosition());
 			winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
-			SETPOINT_BOTTOM = winch1.GetPosition + .5;
+			SETPOINT_BOTTOM = winch1.GetPosition() + .5;
 			break;
 		}
 	}
@@ -116,7 +116,7 @@ void TKOClimber::calibrateWinch()
 	{
 		winch1.Set(winch1.GetPosition() + LIFT_INCREMENT);
 		winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
-		if (not armTop.Get())  //NOT ARMTOP MEANS THAT THE WINCH IS AT THE LIMIT SWITCH
+		if (not armTop.Get()) //NOT ARMTOP MEANS THAT THE WINCH IS AT THE LIMIT SWITCH
 		{
 			winch1.Set(winch1.GetPosition());
 			winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
@@ -271,7 +271,7 @@ void TKOClimber::Test() //pneumatics test
 			else if (_stick1.GetY() > 0.5)
 			{
 				DSLog(5, "Going up");
-				winch1.Set(winch1.GetPosition() + LIFT_INCREMENT;
+				winch1.Set(winch1.GetPosition() + LIFT_INCREMENT);
 			}
 			else
 			{
@@ -284,82 +284,94 @@ void TKOClimber::Test() //pneumatics test
 	}
 }
 
-void TKOClimber::winchMove(double SP)  //
+void TKOClimber::winchMove(double SP) //
 {
-    if(SP > winch1.GetPosition()){  //MOVE WINCH UP
-        RatchetBack();
-        while(SP - winch1.GetPosition() > MAXSPEED)
-        {
-            winch1.Set(winch1.GetPosition + MAXSPEED);
-            winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
-            if(_stick1.GetRawTrigger()){return;}
-        }
-        while(SP - winch1.GetPosition() > 0)
-        {
-            winch1.Set(winch1.GetPosition + SP);
-            winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
-            if(_stick1.GetRawTrigger()){return;}
-        }
-        return;
-    }
-    else if (SP < winch1.GetPosition())  //MOVE WINCH DOWN
-    {
-        while(winch1.GetPosition() - SP > MAXSPEED)
-        {
-            winch1.Set(winch1.GetPosition - MAXSPEED);
-            winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
-            if(_stick1.GetRawTrigger()){return;}
-        }
-        while(winch1.GetPosition() - SP > 0)
-        {
-            winch1.Set(winch1.GetPosition - SP);
-            winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
-            if(_stick1.GetRawTrigger()){return;}
-        }
-    }
-
+	if (SP > winch1.GetPosition())
+	{ //MOVE WINCH UP
+		RatchetBack();
+		while (SP - winch1.GetPosition() > MAXSPEED)
+		{
+			winch1.Set(winch1.GetPosition() + MAXSPEED);
+			winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
+			if (_stick1.GetTrigger())
+			{
+				return;
+			}
+		}
+		while (SP - winch1.GetPosition() > 0)
+		{
+			winch1.Set(winch1.GetPosition() + SP);
+			winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
+			if (_stick1.GetTrigger())
+			{
+				return;
+			}
+		}
+		return;
+	}
+	else if (SP < winch1.GetPosition()) //MOVE WINCH DOWN
+	{
+		while (winch1.GetPosition() - SP > MAXSPEED)
+		{
+			winch1.Set(winch1.GetPosition() - MAXSPEED);
+			winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
+			if (_stick1.GetTrigger())
+			{
+				return;
+			}
+		}
+		while (winch1.GetPosition() - SP > 0)
+		{
+			winch1.Set(winch1.GetPosition() - SP);
+			winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
+			if (_stick1.GetTrigger())
+			{
+				return;
+			}
+		}
+	}
 
 }
 
 void TKOClimber::LevelOneClimb()
 {
-    if(ranCalibration == false)
+	if (ranCalibration == false)
 	{
-	    calibrateWinch();
+		calibrateWinch();
 	}
 	ClipForward();
 	Wait(2);
 	ArmForward();
-    //ClipBack();
+	//ClipBack();
 	RatchetForward();
 	while (not hookLeft.Get() or not hookRight.Get())
 	{
-	    time2.Reset();
+		time2.Reset();
 		winchMove(SETPOINT_RATCHET_RETRACT);
 		//winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
-		if(time2.Get() > 5 and not hookLeft.Get() and not hookRight.Get())
+		if (time2.Get() > 5 and not hookLeft.Get() and not hookRight.Get())
 		{
-		    winchMove(SETPOINT_RATCHET_RETRACT);
-		    armBack();
-		    Wait(.5);
-		    if(not hookLeft.Get() or not hookRight.Get())
-		    {
-		        armBack();
-		        Wait(1);
-		        winchMove(SETPOINT_TOP);
-		        break;
-		    }
+			winchMove(SETPOINT_RATCHET_RETRACT);
+			armBack();
+			Wait(.5);
+			if (not hookLeft.Get() or not hookRight.Get())
+			{
+				armBack();
+				Wait(1);
+				winchMove(SETPOINT_TOP);
+				break;
+			}
 		}
-		if (winch1.GetPosition() <= SETPOINT_RATCHET_RETRACT)  //if we missed the bar
+		if (winch1.GetPosition() <= SETPOINT_RATCHET_RETRACT) //if we missed the bar
 		{
-		    armBack();
-		    Wait(1);
-            winchMove(SETPOINT_TOP);
+			armBack();
+			Wait(1);
+			winchMove(SETPOINT_TOP);
 			break;
 		}
 
 		//neither hook for a second, move the arm back
-		if (hookLeftLeft.Get() and hookRight.Get())
+		if (hookLeft.Get() and hookRight.Get())
 		{
 			break;
 		}
@@ -368,21 +380,20 @@ void TKOClimber::LevelOneClimb()
 			time2.Reset();
 			while (time2.Get() < .1)
 			{
-			    winchMove(SETPOINT_RATCHET_RETRACT);
+				winchMove(SETPOINT_RATCHET_RETRACT);
 			}
-            winchMove(SETPOINT_TOP);
-            armBack();
-            break;
-        }
-    }
-}
+			winchMove(SETPOINT_TOP);
+			armBack();
+			break;
+		}
+	}
 
-    while (hookLeft.Get() and hookRight.Get() and winch1.GetPosition() > SETPOINT_BOTTOM and ratchet.Get()) //MOVE MOTORS
-        {
-            winch1.Set(winch1.GetPosition() - LIFT_INCREMENT);
-            if (winch1.GetPosition() <= SETPOINT_BOTTOM)
-                winch1.Set(SETPOINT_BOTTOM);
-        }
+	while (hookLeft.Get() and hookRight.Get() and winch1.GetPosition() > SETPOINT_BOTTOM and ratchet.Get()) //MOVE MOTORS
+	{
+		winch1.Set(winch1.GetPosition() - LIFT_INCREMENT);
+		if (winch1.GetPosition() <= SETPOINT_BOTTOM)
+			winch1.Set(SETPOINT_BOTTOM);
+	}
 
 }
 
@@ -727,7 +738,7 @@ void TKOClimber::Climb()
 				//arm is back
 				if (winch1.GetPosition() < SETPOINT_TOP - TOLERANCE)
 				{
-					winchTop();
+					TKOClimber::winchMove(SETPOINT_TOP);
 				}
 				if (winch1.GetPosition() > SETPOINT_TOP and (not hookLeft.Get() and not hookRight.Get()))
 				{

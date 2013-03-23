@@ -60,6 +60,10 @@ class TKOClimber
 		 \param int port2 - ID for winch2
 		 */
 		TKOClimber(int port1, int port2);
+		
+		void MoveWinchWithStick();
+		
+		void LevelOneClimb();
 		///Destructor for the TKOClimber class
 		/*!
 		 */
