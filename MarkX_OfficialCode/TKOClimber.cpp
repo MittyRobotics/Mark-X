@@ -100,27 +100,27 @@ void TKOClimber::calibrateWinch()
 	printf("Starting to autoCalibrate \n");
 	while (true)
 	{
-		winch1.Set(winch1.GetPosition() - 0.3);
+		winch1.Set(winch1.GetPosition() - LIFT_INCREMENT);
 		winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
 		if (not armBottom.Get())
 		{
 			winch1.Set(winch1.GetPosition());
 			winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
-			SETPOINT_BOTTOM = .1;
+			SETPOINT_BOTTOM = winch1.GetPosition + .5;
 			break;
 		}
 	}
 	printf("Hit bottom of arm \n");
-	winch1.EnableControl(SETPOINT_BOTTOM);
+	winch1.EnableControl();
 	while (true)
 	{
-		winch1.Set(winch1.GetPosition() + 0.3);
+		winch1.Set(winch1.GetPosition() + LIFT_INCREMENT);
 		winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
-		if (not armTop.Get())
+		if (not armTop.Get())  //NOT ARMTOP MEANS THAT THE WINCH IS AT THE LIMIT SWITCH
 		{
 			winch1.Set(winch1.GetPosition());
 			winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
-			SETPOINT_TOP = winch1.GetPosition() - .1;
+			SETPOINT_TOP = winch1.GetPosition() - .5;
 			winch1.Set(SETPOINT_TOP);
 			break;
 		}
@@ -181,7 +181,7 @@ void TKOClimber::Test() //pneumatics test
 			if (_stick1.GetY() > 0.5)
 			{
 				DSLog(5, "Going up");
-				winch1.Set(winch1.GetPosition() + 1);
+				winch1.Set(winch1.GetPosition() + LIFT_INCREMENT);
 			}
 		}
 		else if (not armTop.Get())
@@ -189,7 +189,7 @@ void TKOClimber::Test() //pneumatics test
 			if (_stick1.GetY() < -0.5)
 			{
 				DSLog(5, "Going down");
-				winch1.Set(winch1.GetPosition() - 1);
+				winch1.Set(winch1.GetPosition() - LIFT_INCREMENT);
 			}
 		}
 		else
@@ -197,12 +197,12 @@ void TKOClimber::Test() //pneumatics test
 			if (_stick1.GetY() < -0.5)
 			{
 				DSLog(5, "Going down");
-				winch1.Set(winch1.GetPosition() - 1);
+				winch1.Set(winch1.GetPosition() - LIFT_INCREMENT);
 			}
 			else if (_stick1.GetY() > 0.5)
 			{
 				DSLog(5, "Going up");
-				winch1.Set(winch1.GetPosition() + 1);
+				winch1.Set(winch1.GetPosition() + LIFT_INCREMENT;
 			}
 			else
 			{
