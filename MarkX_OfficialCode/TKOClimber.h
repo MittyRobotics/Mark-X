@@ -12,6 +12,7 @@
 #define topDumperForward() sDumperR.Set(false);/*Wait(0.1);*/sDumperE.Set(true);/*Wait(0.1);*/
 #define topDumperBackward() sDumperE.Set(false);sDumperR.Set(true);
 #define winchStop() winch1.Set(winch1.GetPosition());winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
+#define disableIfOutOfRange() if(not armBottom.Get() or not armTop.Get()){winch1.Disable();winch2.Disable();}
 
 
 #define gg ;
@@ -36,10 +37,13 @@ class TKOClimber
 		TKORelay rsRatchet;
 		CANJaguar winch1, winch2;
 		DigitalInput hookLeft, hookRight, clipLeft, clipRight, armTop, armBottom, ratchet;
+		//double setpoint;
 		double SETPOINT_TOP;
 		double SETPOINT_BOTTOM;
 		double SETPOINT_LAST;
 		double SETPOINT_RATCHET_RETRACT;
+		double SETPOINT_CENTER;
+		//double SETPOINT_CENTER;
 		bool ranCalibration;
 		///Constructor for the TKOClimber class
 		/*!

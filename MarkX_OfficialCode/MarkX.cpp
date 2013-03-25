@@ -40,14 +40,15 @@ class MarkX: public SimpleRobot
 		void OperatorControl();
 		void Operator();
 		void TKODrive();
+		void TankDrive();
 		void JukeL();
 		void JukeR();
 		void Test();
 		void writeLog();
 		MarkX() :
-			drive1(DRIVE_L1_ID, CANJaguar::kSpeed), // initialize motor 1 < first left drive motor
+			drive1(DRIVE_L1_ID, CANJaguar::kPercentVbus), // initialize motor 1 < first left drive motor
 			        drive2(DRIVE_L2_ID, CANJaguar::kPercentVbus), // initialize motor 2 < second left drive motor
-			        drive3(DRIVE_R1_ID, CANJaguar::kSpeed), // initialize motor 3 < first right drive motor
+			        drive3(DRIVE_R1_ID, CANJaguar::kPercentVbus), // initialize motor 3 < first right drive motor
 			        drive4(DRIVE_R2_ID, CANJaguar::kPercentVbus), // initialize motor 4 < second right drive motor
 
 			        stick1(STICK_1_PORT), // initialize joystick 1 < first drive joystick
@@ -67,6 +68,20 @@ void MarkX::Test()
 {
 	printf("Calling test function \n");
 	climber.Test();
+	//	while (true)
+	//	{
+	//		if (stick1.GetRawButton(2))
+	//			drive1.Set(1);
+	//		if (stick2.GetRawButton(2))
+	//			drive2.Set(1);
+	//		if (stick3.GetRawButton(2))
+	//			drive3.Set(1);
+	//		if (stick4.GetRawButton(2))
+	//			drive4.Set(1);
+	//		if (stick1.GetRawButton(3))
+	//			climber.calibrateWinch();
+	//	}
+	//	climber.Test();
 }
 //! Notifies driver if robot is disabled. Prints "Robot Died!" to console if it is disabled
 /*!
@@ -74,19 +89,11 @@ void MarkX::Test()
 void MarkX::RobotInit()
 {
 	printf("Initializing MarkX class \n");
-	ds = DriverStation::GetInstance(); // Pulls driver station information
-	drive1.EnableControl(); //critical for these jags because they are in speed mode
+	ds = DriverStation::GetInstance();
 	drive1.SetSafetyEnabled(false);
 	drive2.SetSafetyEnabled(false);
-	drive3.EnableControl(); //critical for these jags because they are in speed mode
 	drive3.SetSafetyEnabled(false);
 	drive4.SetSafetyEnabled(false);
-	drive1.SetSpeedReference(JAG_SPEEDREF);
-	drive1.ConfigEncoderCodesPerRev(ENCODER_REVS);
-	drive1.SetPID(DRIVE_kP, DRIVE_kI, DRIVE_kD);
-	drive3.SetSpeedReference(JAG_SPEEDREF);
-	drive3.ConfigEncoderCodesPerRev(ENCODER_REVS);
-	drive3.SetPID(DRIVE_kP, DRIVE_kI, DRIVE_kD);
 	auton.rsFrontLoaderLift.SetOn(0);
 	auton.rsFrontLoaderWrist.SetOn(0);
 	controllerDrive = false;
@@ -95,8 +102,39 @@ void MarkX::RobotInit()
 }
 void MarkX::Disabled()
 {
-	//	writeLog();
+	writeLog();
 	printf("Robot Died!");
+}
+void MarkX::TankDrive()
+{
+	if (stick1.GetTrigger())
+	{
+		drive1.Set(-stick1.GetY() * 0.4);
+		drive2.Set(-stick1.GetY() * 0.4);
+		drive3.Set(stick2.GetY() * 0.4);
+		drive4.Set(stick2.GetY() * 0.4);
+	}
+	else if (stick1.GetRawButton(2))
+	{
+		drive1.Set(-stick1.GetY() * 0.2);
+		drive2.Set(-stick1.GetY() * 0.2);
+		drive3.Set(stick2.GetY() * 0.2);
+		drive4.Set(stick2.GetY() * 0.2);
+	}
+	else if (stick1.GetRawButton(4))
+	{
+		drive1.Set(-stick1.GetY());
+		drive2.Set(-stick1.GetY());
+		drive3.Set(stick2.GetY());
+		drive4.Set(stick2.GetY());
+	}
+	else
+	{
+		drive1.Set(-stick1.GetY() * 0.8);
+		drive2.Set(-stick1.GetY() * 0.8);
+		drive3.Set(stick2.GetY() * 0.8);
+		drive4.Set(stick2.GetY() * 0.8);
+	}
 }
 
 //! Autonomous code
@@ -104,32 +142,32 @@ void MarkX::Disabled()
  */
 void MarkX::Autonomous(void) //Choose autonomous mode between 4 options though DS
 {
-	printf("Starting Autonomous \n");
-	auton.initAutonomous();
-	auton.setDrivePID(DRIVE_kP, DRIVE_kP, DRIVE_kI);
-	//	auton.setDriveTargetStraight(ds->GetAnalogIn(1) * 10 * REVS_PER_METER);
-	auton.startAutonomous();
-
-	while (auton.autonTimer.Get() < 15 && auton.runningAuton)
-	{
-		if (!ds->IsAutonomous())
-			auton.stopAutonomous();
-
-		//auton.autonomousCode();
-		//		if (ds->GetDigitalIn(1))
-		//			auton.autonSetup1();
-		//		else if (ds->GetDigitalIn(2))
-		//			auton.autonSetup2();
-		//		else if (ds->GetDigitalIn(3))
-		//			auton.autonSetup3();
-		//		else
-		//		{
-		//			printf("Error, no starting setup selected");
-		//			DSLog(1, "Error, no starting setup selected");
-		//		}
-	}
-	auton.stopAutonomous();
-	printf("Ending Autonomous \n");
+	//	printf("Starting Autonomous \n");
+	//	auton.initAutonomous();
+	//	auton.setDrivePID(DRIVE_kP, DRIVE_kP, DRIVE_kI);
+	//	//	auton.setDriveTargetStraight(ds->GetAnalogIn(1) * 10 * REVS_PER_METER);
+	//	auton.startAutonomous();
+	//
+	//	while (auton.autonTimer.Get() < 15 && auton.runningAuton)
+	//	{
+	//		if (!ds->IsAutonomous())
+	//			auton.stopAutonomous();
+	//
+	//		//auton.autonomousCode();
+	//		//		if (ds->GetDigitalIn(1))
+	//		//			auton.autonSetup1();
+	//		//		else if (ds->GetDigitalIn(2))
+	//		//			auton.autonSetup2();
+	//		//		else if (ds->GetDigitalIn(3))
+	//		//			auton.autonSetup3();
+	//		//		else
+	//		//		{
+	//		//			printf("Error, no starting setup selected");
+	//		//			DSLog(1, "Error, no starting setup selected");
+	//		//		}
+	//	}
+	//	auton.stopAutonomous();
+	//	printf("Ending Autonomous \n");
 }
 //! Operator Control Initialize and runs the Operator Control loop
 /*!
@@ -150,16 +188,16 @@ void MarkX::OperatorControl()
 	while (IsOperatorControl() && ds->IsEnabled())
 	{
 		startLoopT = loopTimer.Get();
-		DSClear();
-
 		MarkX::Operator();
-		MarkX::TKODrive();
+		MarkX::TankDrive();
+		//		MarkX::TKODrive();
 		DSLog(4, "Avr d1,3 cur: %f", ((drive1.GetOutputCurrent() + drive3.GetOutputCurrent()) / 2));writeMD(2, (drive2.GetOutputCurrent() + drive4.GetOutputCurrent()) / 2)
 
 		endLoopT = loopTimer.Get();
 		loopTime = endLoopT - startLoopT;
-		printf("Operator Loop Time, excluding Wait: %f", endLoopT);
+		//		printf("Operator Loop Time, excluding Wait: %f", endLoopT);
 		space
+		Wait(0.01 - loopTime);
 		loopTimer.Reset();
 	}
 	globalOCTimer.Stop();
@@ -178,9 +216,11 @@ void MarkX::Operator()
 	//	if (stick1.GetRawButton(5))
 	//		climber.ClipForward();
 	//	if (stick2.GetRawButton(4))
-	//			climber.ArmBack();
+	//		climber.ArmBack();
 	//	if (stick2.GetRawButton(5))
-	//			climber.ArmForward();
+	//		climber.ArmForward();
+	//	if (stick2.GetRawButton(3))
+	//		climber.calibrateWinch();
 	//	if (stick1.GetRawButton(8))
 	//		climber.RatchetBack();
 	//	if (stick1.GetRawButton(9))
@@ -190,7 +230,7 @@ void MarkX::Operator()
 	//	if (stick1.GetRawButton(11))
 	//		climber.RetractDump();
 	//END OF TEST STATEMENT
-
+	
 	while (stick2.GetRawButton(3))
 	{
 		climber.MoveWinchWithStick();
@@ -224,20 +264,20 @@ void MarkX::Operator()
 		climber.Test();
 	}
 
-	if (stick1.GetTrigger())
-	{
-		kDRIVE_STRAIGHT = 0.4;
-		kDRIVE_ROTATION = 0.2;
-	}
-	else if (stick1.GetRawButton(2))
-	{
-		kDRIVE_STRAIGHT = 0.2;
-	}
-	else
-	{
-		kDRIVE_STRAIGHT = 1.2;
-		kDRIVE_ROTATION = 0.7;
-	}
+	//	if (stick1.GetTrigger())
+	//	{
+	//		kDRIVE_STRAIGHT = 0.4;
+	//		kDRIVE_ROTATION = 0.2;
+	//	}
+	//	else if (stick1.GetRawButton(2))
+	//	{
+	//		kDRIVE_STRAIGHT = 0.2;
+	//	}
+	//	else
+	//	{
+	//		kDRIVE_STRAIGHT = 1.2;
+	//		kDRIVE_ROTATION = 0.7;
+	//	}
 
 	if (stick2.GetTrigger())
 	{
@@ -273,7 +313,7 @@ void MarkX::Operator()
 	if (stick3.GetRawButton(9) and stick4.GetRawButton(9))
 	{
 		climber.ArmForward();
-		climber.Climb();
+		climber.LevelOneClimb();
 		DSLog(6, "Autoclimbing");
 	}
 }
@@ -289,15 +329,6 @@ void MarkX::writeLog()
 	{
 		switch (message[i])
 		{
-			case 1:
-				if (logFile.is_open())
-				{
-					if (ds->IsOperatorControl())
-						logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
-					logFile << "Ran Calibration" << endl;
-				}
-				break;
-
 			case 2:
 				if (logFile.is_open())
 				{
@@ -719,19 +750,19 @@ void MarkX::TKODrive()
 		burnoutIndexRight = 0;
 	}
 
-	if (burnoutIndexLeft > kBURNOUT_CYCLES)
-	{
-		final_velocity_left = 0;
-		printf("Burnout Left");
-		DSLog(5, "Burnout Left");
-	}
-
-	if (burnoutIndexRight > kBURNOUT_CYCLES)
-	{
-		final_velocity_right = 0;
-		printf("Burnout Right");
-		DSLog(5, "Burnout Right");
-	}
+	//	if (burnoutIndexLeft > kBURNOUT_CYCLES)
+	//	{
+	//		final_velocity_left = 0;
+	//		printf("Burnout Left");
+	//		DSLog(5, "Burnout Left");
+	//	}
+	//
+	//	if (burnoutIndexRight > kBURNOUT_CYCLES)
+	//	{
+	//		final_velocity_right = 0;
+	//		printf("Burnout Right");
+	//		DSLog(5, "Burnout Right");
+	//	}
 	printf("Finished processing joystick inputs. \n");
 	printf("Left velocity to set: %f", final_velocity_left);
 	space
@@ -741,7 +772,7 @@ void MarkX::TKODrive()
 	float speedLeft = drive1.GetSpeed() * 3.14159 * 6/*wheel size*// 12
 	/*inches in feet*// 60;
 	float speedRight = drive3.GetSpeed() * 3.14159 * 6 / 12 / 60;
-	DSLog(1, "Speed F/s: %f", fabs(((speedLeft + speedRight) / 2)));
+	DSLog(1, "Speed F/s: %f", fabs(((fabs(speedLeft) + fabs(speedRight)) / 2)));
 	//	DSLog(2, "Sonar 1 in: %f", sonar1.GetVoltage() * 100);
 	//	DSLog(3, "Sonar 2 in: %f", sonar2.GetVoltage() * 100);
 	DSLog(2, "Left target %f", final_velocity_left);

@@ -42,28 +42,28 @@ int TKOClimber::Decide(int s)
 
 void TKOClimber::ArmBack()
 {
-	if (sArmE.Get() and not sArmR.Get())
-	{
-		armBack()
-	}
+	//if (sArmE.Get() and not sArmR.Get())
+	//{
+	armBack()
+	//}
 }
 
 void TKOClimber::ArmForward()
 {
-	if (sArmR.Get() and not sArmE.Get())
-	{
-		armForward()
-	}
+	//if (sArmR.Get() and not sArmE.Get())
+	//{
+	armForward()
+	//}
 }
 
 void TKOClimber::ClipBack()
 {
-		clipBack()
+	clipBack()
 }
 
 void TKOClimber::ClipForward()
 {
-		clipForward()
+	clipForward()
 }
 
 void TKOClimber::RatchetBack()
@@ -96,6 +96,7 @@ void TKOClimber::calibrateWinch()
 	{
 		winch1.Set(winch1.GetPosition() - LIFT_INCREMENT);
 		winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
+		RatchetBack();
 		if (not armBottom.Get())
 		{
 			winch1.Set(winch1.GetPosition());
@@ -114,13 +115,16 @@ void TKOClimber::calibrateWinch()
 		{
 			winch1.Set(winch1.GetPosition());
 			winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
-			SETPOINT_TOP = winch1.GetPosition() - .5;
+			SETPOINT_TOP = winch1.GetPosition() - 1;
 			winch1.Set(SETPOINT_TOP);
+			winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
+			Wait(1);
 			break;
 		}
 	}
 	SETPOINT_RATCHET_RETRACT = SETPOINT_BOTTOM + 2.0;
 	SETPOINT_LAST = SETPOINT_TOP - 2.0;
+	SETPOINT_CENTER = (SETPOINT_TOP + SETPOINT_BOTTOM) / 2;
 	ranCalibration = true;
 	printf("Reached top of arm \n");
 	printf("Finished calibration of arm \n");
@@ -169,44 +173,81 @@ void TKOClimber::MoveWinchWithStick()
 		TKOClimber::RatchetBack();
 	if (_stick1.GetRawButton(9))
 		TKOClimber::RatchetForward();
+	if (_stick1.GetRawButton(10))
+		TKOClimber::calibrateWinch();
+	if (_stick1.GetTrigger())
+		TKOClimber::winchMove(SETPOINT_CENTER);
+
+	DSLog(5, "Top: %i", armTop.Get());
+	DSLog(6, "Bottom: %i", armBottom.Get());
 
 	if (not armBottom.Get())
 	{
-		if (_stick1.GetY() > 0.5)
-		{
-			DSLog(5, "Going up");
-			winch1.Set(winch1.GetPosition() + 5);
-		}
+		winch1.Disable();
+		winch2.Disable();
+		DSLog(5, "RUH-ROH");
+		printf("DISABLING WINCHES");
 	}
 	else if (not armTop.Get())
 	{
-		if (_stick1.GetY() < -0.5)
-		{
-			DSLog(5, "Going down");
-			winch1.Set(winch1.GetPosition() - 5);
-		}
+		winch1.Disable();
+		winch2.Disable();
+		DSLog(5, "RUH-ROH");
+		printf("DISABLING WINCHES");
 	}
 	else
 	{
-		if (_stick1.GetY() < -0.5)
+		if (_stick1.GetY() < -0.5) //moving down
 		{
-			DSLog(5, "Going down");
-			winch1.Set(winch1.GetPosition() - 5);
-			if (winch1.GetPosition() - 5 <= SETPOINT_BOTTOM)
-				winch1.Set(SETPOINT_BOTTOM);
+			if (winch1.GetPosition() <= SETPOINT_BOTTOM)
+			{
+				winchStop();
+			}
+			else if (winch1.GetPosition() > SETPOINT_BOTTOM)
+			{
+				if (winch1.GetPosition() - 2 > SETPOINT_BOTTOM)
+				{
+					DSLog(5, "Going down");
+					winch1.Set(winch1.GetPosition() + (_stick1.GetY() + .5) * MANSPEED);
+					//			if (winch1.GetPosition() - 5 <= SETPOINT_BOTTOM)
+					//				winch1.Set(SETPOINT_BOTTOM);
+				}
+
+				else if (winch1.GetPosition() - 1 <= SETPOINT_BOTTOM)
+				{
+					winch1.Set(winch1.GetPosition() + (_stick1.GetY() + .5) * (winch1.GetPosition() - SETPOINT_BOTTOM));
+				}
+			}
 
 		}
-		else if (_stick1.GetY() > 0.5)
+		else if (_stick1.GetY() > 0.5)  //moving up
 		{
-			DSLog(5, "Going up");
-			winch1.Set(winch1.GetPosition() + 5);
-			if (winch1.GetPosition() + 5 >= SETPOINT_TOP)
-				winch1.Set(SETPOINT_TOP);
+			if (winch1.GetPosition() >= SETPOINT_TOP)
+			{
+				winchStop();
+			}
+			else if (winch1.GetPosition() < SETPOINT_TOP)
+			{
+				if (winch1.GetPosition() + 1 < SETPOINT_TOP)
+
+				{
+					DSLog(5, "Going up");
+					winch1.Set(winch1.GetPosition() + (_stick1.GetY() - .5) * MANSPEED);
+					//			if (winch1.GetPosition() + 5 >= SETPOINT_TOP)
+					//				winch1.Set(SETPOINT_TOP);
+				}
+
+				else if (winch1.GetPosition() + 1 >= SETPOINT_TOP)
+				{
+					winch1.Set(winch1.GetPosition() + (_stick1.GetY() - .5) * (SETPOINT_TOP - winch1.GetPosition()));
+				}
+
+			}
 		}
 		else
 		{
 			DSLog(5, "Staying");
-			winch1.Set(winch1.GetPosition());
+			winchStop();
 		}
 	}
 
@@ -228,7 +269,7 @@ void TKOClimber::Test() //pneumatics test
 		DSLog(2, "Target: %f", setpointtest);
 		DSLog(3, "Stick1: %f", _stick1.GetY());
 		DSLog(5, "Top: %i", armTop.Get());
-		DSLog(6, "Bottom: %i", armBottom.Get());
+		DSLog(6, "Bottom: %i", armBottom.Get());	
 		printf("Encoder Value = %f", winch1.GetPosition());
 		printf("\n");
 		printf("Target: %f", setpointtest);
@@ -240,56 +281,61 @@ void TKOClimber::Test() //pneumatics test
 		printf("Bottom: %i", armBottom.Get());
 		printf("\n");
 
+		winchMove(SETPOINT_CENTER);
+		//winchMove(SETPOINT_BOTTOM);
+		//winchMove(SETPOINT_TOP);
+
+		//LevelOneClimb();
+
 		MoveWinchWithStick();
 	}
 }
 
 void TKOClimber::winchMove(double SP) //
 {
-	if (SP > winch1.GetPosition())
+	printf("Beginning winchMove Test");
+	//Wait(1.);
+	RatchetBack();
+	winch1.Set(SP);
+	while(true)
+	//while (SP != winch1.GetPosition())
 	{ //MOVE WINCH UP6
-		RatchetBack();
-		while (SP - winch1.GetPosition() > MAXSPEED)
+		winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
+		printf("ERROR %f", (winch1.GetPosition() - SP));
+		if (_stick1.GetRawButton(3))
 		{
-			winch1.Set(winch1.GetPosition() + MAXSPEED);
-			winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
-			if (_stick1.GetTrigger())
-			{
-				return;
-			}
+			//winchStop();
+			return;
 		}
-		while (SP - winch1.GetPosition() > 0)
+		if (not armBottom.Get() or not armTop.Get())
 		{
-			winch1.Set(winch1.GetPosition() + SP);
-			winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
-			if (_stick1.GetTrigger())
-			{
-				return;
-			}
+			winch1.Disable();
+			winch2.Disable();
+			break;
 		}
-		return;
 	}
-	else if (SP < winch1.GetPosition()) //MOVE WINCH DOWN
+	//while (SP != winch1.GetPosition()) //winchdown
+	while(true)
 	{
-		while (winch1.GetPosition() - SP > MAXSPEED)
+		winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
+		printf("ERROR %f", (winch1.GetPosition() - SP));
+		if (_stick1.GetRawButton(3))
 		{
-			winch1.Set(winch1.GetPosition() - MAXSPEED);
-			winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
-			if (_stick1.GetTrigger())
-			{
-				return;
-			}
+			//winchStop();
+			return;
 		}
-		while (winch1.GetPosition() - SP > 0)
+		if (not armBottom.Get() or not armTop.Get())
 		{
-			winch1.Set(winch1.GetPosition() - SP);
-			winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
-			if (_stick1.GetTrigger())
-			{
-				return;
-			}
+			winch1.Disable();
+			winch2.Disable();
+			break;
+		}
+		if (winch1.GetPosition() <= SP)
+		{
+			break;
 		}
 	}
+	return;
 
 }
 
