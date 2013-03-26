@@ -110,31 +110,31 @@ void TKOClimber::calibrateWinch()
 	printf("Starting to autoCalibrate \n");
 	while (true)
 	{
-		winch1.Set(winch1.GetPosition() - LIFT_INCREMENT);
-		winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
+		winch1.Set((-1) * MAXSPEED); //go down
+		winch2.Set((-1) * MAXSPEED);
 		RatchetBack();
 		if (not armBottom.Get())
 		{
-			winch1.Set(winch1.GetPosition());
-			winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
-			SETPOINT_BOTTOM = winch1.GetPosition() + .5;
+			winch1.Set(0);
+			winch2.Set(0);
+			SETPOINT_BOTTOM = winch1.GetPosition() + TOLERANCE;
 			break;
 		}
 	}
 	printf("Hit bottom of arm \n");
-	winch1.EnableControl();
+	winch1PID.EnableControl();
+	winch2PID.EnableControl();
 	while (true)
 	{
-		winch1.Set(winch1.GetPosition() + LIFT_INCREMENT);
-		winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
+		winch1.Set(MAXSPEED); //go up
+		winch2.Set(MAXSPEED);
 		if (not armTop.Get()) //NOT ARMTOP MEANS THAT THE WINCH IS AT THE LIMIT SWITCH
 		{
-			winch1.Set(winch1.GetPosition());
-			winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
-			SETPOINT_TOP = winch1.GetPosition() - 1;
-			winch1.Set(SETPOINT_TOP);
-			winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
-			Wait(1);
+			winch1.Set(0);
+			winch2.Set(0);
+			SETPOINT_TOP = winch1.GetPosition() - TOLERANCE;
+			winch1PID.SetSetpoint(SETPOINT_TOP);
+			winch2PID.SetSetpoint(SETPOINT_TOP);
 			break;
 		}
 	}
@@ -142,10 +142,10 @@ void TKOClimber::calibrateWinch()
 	SETPOINT_LAST = SETPOINT_TOP - 2.0;
 	SETPOINT_CENTER = (SETPOINT_TOP + SETPOINT_BOTTOM) / 2;
 	ranCalibration = true;
-	printf("Reached top of arm \n");
-	printf("Finished calibration of arm \n");
-	printf("Bottom of winch is 0 and top is %f", SETPOINT_TOP);
-	printf("\n");
+	//printf("Reached top of arm \n");
+	//printf("Finished calibration of arm \n");
+	//printf("Bottom of winch is 0 and top is %f", SETPOINT_TOP);
+	//printf("\n");
 	writeM(1);
 
 }
@@ -309,10 +309,15 @@ void TKOClimber::Test() //pneumatics test
 
 void TKOClimber::winchMove(double SP) //
 {
-	printf("Beginning winchMove Test");
+	//printf("Beginning winchMove Test");
 	//Wait(1.);
-	RatchetBack();
-	winch1PID.SetSetpoint(SP);
+	if(SP < winch1PID.GetSetpoint())
+	{
+	    RatchetBack();
+	}
+	if(SP > SETPOINT_TOP){SP = SETPOINT_TOP;}
+	if(SP < SETPOINT_BOTTOM){SP = SETPOINT_BOTTOM;}
+    winch1PID.SetSetpoint(SP);
 	winch2PID.SetSetpoint(SP);
 	return;
 }

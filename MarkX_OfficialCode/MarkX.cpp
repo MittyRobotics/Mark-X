@@ -230,7 +230,7 @@ void MarkX::Operator()
 	//	if (stick1.GetRawButton(11))
 	//		climber.RetractDump();
 	//END OF TEST STATEMENT
-	
+
 	while (stick2.GetRawButton(3))
 	{
 		climber.MoveWinchWithStick();
@@ -329,6 +329,14 @@ void MarkX::writeLog()
 	{
 		switch (message[i])
 		{
+		    case 1:
+				if (logFile.is_open())
+				{
+					if (ds->IsOperatorControl())
+						logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
+					logFile << "Ran Winch Calibration" << endl;
+				}
+				break;
 			case 2:
 				if (logFile.is_open())
 				{

@@ -21,6 +21,8 @@
 #include "TKORelay.h"
 #include "Logger.h"
 
+//ONE SETPOINT = 6.28"
+
 class TKOClimber
 {
 
