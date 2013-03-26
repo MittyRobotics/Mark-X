@@ -4,18 +4,34 @@
 //Constructor for the TKOAutonomous class
 
 TKOClimber::TKOClimber(int port1, int port2) :
-	_stick1(1), sDumperR(PN_S1R_ID), sDumperE(PN_S1E_ID), sClipsR(PN_S3R_ID), sClipsE(PN_S3E_ID), sArmR(PN_S4R_ID), sArmE(PN_S4E_ID), rsRatchet(PN_R3_ID), winch1(port1, CANJaguar::kPosition), winch2(port2, CANJaguar::kPercentVbus), hookLeft(7),
-	        hookRight(8), clipLeft(5), clipRight(6), armTop(4), armBottom(3), ratchet(2)
+	_stick1(1),
+	sDumperR(PN_S1R_ID),
+	sDumperE(PN_S1E_ID),
+	sClipsR(PN_S3R_ID),
+	sClipsE(PN_S3E_ID),
+	sArmR(PN_S4R_ID),
+	sArmE(PN_S4E_ID),
+	rsRatchet(PN_R3_ID),
+	winch1(port1, CANJaguar::kPercentVbus),
+	winch2(port2, CANJaguar::kPercentVbus),
+	winchEncoder(WINCH_ENC_PORT),
+	winch1PID(WINCH_kP, WINCH_kI, WINCH_kD, &winchEncoder, &winch1),
+	winch2PID(WINCH_kP, WINCH_kI, WINCH_kD, &winchEncoder, &winch2),
+	hookLeft(7),
+    hookRight(8),
+    clipLeft(5),
+    clipRight(6),
+    armTop(4),
+    armBottom(3),
+    ratchet(2)
+
 {
 	printf("Initializing climber \n");
 	ds = DriverStation::GetInstance(); // Pulls driver station information
 	state = INITIAL_STATE;
-	winch1.EnableControl(0); // set to top value
-	winch1.SetPositionReference(JAG_POSREF);
-	winch1.ConfigEncoderCodesPerRev(ENCODER_REVS);
-	winch1.SetPID(WINCH_kP, WINCH_kI, WINCH_kD);
-	winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
-	ranCalibration = false;
+	winch1PID.Enable();
+	winch2PID.Enable();
+    ranCalibration = false;
 	clipBack()
 	armBack()
 	ratchetBack()
@@ -269,7 +285,7 @@ void TKOClimber::Test() //pneumatics test
 		DSLog(2, "Target: %f", setpointtest);
 		DSLog(3, "Stick1: %f", _stick1.GetY());
 		DSLog(5, "Top: %i", armTop.Get());
-		DSLog(6, "Bottom: %i", armBottom.Get());	
+		DSLog(6, "Bottom: %i", armBottom.Get());
 		printf("Encoder Value = %f", winch1.GetPosition());
 		printf("\n");
 		printf("Target: %f", setpointtest);
@@ -296,47 +312,9 @@ void TKOClimber::winchMove(double SP) //
 	printf("Beginning winchMove Test");
 	//Wait(1.);
 	RatchetBack();
-	winch1.Set(SP);
-	while(true)
-	//while (SP != winch1.GetPosition())
-	{ //MOVE WINCH UP6
-		winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
-		printf("ERROR %f", (winch1.GetPosition() - SP));
-		if (_stick1.GetRawButton(3))
-		{
-			//winchStop();
-			return;
-		}
-		if (not armBottom.Get() or not armTop.Get())
-		{
-			winch1.Disable();
-			winch2.Disable();
-			break;
-		}
-	}
-	//while (SP != winch1.GetPosition()) //winchdown
-	while(true)
-	{
-		winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
-		printf("ERROR %f", (winch1.GetPosition() - SP));
-		if (_stick1.GetRawButton(3))
-		{
-			//winchStop();
-			return;
-		}
-		if (not armBottom.Get() or not armTop.Get())
-		{
-			winch1.Disable();
-			winch2.Disable();
-			break;
-		}
-		if (winch1.GetPosition() <= SP)
-		{
-			break;
-		}
-	}
+	winch1PID.SetSetpoint(SP);
+	winch2PID.SetSetpoint(SP);
 	return;
-
 }
 
 void TKOClimber::LevelOneClimb()

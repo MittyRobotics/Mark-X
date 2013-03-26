@@ -28,6 +28,8 @@ class TKOClimber
 		Timer time;
 		Timer time2;
 		DriverStation *ds;
+        AnalogChannel winchEncoder;
+        PIDController winch1PID, winch2PID;
 		Joystick _stick1;
 
 		int state; /*!< The state variable for the state machine. 1 is Operator control, 13 is Emergency State */
@@ -64,9 +66,9 @@ class TKOClimber
 		 \param int port2 - ID for winch2
 		 */
 		TKOClimber(int port1, int port2);
-		
+
 		void MoveWinchWithStick();
-		
+
 		void LevelOneClimb();
 		///Destructor for the TKOClimber class
 		/*!
