@@ -133,8 +133,8 @@ const double MAXSPEED = .3;
 const double MANSPEED = 3.0;
 const double LIFT_INCREMENT = .5; //POTENTIALLY CHANGE TO .0001
 const double LIFT_INCREMENT_RATCHET = LIFT_INCREMENT / 20;
-const double STRNOCLIPMIN = .4;
-const double STRYESCLIPMIN = 1.0;
+const double STRNOCLIPMIN = -.4;
+const double STRYESCLIPMIN = -1.0;
 const double STRMAX = 1.0;
 
 ///state machine constants
