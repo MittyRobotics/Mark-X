@@ -14,7 +14,7 @@ TKOClimber::TKOClimber(int port1, int port2) :
 	rsRatchet(PN_R3_ID),
 	winch1(port1, CANJaguar::kPercentVbus),
 	winch2(port2, CANJaguar::kPercentVbus),
-	winchEncoder(WINCH_ENC_PORT),
+	winchEncoder(WINCH_ENC_PORT_A, WINCH_ENC_PORT_B),
 	winch1PID(WINCH_kP, WINCH_kI, WINCH_kD, &winchEncoder, &winch1),
 	winch2PID(WINCH_kP, WINCH_kI, WINCH_kD, &winchEncoder, &winch2),
 	hookLeft(7),
@@ -90,7 +90,8 @@ void TKOClimber::Dump()
 
 void TKOClimber::calibrateWinch()
 {
-	printf("Starting to autoCalibrate \n");
+    writeMD(1, 1.0);
+	//printf("Starting to autoCalibrate \n");
 	while (true)
 	{
 		winch1.Set((-1) * MAXSPEED); //go down
@@ -104,7 +105,8 @@ void TKOClimber::calibrateWinch()
 			break;
 		}
 	}
-	printf("Hit bottom of arm \n");
+	writeMD(1, 2.0);
+	//printf("Hit bottom of arm \n");
 	winch1PID.EnableControl();
 	winch2PID.EnableControl();
 	while (true)
@@ -118,18 +120,22 @@ void TKOClimber::calibrateWinch()
 			SETPOINT_TOP = winch1.GetPosition() - TOLERANCE;
 			winch1PID.SetSetpoint(SETPOINT_TOP);
 			winch2PID.SetSetpoint(SETPOINT_TOP);
+			writeMD(1, 3.0);
+			//printf("Hit top of arm")
 			break;
 		}
 	}
 	SETPOINT_RATCHET_RETRACT = SETPOINT_BOTTOM + 2.0;
 	SETPOINT_LAST = SETPOINT_TOP - 2.0;
 	SETPOINT_CENTER = (SETPOINT_TOP + SETPOINT_BOTTOM) / 2;
+	printf("Top Setpoint: %f", SETPOINT_TOP);
+	printf("Bottom Setpoint: %f", SETPOINT_BOTTOM);
 	ranCalibration = true;
 	//printf("Reached top of arm \n");
 	//printf("Finished calibration of arm \n");
 	//printf("Bottom of winch is 0 and top is %f", SETPOINT_TOP);
 	//printf("\n");
-	writeM(1);
+	writeM(1, 4.0);
 
 }
 
@@ -177,80 +183,46 @@ void TKOClimber::MoveWinchWithStick()
 	if (_stick1.GetTrigger())
 		TKOClimber::winchMove(SETPOINT_CENTER);
 
-	DSLog(5, "Top: %i", armTop.Get());
-	DSLog(6, "Bottom: %i", armBottom.Get());
+	//DSLog(5, "Top: %i", armTop.Get());
+	//DSLog(6, "Bottom: %i", armBottom.Get());
+	DSLog(4, "Encoder Location: %f", winchEncoder.Get());
+	DSLog(5, "You have %f until you hit the top", SETPOINT_TOP - winchEncoder.Get());
+	DSLog(6, "You have %f until you hit the bottom", winchEncoder.Get() - SETPOINT_BOTTOM);
 
 	if (not armBottom.Get())
 	{
 		winch1.Disable();
 		winch2.Disable();
-		DSLog(5, "RUH-ROH");
-		printf("DISABLING WINCHES");
+		writeMD(3, 1.0);
+		//DSLog(5, "RUH-ROH");
+
+		//printf("DISABLING WINCHES");
 	}
 	else if (not armTop.Get())
 	{
 		winch1.Disable();
 		winch2.Disable();
-		DSLog(5, "RUH-ROH");
-		printf("DISABLING WINCHES");
+		writeMD(3, 2.0);
+		//DSLog(5, "RUH-ROH");
+		//printf("DISABLING WINCHES");
 	}
 	else
 	{
-		if (_stick1.GetY() < -0.5) //moving down
+		if (_stick1.GetY() < -0.1 and winchEncoder.Get() > SETPOINT_BOTTOM) //moving down
 		{
-			if (winch1.GetPosition() <= SETPOINT_BOTTOM)
-			{
-				winchStop();
-			}
-			else if (winch1.GetPosition() > SETPOINT_BOTTOM)
-			{
-				if (winch1.GetPosition() - 2 > SETPOINT_BOTTOM)
-				{
-					DSLog(5, "Going down");
-					winch1.Set(winch1.GetPosition() + (_stick1.GetY() + .5) * MANSPEED);
-					//			if (winch1.GetPosition() - 5 <= SETPOINT_BOTTOM)
-					//				winch1.Set(SETPOINT_BOTTOM);
-				}
-
-				else if (winch1.GetPosition() - 1 <= SETPOINT_BOTTOM)
-				{
-					winch1.Set(winch1.GetPosition() + (_stick1.GetY() + .5) * (winch1.GetPosition() - SETPOINT_BOTTOM));
-				}
-			}
-
+            winch1.Set(_stick1.GetY() * MANSPEED);
+            winch2.Set(_stick1.GetY() * MANSPEED)
 		}
-		else if (_stick1.GetY() > 0.5)  //moving up
+		else if (_stick1.GetY() > 0.1 and winchEncoder.Get() < SETPOINT_TOP)  //moving up
 		{
-			if (winch1.GetPosition() >= SETPOINT_TOP)
-			{
-				winchStop();
-			}
-			else if (winch1.GetPosition() < SETPOINT_TOP)
-			{
-				if (winch1.GetPosition() + 1 < SETPOINT_TOP)
-
-				{
-					DSLog(5, "Going up");
-					winch1.Set(winch1.GetPosition() + (_stick1.GetY() - .5) * MANSPEED);
-					//			if (winch1.GetPosition() + 5 >= SETPOINT_TOP)
-					//				winch1.Set(SETPOINT_TOP);
-				}
-
-				else if (winch1.GetPosition() + 1 >= SETPOINT_TOP)
-				{
-					winch1.Set(winch1.GetPosition() + (_stick1.GetY() - .5) * (SETPOINT_TOP - winch1.GetPosition()));
-				}
-
-			}
+            winch1.Set(_stick1.GetY() * MANSPEED);
+            winch2.Set(_stick1.GetY() * MANSPEED)
 		}
-		else
+		else if (_stick1.GetY() <= .1 and _stick1.GetY() >= -.1)
 		{
-			DSLog(5, "Staying");
-			winchStop();
+		    winchStop();
 		}
 	}
-
-	winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
 }
 
 void TKOClimber::Test() //pneumatics test

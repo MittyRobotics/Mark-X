@@ -30,7 +30,6 @@ class TKOClimber
 		Timer time;
 		Timer time2;
 		DriverStation *ds;
-        AnalogChannel winchEncoder;
         PIDController winch1PID, winch2PID;
 		Joystick _stick1;
 
@@ -41,6 +40,7 @@ class TKOClimber
 		TKORelay rsRatchet;
 		CANJaguar winch1, winch2;
 		DigitalInput hookLeft, hookRight, clipLeft, clipRight, armTop, armBottom, ratchet;
+		Encoder winchEncoder;
 		//double setpoint;
 		double SETPOINT_TOP;
 		double SETPOINT_BOTTOM;

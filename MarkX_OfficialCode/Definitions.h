@@ -56,7 +56,8 @@ const int TURRET_ID = 10;
 const int SHOOTER_PORT = 8;
 const int WINCH_1_PORT = 6;
 const int WINCH_2_PORT = 7;
-const int WINCH_ENC_PORT = 1;
+const int WINCH_ENC_PORT_A = 9;
+const int WINCH_ENC_PORT_B = 10;
 
 // Spinner constants
 const float RADIUS_WHEELS = 4;
@@ -130,7 +131,7 @@ const float DEGREES_PER_RADIAN = 180 / PI;
 //WINCH CONSTANTS
 const double TOLERANCE = .5;
 const double MAXSPEED = .3;
-const double MANSPEED = 3.0;
+const double MANSPEED = .5;
 const double LIFT_INCREMENT = .5; //POTENTIALLY CHANGE TO .0001
 const double LIFT_INCREMENT_RATCHET = LIFT_INCREMENT / 20;
 const double STRNOCLIPMIN = -.4;

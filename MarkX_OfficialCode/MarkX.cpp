@@ -329,14 +329,33 @@ void MarkX::writeLog()
 	{
 		switch (message[i])
 		{
-		    case 1:
+
+		    case 1:  //WINCH CALIBRATION
 				if (logFile.is_open())
 				{
 					if (ds->IsOperatorControl())
 						logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
-					logFile << "Ran Winch Calibration" << endl;
+					logFile << "Winch Calibration:" << endl;
+					if (data[i] == 1.0)
+					{
+						logFile << "Beginning to Autocalibrate" << endl;
+					}
+					if (data[i] == 2.0)
+					{
+						logFile << "Winch hit bottom limitswitch" << endl;
+					}
+					if (data[i] == 3.0)
+					{
+					    logFile << "Winch hit top limitswitch" << endl;
+					}
+                    if (data[i] == 4.0)
+					{
+						logFile << "Successfully autocalibrated" << endl;
+					}
 				}
 				break;
+
+
 			case 2:
 				if (logFile.is_open())
 				{
@@ -346,6 +365,40 @@ void MarkX::writeLog()
 					logFile << "Data: " << data[i] << endl;
 				}
 				break;
+			case 3:  //MANUAL MOVE ERRORS
+				if (logFile.is_open())
+				{
+					if (ds->IsOperatorControl())
+						logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
+					logFile << "Manual winch move errors!" << endl;
+					if (data[i] == 1.0)
+					{
+						logFile << "You hit the bottom limit switch, winch motors are disabled" << endl;
+					}
+					if (data[i] == 2.0)
+					{
+						logFile << "You hit the top limit switch, winch motors are disabled" << endl;
+					}
+				}
+				break;
+
+            case 4:  //MANUAL MOVE ERRORS
+				if (logFile.is_open())
+				{
+					if (ds->IsOperatorControl())
+						logFile << endl << "TELE Timer: " << globalOCTimer.Get() << endl;
+					logFile << "Manual winch move motor input value: " << endl;
+					if (data[i] == 1.0)
+					{
+						logFile << "You hit the bottom limit switch, winch motors are disabled" << endl;
+					}
+					if (data[i] == 2.0)
+					{
+						logFile << "You hit the top limit switch, winch motors are disabled" << endl;
+					}
+				}
+				break;
+
 			case 52:
 				if (logFile.is_open())
 				{
