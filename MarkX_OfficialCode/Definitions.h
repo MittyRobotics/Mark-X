@@ -127,6 +127,16 @@ const int CAMERA_PWM_INCREMENT = 1;
 const float PI = 3.14159265;
 const float DEGREES_PER_RADIAN = 180 / PI;
 
+//WINCH CONSTANTS
+const double TOLERANCE = .5;
+const double MAXSPEED = .3;
+const double MANSPEED = 3.0;
+const double LIFT_INCREMENT = .5; //POTENTIALLY CHANGE TO .0001
+const double LIFT_INCREMENT_RATCHET = LIFT_INCREMENT / 20;
+const double STRNOCLIPMIN = .4;
+const double STRYESCLIPMIN = 1.0;
+const double STRMAX = 1.0;
+
 ///state machine constants
 const int INITIAL_STATE = 2;
 const int OPERATOR_CONTROL = 1;
@@ -143,13 +153,6 @@ const int WE_MADE_IT = 12;
 const int OH_SHIT = 13;
 const int WTF = 13;
 const int PYRAMID_SIZE = 3;
-//const double SETPOINT_RATCHET_RETRACT = .9;
-const double TOLERANCE = .5;
-const double MAXSPEED = .3;
-const double MANSPEED = 3.0;
-const double LIFT_INCREMENT = .5; //POTENTIALLY CHANGE TO .0001
-const double LIFT_INCREMENT_RATCHET = LIFT_INCREMENT / 20;
-
 const int TIMEOUT2 = 15;
 const int TIMEOUT3 = 1;
 const int TIMEOUT4 = 3;
