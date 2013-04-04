@@ -129,9 +129,9 @@ const float PI = 3.14159265;
 const float DEGREES_PER_RADIAN = 180 / PI;
 
 //WINCH CONSTANTS
-const double TOLERANCE = .5;
+const double TOLERANCE = 5.;
 const double MAXSPEED = .3;
-const double MANSPEED = .5;
+const double MANSPEED = .7;
 const double LIFT_INCREMENT = .5; //POTENTIALLY CHANGE TO .0001
 const double LIFT_INCREMENT_RATCHET = LIFT_INCREMENT / 20;
 const double STRNOCLIPMIN = -.4;

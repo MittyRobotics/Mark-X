@@ -11,7 +11,6 @@
 #define clipBack() sClipsR.Set(false);/*Wait(0.3);*/sClipsE.Set(true);/*Wait(0.3);*/
 #define topDumperForward() sDumperR.Set(false);/*Wait(0.1);*/sDumperE.Set(true);/*Wait(0.1);*/
 #define topDumperBackward() sDumperE.Set(false);sDumperR.Set(true);
-#define winchStop() winch1.Set(winch1.GetPosition());winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
 #define disableIfOutOfRange() if(not armBottom.Get() or not armTop.Get()){winch1.Disable();winch2.Disable();}
 
 
@@ -30,17 +29,17 @@ class TKOClimber
 		Timer time;
 		Timer time2;
 		DriverStation *ds;
-        PIDController winch1PID, winch2PID;
 		Joystick _stick1;
 
 		int state; /*!< The state variable for the state machine. 1 is Operator control, 13 is Emergency State */
-		float setpointtest;
+		//float setpointtest;
 	public:
 		Solenoid sDumperR, sDumperE, sClipsR, sClipsE, sArmR, sArmE;
 		TKORelay rsRatchet;
 		CANJaguar winch1, winch2;
 		Encoder winchEncoder;
 		DigitalInput hookLeft, hookRight, clipLeft, clipRight, armTop, armBottom, ratchet;
+		PIDController winch1PID, winch2PID;
 		//double setpoint;
 		double SETPOINT_TOP;
 		double SETPOINT_BOTTOM;
@@ -70,6 +69,8 @@ class TKOClimber
 		TKOClimber(int port1, int port2);
 
 		void MoveWinchWithStick();
+		
+		void winchStop();
 
 		void LevelOneClimb();
 		///Destructor for the TKOClimber class

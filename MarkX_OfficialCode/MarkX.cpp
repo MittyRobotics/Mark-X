@@ -13,6 +13,9 @@
  * Fix logger
  * add autocalibration system for winch
  * Make sure that auto turn and drive slaves volatage is setup right
+ * 
+ * Test new PID winch drive
+ * Autocalibrate at start of match?
  */
 
 class MarkX: public SimpleRobot
@@ -233,9 +236,17 @@ void MarkX::Operator()
 
 	while (stick2.GetRawButton(3))
 	{
+		printf("In moveWithStick");
 		climber.MoveWinchWithStick();
+		if (!stick2.GetRawButton(3))
+		{
+			climber.winchStop();
+			break;
+		}
 	}
 
+	climber.winchStop();
+	
 	if (stick2.GetRawButton(6))
 		controllerDrive = not controllerDrive;
 	if (stick3.GetRawButton(3))
