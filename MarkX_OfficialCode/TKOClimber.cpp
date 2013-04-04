@@ -4,8 +4,6 @@
 //Constructor for the TKOAutonomous class
 
 TKOClimber::TKOClimber(int port1, int port2) :
-	winch1PID(WINCH_kP, WINCH_kI, WINCH_kD, &winchEncoder, &winch1),
-	winch2PID(WINCH_kP, WINCH_kI, WINCH_kD, &winchEncoder, &winch2),
 	_stick1(1),
 	sDumperR(PN_S1R_ID),
 	sDumperE(PN_S1E_ID),
@@ -23,8 +21,9 @@ TKOClimber::TKOClimber(int port1, int port2) :
     clipRight(6),
     armTop(4),
     armBottom(3),
-    ratchet(2)
-
+    ratchet(2),
+	winch1PID(WINCH_kP, WINCH_kI, WINCH_kD, &winchEncoder, &winch1),
+	winch2PID(WINCH_kP, WINCH_kI, WINCH_kD, &winchEncoder, &winch2)
 {
 	printf("Initializing climber \n");
 	ds = DriverStation::GetInstance(); // Pulls driver station information
@@ -101,7 +100,7 @@ void TKOClimber::calibrateWinch()
 		{
 			winch1.Set(0);
 			winch2.Set(0);
-			SETPOINT_BOTTOM = winch1.GetPosition() + TOLERANCE;
+			SETPOINT_BOTTOM = winchEncoder.Get() + TOLERANCE;
 			break;
 		}
 	}
@@ -210,12 +209,12 @@ void TKOClimber::MoveWinchWithStick()
 	}
 	else
 	{
-		if (_stick1.GetY() < -0.1 and winchEncoder.Get() > SETPOINT_BOTTOM) //moving down
+		if (_stick1.GetY() < -0.1 /*and winchEncoder.Get() > SETPOINT_BOTTOM*/) //moving down
 		{
             winch1.Set(_stick1.GetY() * MANSPEED);
             winch2.Set(_stick1.GetY() * MANSPEED);
 		}
-		else if (_stick1.GetY() > 0.1 and winchEncoder.Get() < SETPOINT_TOP)  //moving up
+		else if (_stick1.GetY() > 0.1 /*and winchEncoder.Get() < SETPOINT_TOP*/)  //moving up
 		{
             winch1.Set(_stick1.GetY() * MANSPEED);
             winch2.Set(_stick1.GetY() * MANSPEED);
