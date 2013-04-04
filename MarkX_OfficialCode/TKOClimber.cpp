@@ -53,6 +53,7 @@ void TKOClimber::ArmForward()
 {
 	//if (sArmR.Get() and not sArmE.Get())
 	//{
+    ClipForward();
 	armForward()
 	//}
 }
@@ -92,6 +93,8 @@ void TKOClimber::Dump()
 
 void TKOClimber::calibrateWinch()
 {
+    winch1PID.Disable();
+    winch2PID.Disable();
 	RatchetBack();
     writeMD(1, 1.0);
 	//printf("Starting to autoCalibrate \n");
@@ -131,9 +134,9 @@ void TKOClimber::calibrateWinch()
 	winch1.Set((1) * MAXSPEED); //go DOWN
 	winch2.Set((1) * MAXSPEED);
 	Wait(1.);
-	winch1.Set(0); 
+	winch1.Set(0);
 	winch2.Set(0);
-	
+
 	SETPOINT_RATCHET_RETRACT = SETPOINT_BOTTOM + 2.0;
 	SETPOINT_LAST = SETPOINT_TOP - 2.0;
 	SETPOINT_CENTER = (SETPOINT_TOP + SETPOINT_BOTTOM) / 2;
@@ -164,6 +167,8 @@ void TKOClimber::print()
 
 void TKOClimber::MoveWinchWithStick()
 {
+    winch1PID.Disable();
+    winch2PID.Disable();
 	/*
 	 * ratchet back,
 	 * clip forward,
@@ -176,15 +181,12 @@ void TKOClimber::MoveWinchWithStick()
 
 	if (_stick1.GetRawButton(4))
 		TKOClimber::ArmBack();
-	if (_stick1.GetRawButton(5)){
-		TKOClimber::ClipForward();
+	if (_stick1.GetRawButton(5))
 		TKOClimber::ArmForward();
-	}
 	if (_stick1.GetRawButton(2))
 		TKOClimber::ClipBack();
 	if (_stick1.GetRawButton(3))
 		TKOClimber::ClipForward();
-
 	if (_stick1.GetRawButton(8))
 		TKOClimber::RatchetBack();
 	if (_stick1.GetRawButton(9))
@@ -220,11 +222,26 @@ void TKOClimber::MoveWinchWithStick()
 	}
 	else
 	{
-		if (_stick1.GetY() < -0.1 or _stick1.GetY() > 0.1) //moving down
+		if (_stick1.GetY() < -0.1 or _stick1.GetY() > 0.1 and winchEncoder.GetDistance() < SETPOINT_TOP and winchEncoder.GetDistance() > SETPOINT_BOTTOM) //moving down
 		{
             winch1.Set(_stick1.GetY() * -MANSPEED);
             winch2.Set(_stick1.GetY() * -MANSPEED);
 		}
+
+        // + is up
+
+        else if (winchEncoder.GetDistance() >= SETPOINT_TOP and _stick1.GetY() < -.1 and not armTop.Get())
+        {
+            winch1.Set(_stick1.GetY() * -MANSPEED);
+            winch2.Set(_stick1.GetY() * -MANSPEED);
+        }
+
+        else if (winchEncoder.GetDistance() <= SETPOINT_BOTTOM and _stick1.GetY() > .1 and not armBottom.Get())  //at or below setpoint bottom, and you push joystick up, move up
+        {
+            winch1.Set(_stick1.GetY() * -MANSPEED);
+            winch2.Set(_stick1.GetY() * -MANSPEED);
+        }
+
 //		else if (_stick1.GetY() > 0.1 /*and winchEncoder.GetDistance() < SETPOINT_TOP*/)  //moving up
 //		{
 //            winch1.Set(_stick1.GetY() * MANSPEED);
@@ -239,7 +256,7 @@ void TKOClimber::MoveWinchWithStick()
 	Wait(0.005);
 }
 
-void TKOClimber::winchStop() 
+void TKOClimber::winchStop()
 {
 	winch1.Set(0);
 	winch2.Set(0);
@@ -255,57 +272,12 @@ void TKOClimber::winchStop()
 
 void TKOClimber::Test() //pneumatics test
 {
-//	DSClear();
-//	printf("Starting winch/climber test. \n");
-//	if (not ranCalibration)
-//		calibrateWinch();
-//	while (true)
-//	{
-//		if (!ds->IsEnabled())
-//			return;
-//
-//		DSLog(1, "Encoder Value = %f", winch1.GetPosition());
-//		DSLog(2, "Target: %f", setpointtest);
-//		DSLog(3, "Stick1: %f", _stick1.GetY());
-//		DSLog(5, "Top: %i", armTop.Get());
-//		DSLog(6, "Bottom: %i", armBottom.Get());
-//		printf("Encoder Value = %f", winch1.GetPosition());
-//		printf("\n");
-//		printf("Target: %f", setpointtest);
-//		printf("\n");
-//		printf("Stick1: %f", _stick1.GetY());
-//		printf("\n");
-//		printf("Top: %i", armTop.Get());
-//		printf("\n");
-//		printf("Bottom: %i", armBottom.Get());
-//		printf("\n");
-//
-//		winchMove(SETPOINT_CENTER);
-//		//winchMove(SETPOINT_BOTTOM);
-//		//winchMove(SETPOINT_TOP);
-//
-//		//LevelOneClimb();
-//
-//		MoveWinchWithStick();
-//	}
-	
-//	SETPOINT_TOP = 10.0;
-//	SETPOINT_BOTTOM = 0.0;
-//	
-//	printf("set setpoints");
-//	
-//	Wait(1);
-//	
-//	winch1PID.Enable();
-//		winch2PID.Enable();
-//	
-//	printf("enabled winches");	
-//		
-//	winchMove(5.0);
 }
 
 void TKOClimber::winchMove(double SP) //
 {
+    winch1PID.Enable();
+    winch2PID.Enable();
 	//printf("Beginning winchMove Test");
 	//Wait(1.);
 	if(SP < winch1PID.GetSetpoint())
@@ -325,12 +297,12 @@ void TKOClimber::LevelOneClimb()
 	{
 		calibrateWinch();
 	}
-	ClipForward();
-	Wait(2);
+    winch1PID.Enable();
+    winch2PID.Enable();
 	ArmForward();
 	RatchetForward();
-    winch1PID.SetOutputRange(STRNOCLIPMIN, STRMAX);
-    winch2PID.SetOutputRange(STRNOCLIPMIN, STRMAX);
+    //winch1PID.SetOutputRange(STRNOCLIPMIN, STRMAX);
+    //winch2PID.SetOutputRange(STRNOCLIPMIN, STRMAX);
     time2.Reset();
     winchMove(SETPOINT_RATCHET_RETRACT);
 	while (not hookLeft.Get() or not hookRight.Get())
@@ -374,8 +346,8 @@ void TKOClimber::LevelOneClimb()
 
 	while (hookLeft.Get() and hookRight.Get() and winch1.GetPosition() > SETPOINT_BOTTOM and ratchet.Get()) //MOVE MOTORS
 	{
-	    winch1PID.SetOutputRange(STRYESCLIPMIN, STRMAX);
-	    winch2PID.SetOutputRange(STRYESCLIPMIN, STRMAX);
+	    //winch1PID.SetOutputRange(STRYESCLIPMIN, STRMAX);
+	    //winch2PID.SetOutputRange(STRYESCLIPMIN, STRMAX);
 		winchMove(SETPOINT_BOTTOM);
 	}
 
