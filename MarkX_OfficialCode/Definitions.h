@@ -132,6 +132,7 @@ const float DEGREES_PER_RADIAN = 180 / PI;
 const double TOLERANCE = 5.;
 const double MAXSPEED = .3;
 const double MANSPEED = .7;
+const double STICK_DEADZONE = .1;
 const double LIFT_INCREMENT = .5; //POTENTIALLY CHANGE TO .0001
 const double LIFT_INCREMENT_RATCHET = LIFT_INCREMENT / 20;
 const double STRNOCLIPMIN = -.4;

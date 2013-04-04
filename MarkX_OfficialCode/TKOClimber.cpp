@@ -222,7 +222,7 @@ void TKOClimber::MoveWinchWithStick()
 	}
 	else
 	{
-		if (_stick1.GetY() < -0.1 or _stick1.GetY() > 0.1 and winchEncoder.GetDistance() < SETPOINT_TOP and winchEncoder.GetDistance() > SETPOINT_BOTTOM) //moving down
+		if (_stick1.GetY() < -STICK_DEADZONE or _stick1.GetY() > STICK_DEADZONE and winchEncoder.GetDistance() < SETPOINT_TOP and winchEncoder.GetDistance() > SETPOINT_BOTTOM) //moving down
 		{
             winch1.Set(_stick1.GetY() * -MANSPEED);
             winch2.Set(_stick1.GetY() * -MANSPEED);
@@ -230,13 +230,13 @@ void TKOClimber::MoveWinchWithStick()
 
         // + is up
 
-        else if (winchEncoder.GetDistance() >= SETPOINT_TOP and _stick1.GetY() < -.1 and not armTop.Get())
+        else if (winchEncoder.GetDistance() >= SETPOINT_TOP and _stick1.GetY() < -STICK_DEADZONE and not armTop.Get())
         {
             winch1.Set(_stick1.GetY() * -MANSPEED);
             winch2.Set(_stick1.GetY() * -MANSPEED);
         }
 
-        else if (winchEncoder.GetDistance() <= SETPOINT_BOTTOM and _stick1.GetY() > .1 and not armBottom.Get())  //at or below setpoint bottom, and you push joystick up, move up
+        else if (winchEncoder.GetDistance() <= SETPOINT_BOTTOM and _stick1.GetY() > STICK_DEADZONE and not armBottom.Get())  //at or below setpoint bottom, and you push joystick up, move up
         {
             winch1.Set(_stick1.GetY() * -MANSPEED);
             winch2.Set(_stick1.GetY() * -MANSPEED);
