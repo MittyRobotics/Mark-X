@@ -39,8 +39,8 @@ class TKOClimber
 		Solenoid sDumperR, sDumperE, sClipsR, sClipsE, sArmR, sArmE;
 		TKORelay rsRatchet;
 		CANJaguar winch1, winch2;
-		DigitalInput hookLeft, hookRight, clipLeft, clipRight, armTop, armBottom, ratchet;
 		Encoder winchEncoder;
+		DigitalInput hookLeft, hookRight, clipLeft, clipRight, armTop, armBottom, ratchet;
 		//double setpoint;
 		double SETPOINT_TOP;
 		double SETPOINT_BOTTOM;

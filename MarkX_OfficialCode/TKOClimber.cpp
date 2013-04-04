@@ -4,6 +4,8 @@
 //Constructor for the TKOAutonomous class
 
 TKOClimber::TKOClimber(int port1, int port2) :
+	winch1PID(WINCH_kP, WINCH_kI, WINCH_kD, &winchEncoder, &winch1),
+	winch2PID(WINCH_kP, WINCH_kI, WINCH_kD, &winchEncoder, &winch2),
 	_stick1(1),
 	sDumperR(PN_S1R_ID),
 	sDumperE(PN_S1E_ID),
@@ -15,8 +17,6 @@ TKOClimber::TKOClimber(int port1, int port2) :
 	winch1(port1, CANJaguar::kPercentVbus),
 	winch2(port2, CANJaguar::kPercentVbus),
 	winchEncoder(WINCH_ENC_PORT_A, WINCH_ENC_PORT_B),
-	winch1PID(WINCH_kP, WINCH_kI, WINCH_kD, &winchEncoder, &winch1),
-	winch2PID(WINCH_kP, WINCH_kI, WINCH_kD, &winchEncoder, &winch2),
 	hookLeft(7),
     hookRight(8),
     clipLeft(5),
