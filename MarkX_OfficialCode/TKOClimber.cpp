@@ -5,14 +5,14 @@
 
 TKOClimber::TKOClimber(int port1, int port2) :
 	_stick1(1), sDumperR(PN_S1R_ID),
-	sDumperE(PN_S1E_ID), 
-	sClipsR(PN_S3R_ID), 
-	sClipsE(PN_S3E_ID), 
-	sArmR(PN_S4R_ID), 
-	sArmE(PN_S4E_ID), rsRatchet(PN_R3_ID), 
+	sDumperE(PN_S1E_ID),
+	sClipsR(PN_S3R_ID),
+	sClipsE(PN_S3E_ID),
+	sArmR(PN_S4R_ID),
+	sArmE(PN_S4E_ID), rsRatchet(PN_R3_ID),
 	winch1(port1, CANJaguar::kPercentVbus), winch2(port2, CANJaguar::kPercentVbus),
-	winchEncoder(WINCH_ENC_PORT_A, WINCH_ENC_PORT_B), hookLeft(7), hookRight(8), 
-	clipLeft(5), clipRight(6), armTop(4), armBottom(3), ratchet(2), 
+	winchEncoder(WINCH_ENC_PORT_A, WINCH_ENC_PORT_B), hookLeft(7), hookRight(8),
+	clipLeft(5), clipRight(6), armTop(4), armBottom(3), ratchet(2),
 	winch1PID(WINCH_kP, WINCH_kI, WINCH_kD, &winchEncoder, &winch1),
 	winch2PID(WINCH_kP, WINCH_kI, WINCH_kD, &winchEncoder, &winch2)
 {
@@ -106,7 +106,7 @@ void TKOClimber::calibrateWinch()
 				break;
 			}
 		}
-	
+
 	while (true)
 	{
 		printf("Encoder Location: %f", winchEncoder.GetDistance());
@@ -130,7 +130,7 @@ void TKOClimber::calibrateWinch()
 	winch1.Set(0);
 	winch2.Set(0);
 	oldSetpoint = winchEncoder.GetDistance();
-	winchEncoder.Reset();
+	//winchEncoder.Reset();
 	SETPOINT_RATCHET_RETRACT = SETPOINT_BOTTOM + 2.0;
 	SETPOINT_LAST = SETPOINT_TOP - 2.0;
 	SETPOINT_CENTER = (SETPOINT_TOP + SETPOINT_BOTTOM) / 2;
@@ -198,7 +198,7 @@ void TKOClimber::MoveWinchWithStick()
 	//DSLog(5, "Top: %i", armTop.Get());
 	//DSLog(6, "Bottom: %i", armBottom.Get());
 	DSLog(4, "Encoder Location: %f", winchEncoder.GetDistance());
-	printf("Encoder Location: %f", winchEncoder.GetDistance());
+	//printf("Encoder Location: %f", winchEncoder.GetDistance());
 	DSLog(5, "You have %f until you hit the top", SETPOINT_TOP - winchEncoder.GetDistance());
 	DSLog(6, "You have %f until you hit the bottom", winchEncoder.GetDistance() - SETPOINT_BOTTOM);
 
@@ -225,12 +225,12 @@ void TKOClimber::MoveWinchWithStick()
 		{
 			oldSetpoint = oldSetpoint - (-_stick1.GetY() * deltaSetpoint);
 		}
-		
+
 		while(_stick1.GetY() > STICK_DEADZONE)
 		{
 			oldSetpoint = oldSetpoint + (-_stick1.GetY() * deltaSetpoint);
 		}
-		
+
 //		if (_stick1.GetY() < -STICK_DEADZONE or _stick1.GetY() > STICK_DEADZONE/* and winchEncoder.GetDistance() < SETPOINT_TOP and winchEncoder.GetDistance() > SETPOINT_BOTTOM*/) //moving down
 //				{
 //					winch1.Set(_stick1.GetY() * -MANSPEED);
@@ -262,7 +262,7 @@ void TKOClimber::MoveWinchWithStick()
 //			printf("WINCH STOP");
 //		}
 	}
-	Wait(0.005);
+	//Wait(0.005);
 }
 
 void TKOClimber::winchStop()
@@ -314,7 +314,7 @@ void TKOClimber::winchMove(double SP) //
 		alreadyRan = true;
 		Wait(LOOPTIME - loopTime.Get());
 	}
-	
+
 	while(oldSetpoint > SP and alreadyRan == false)
 	{
 		loopTime.Reset();
@@ -344,7 +344,7 @@ void TKOClimber::winchMove(double SP) //
 //	{
 //		SP = SETPOINT_TOP;
 //	}
-//	if (SP < SETPOINT_BOTTOM) 
+//	if (SP < SETPOINT_BOTTOM)
 //	{
 //		SP = SETPOINT_BOTTOM;
 //	}
@@ -357,7 +357,7 @@ void TKOClimber::winchMove(double SP) //
 //		alreadyRan = true;
 //		Wait(LOOPTIME - loopTime.Get());
 //	}
-//	
+//
 //	while(oldSetpoint > SP and alreadyRan == false)
 //	{
 //		loopTime.Reset();

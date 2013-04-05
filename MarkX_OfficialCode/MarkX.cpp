@@ -13,7 +13,7 @@
  * Fix logger
  * add autocalibration system for winch
  * Make sure that auto turn and drive slaves volatage is setup right
- * 
+ *
  * Test new PID winch drive
  * Autocalibrate at start of match?
  */
@@ -234,43 +234,42 @@ void MarkX::Operator()
 	//		climber.RetractDump();
 	//END OF TEST STATEMENT
 
-	while (stick2.GetRawButton(3))
+	if (stick2.GetRawButton(3))
 	{
-		printf("In moveWithStick");
+		printf("In moveWithStick \n");
 		climber.MoveWinchWithStick();
 		if (!stick2.GetRawButton(3))
 		{
 			climber.winchStop();
 		}
 	}
+    else {
+        climber.winchStop();
 
-	climber.winchStop();
-	
-	if (stick2.GetRawButton(6))
-		controllerDrive = not controllerDrive;
-	if (stick3.GetRawButton(3))
-		auton.rsFrontLoaderLift.SetOn(1);
-	else if (stick3.GetRawButton(2))
-		auton.rsFrontLoaderLift.SetOn(0);
+        if (stick2.GetRawButton(6))
+            controllerDrive = not controllerDrive;
+        if (stick3.GetRawButton(3))
+            auton.rsFrontLoaderLift.SetOn(1);
+        else if (stick3.GetRawButton(2))
+            auton.rsFrontLoaderLift.SetOn(0);
 
-	if (stick3.GetRawButton(5))
-		auton.rsFrontLoaderWrist.SetOn(1);
-	else if (stick3.GetRawButton(4))
-		auton.rsFrontLoaderWrist.SetOn(0);
+        if (stick3.GetRawButton(5))
+            auton.rsFrontLoaderWrist.SetOn(1);
+        else if (stick3.GetRawButton(4))
+            auton.rsFrontLoaderWrist.SetOn(0);
 
-	if (stick3.GetRawButton(10) and stick3.GetX() > 0)
-		cameraServo.SetRaw(cameraServo.GetRaw() + CAMERA_PWM_INCREMENT);
+        if (stick3.GetRawButton(10) and stick3.GetX() > 0)
+            cameraServo.SetRaw(cameraServo.GetRaw() + CAMERA_PWM_INCREMENT);
 
-	if (stick3.GetRawButton(10) and stick3.GetX() < 0)
-		cameraServo.SetRaw(cameraServo.GetRaw() - CAMERA_PWM_INCREMENT);
-
-
-	if (stick3.GetRawButton(9) and stick4.GetRawButton(9))
-	{
-		climber.ArmForward();
-		climber.LevelOneClimb();
-		DSLog(6, "Autoclimbing");
-	}
+        if (stick3.GetRawButton(10) and stick3.GetX() < 0)
+            cameraServo.SetRaw(cameraServo.GetRaw() - CAMERA_PWM_INCREMENT);
+        if (stick3.GetRawButton(9) and stick4.GetRawButton(9))
+        {
+            climber.ArmForward();
+            climber.LevelOneClimb();
+            DSLog(6, "Autoclimbing");
+        }
+    }
 }
 
 void MarkX::writeLog()
