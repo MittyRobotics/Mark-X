@@ -145,8 +145,6 @@ void MarkX::TankDrive()
  */
 void MarkX::Autonomous(void) //Choose autonomous mode between 4 options though DS
 {
-//	Wait(3);
-//	climber.calibrateWinch();
 	//	printf("Starting Autonomous \n");
 	//	auton.initAutonomous();
 	//	auton.setDrivePID(DRIVE_kP, DRIVE_kP, DRIVE_kI);
@@ -183,6 +181,7 @@ void MarkX::OperatorControl()
 {
 	printf("Starting OperatorControl \n");
 	Timer loopTimer;
+	float startLoopT, endLoopT, loopTime;
 	loopTimer.Start();
 	globalOCTimer.Start();
 	climber.RetractDump();
@@ -191,16 +190,17 @@ void MarkX::OperatorControl()
 	climber.RatchetBack();
 	while (IsOperatorControl() && ds->IsEnabled())
 	{
-		loopTimer.Reset();
-		if(climber.ranCalibration)
-		{
-			climber.winchMove(climber.oldSetpoint);
-		}
+		startLoopT = loopTimer.Get();
 		MarkX::Operator();
 		MarkX::TankDrive();
-		//printf("Operator Loop Time, excluding Wait: %f", loopTime);
+		//		MarkX::TKODrive();
+		DSLog(4, "Avr d1,3 cur: %f", ((drive1.GetOutputCurrent() + drive3.GetOutputCurrent()) / 2));writeMD(2, (drive2.GetOutputCurrent() + drive4.GetOutputCurrent()) / 2)
+
+		endLoopT = loopTimer.Get();
+		loopTime = endLoopT - startLoopT;
+		//		printf("Operator Loop Time, excluding Wait: %f", endLoopT);
 		space
-		Wait(LOOPTIME - loopTimer.Get());
+		Wait(0.01 - loopTime);
 		loopTimer.Reset();
 	}
 	globalOCTimer.Stop();
@@ -241,8 +241,10 @@ void MarkX::Operator()
 		if (!stick2.GetRawButton(3))
 		{
 			climber.winchStop();
+			break;
 		}
 	}
+<<<<<<< HEAD:MarkX_OfficialCodeDanPID/MarkX.cpp
     else {
         climber.winchStop();
 
@@ -270,6 +272,91 @@ void MarkX::Operator()
             DSLog(6, "Autoclimbing");
         }
     }
+=======
+
+	climber.winchStop();
+	
+	if (stick2.GetRawButton(6))
+		controllerDrive = not controllerDrive;
+	if (stick3.GetRawButton(3))
+		auton.rsFrontLoaderLift.SetOn(1);
+	else if (stick3.GetRawButton(2))
+		auton.rsFrontLoaderLift.SetOn(0);
+
+	if (stick3.GetRawButton(5))
+		auton.rsFrontLoaderWrist.SetOn(1);
+	else if (stick3.GetRawButton(4))
+		auton.rsFrontLoaderWrist.SetOn(0);
+
+	if (stick3.GetRawButton(10) and stick3.GetX() > 0)
+		cameraServo.SetRaw(cameraServo.GetRaw() + CAMERA_PWM_INCREMENT);
+
+	if (stick3.GetRawButton(10) and stick3.GetX() < 0)
+		cameraServo.SetRaw(cameraServo.GetRaw() - CAMERA_PWM_INCREMENT);
+
+	if (stick1.GetRawButton(10))
+		JukeR();
+	if (stick1.GetRawButton(7))
+		JukeL();
+	if (stick2.GetRawButton(7))
+	{
+		printf("Starting to test.");
+		climber.Test();
+	}
+
+	//	if (stick1.GetTrigger())
+	//	{
+	//		kDRIVE_STRAIGHT = 0.4;
+	//		kDRIVE_ROTATION = 0.2;
+	//	}
+	//	else if (stick1.GetRawButton(2))
+	//	{
+	//		kDRIVE_STRAIGHT = 0.2;
+	//	}
+	//	else
+	//	{
+	//		kDRIVE_STRAIGHT = 1.2;
+	//		kDRIVE_ROTATION = 0.7;
+	//	}
+
+	if (stick2.GetTrigger())
+	{
+		kDRIVE_STRAIGHT = -kDRIVE_STRAIGHT;
+		kDRIVE_ROTATION = -kDRIVE_ROTATION;
+	}
+	else
+	{
+		kDRIVE_STRAIGHT = fabs(kDRIVE_STRAIGHT);
+		kDRIVE_ROTATION = fabs(kDRIVE_ROTATION);
+	}
+	if (stick3.GetTrigger())
+	{
+		drive1.Set(kMAX_DRIVE_RPM);
+		drive3.Set(kMAX_DRIVE_RPM);
+	}
+	if (stick4.GetTrigger())
+	{
+		drive2.Set(1);
+		drive4.Set(1);
+	}
+
+	if (stick3.GetRawButton(4))
+	{
+		//TKOShooter.shoot(-stick3.GetY());
+		DSLog(6, "Manual shoot pow: %f", -stick3.GetY());
+	}
+	if (stick4.GetRawButton(6))
+	{
+		//TKOShooter.autoShoot();
+		DSLog(6, "Autoshoot");
+	}
+	if (stick3.GetRawButton(9) and stick4.GetRawButton(9))
+	{
+		climber.ArmForward();
+		climber.LevelOneClimb();
+		DSLog(6, "Autoclimbing");
+	}
+>>>>>>> ddac23b... Daniel code:MarkX_OfficialCode/MarkX.cpp
 }
 
 void MarkX::writeLog()

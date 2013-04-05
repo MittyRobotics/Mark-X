@@ -34,7 +34,7 @@ extern short indx;
 //#define writeM(c) ;
 //#define writeMD(c,f) ;
 
-//hue
+
 /*! \mainpage Welcome to TKO 1351's MarkIX's Code Documentation!
  *
  * 	This is the Robot Code for the 2013 Season of Ultimate Ascent
@@ -74,8 +74,8 @@ const float SPINNER_kD = 0.0;
 const float DRIVE_kP = 0.2; //working P: 0.20, working I: .0034
 const float DRIVE_kI = 0.0015;
 const float DRIVE_kD = 0.0;
-const float WINCH_kP = .05;
-const float WINCH_kI = 0.00;
+const float WINCH_kP = -100;
+const float WINCH_kI = 0.001;
 const float WINCH_kD = 0.0;
 const float REVS_PER_METER = 2.51;
 const int ENCODER_REVS = 250;
@@ -129,12 +129,9 @@ const float PI = 3.14159265;
 const float DEGREES_PER_RADIAN = 180 / PI;
 
 //WINCH CONSTANTS
-const double TOLERANCE = 4.;
+const double TOLERANCE = 5.;
 const double MAXSPEED = .3;
-const double MANSPEED = 1.0;
-const double LOOPTIME = .01;
-const double TIME_BW_SP = 5;
-const double STICK_DEADZONE = .05;
+const double MANSPEED = 1.;
 const double LIFT_INCREMENT = .5; //POTENTIALLY CHANGE TO .0001
 const double LIFT_INCREMENT_RATCHET = LIFT_INCREMENT / 20;
 const double STRNOCLIPMIN = -.4;
