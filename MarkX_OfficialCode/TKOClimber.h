@@ -28,6 +28,7 @@ class TKOClimber
 	private:
 		Timer time;
 		Timer time2;
+		Timer loopTime;
 		DriverStation *ds;
 		Joystick _stick1;
 
@@ -46,6 +47,8 @@ class TKOClimber
 		double SETPOINT_LAST;
 		double SETPOINT_RATCHET_RETRACT;
 		double SETPOINT_CENTER;
+		double oldSetpoint;
+		double deltaSetpoint;
 		//double SETPOINT_CENTER;
 		bool ranCalibration;
 		///Constructor for the TKOClimber class
@@ -103,6 +106,9 @@ class TKOClimber
 		void Climb();
 
 		void winchMove(double SP);
+		
+		void winchMove(double SP, double deltaSetPoint);
+		
 		///The test method for TKOClimber class
 		/*!
 		 Tests pneumatics and winch positions.
