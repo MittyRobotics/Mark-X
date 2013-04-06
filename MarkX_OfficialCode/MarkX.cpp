@@ -13,9 +13,12 @@
  * Fix logger
  * add autocalibration system for winch
  * Make sure that auto turn and drive slaves volatage is setup right
- *
+ * 
  * Test new PID winch drive
  * Autocalibrate at start of match?
+ * 
+ * MAKE TOP DOWNSHIFT GREATER SO IT DOESNT STOP EXACTLY IN THE TOP LIM SWITCH
+ * LOOKUP HOW TO TUNE PID VALUES EXACTLY
  */
 
 class MarkX: public SimpleRobot
@@ -101,7 +104,7 @@ void MarkX::RobotInit()
 	auton.rsFrontLoaderWrist.SetOn(0);
 	controllerDrive = false;
 	comp.Start();
-	printf("Initialized the MarkX class \n");
+	printf("Initialized the MarkX class ;) \n");
 }
 void MarkX::Disabled()
 {
@@ -145,6 +148,8 @@ void MarkX::TankDrive()
  */
 void MarkX::Autonomous(void) //Choose autonomous mode between 4 options though DS
 {
+	climber.calibrateEncoder();
+	climber.winchStop();
 	//	printf("Starting Autonomous \n");
 	//	auton.initAutonomous();
 	//	auton.setDrivePID(DRIVE_kP, DRIVE_kP, DRIVE_kI);
@@ -190,29 +195,15 @@ void MarkX::OperatorControl()
 	climber.RatchetBack();
 	while (IsOperatorControl() && ds->IsEnabled())
 	{
-<<<<<<< HEAD
 		startLoopT = loopTimer.Get();
 		MarkX::Operator();
 		MarkX::TankDrive();
 		//		MarkX::TKODrive();
-		DSLog(4, "Avr d1,3 cur: %f", ((drive1.GetOutputCurrent() + drive3.GetOutputCurrent()) / 2));writeMD(2, (drive2.GetOutputCurrent() + drive4.GetOutputCurrent()) / 2)
+//		DSLog(4, "Avr d1,3 cur: %f", ((drive1.GetOutputCurrent() + drive3.GetOutputCurrent()) / 2));writeMD(2, (drive2.GetOutputCurrent() + drive4.GetOutputCurrent()) / 2)
 
 		endLoopT = loopTimer.Get();
 		loopTime = endLoopT - startLoopT;
 		//		printf("Operator Loop Time, excluding Wait: %f", endLoopT);
-=======
-		loopTimer.Reset();
-		if(climber.ranCalibration)
-		{
-			//climber.winchMove(climber.oldSetpoint);
-			climber.winch1PID.SetSetpoint(climber.oldSetpoint);
-			climber.winch2PID.SetSetpoint(climber.oldSetpoint);
-		}
-		MarkX::Operator();
-		if (not stick2.GetRawButton(3))
-			MarkX::TankDrive();
-		//printf("Operator Loop Time, excluding Wait: %f", loopTime);
->>>>>>> c9446a3... All of changes from SVR Day 2
 		space
 		Wait(0.01 - loopTime);
 		loopTimer.Reset();
@@ -248,9 +239,9 @@ void MarkX::Operator()
 	//		climber.RetractDump();
 	//END OF TEST STATEMENT
 
-	if (stick2.GetRawButton(3))
+	while (stick2.GetRawButton(3))
 	{
-		printf("In moveWithStick \n");
+		printf("In moveWithStick");
 		climber.MoveWinchWithStick();
 		if (!stick2.GetRawButton(3))
 		{
@@ -258,35 +249,6 @@ void MarkX::Operator()
 			break;
 		}
 	}
-<<<<<<< HEAD:MarkX_OfficialCodeDanPID/MarkX.cpp
-    else {
-        climber.winchStop();
-
-        if (stick2.GetRawButton(6))
-            controllerDrive = not controllerDrive;
-        if (stick3.GetRawButton(3))
-            auton.rsFrontLoaderLift.SetOn(1);
-        else if (stick3.GetRawButton(2))
-            auton.rsFrontLoaderLift.SetOn(0);
-
-        if (stick3.GetRawButton(5))
-            auton.rsFrontLoaderWrist.SetOn(1);
-        else if (stick3.GetRawButton(4))
-            auton.rsFrontLoaderWrist.SetOn(0);
-
-        if (stick3.GetRawButton(10) and stick3.GetX() > 0)
-            cameraServo.SetRaw(cameraServo.GetRaw() + CAMERA_PWM_INCREMENT);
-
-        if (stick3.GetRawButton(10) and stick3.GetX() < 0)
-            cameraServo.SetRaw(cameraServo.GetRaw() - CAMERA_PWM_INCREMENT);
-        if (stick3.GetRawButton(9) and stick4.GetRawButton(9))
-        {
-            climber.ArmForward();
-            climber.LevelOneClimb();
-            DSLog(6, "Autoclimbing");
-        }
-    }
-=======
 
 	climber.winchStop();
 	
@@ -370,7 +332,6 @@ void MarkX::Operator()
 		climber.LevelOneClimb();
 		DSLog(6, "Autoclimbing");
 	}
->>>>>>> ddac23b... Daniel code:MarkX_OfficialCode/MarkX.cpp
 }
 
 void MarkX::writeLog()

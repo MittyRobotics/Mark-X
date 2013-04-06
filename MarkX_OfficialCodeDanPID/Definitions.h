@@ -74,8 +74,13 @@ const float SPINNER_kD = 0.0;
 const float DRIVE_kP = 0.2; //working P: 0.20, working I: .0034
 const float DRIVE_kI = 0.0015;
 const float DRIVE_kD = 0.0;
+<<<<<<< HEAD
 const float WINCH_kP = -100;
 const float WINCH_kI = 0.001;
+=======
+const float WINCH_kP = .0075;
+const float WINCH_kI = 0.000001;
+>>>>>>> c9446a3... All of changes from SVR Day 2
 const float WINCH_kD = 0.0;
 const float REVS_PER_METER = 2.51;
 const int ENCODER_REVS = 250;
@@ -129,9 +134,18 @@ const float PI = 3.14159265;
 const float DEGREES_PER_RADIAN = 180 / PI;
 
 //WINCH CONSTANTS
+<<<<<<< HEAD
 const double TOLERANCE = 5.;
 const double MAXSPEED = .3;
 const double MANSPEED = 1.;
+=======
+const double TOLERANCE = 15.;
+const double MAXSPEED = .3;
+const double MANSPEED = 1.0;
+const double LOOPTIME = .01;
+const double TIME_BW_SP = 3;
+const double STICK_DEADZONE = .1;
+>>>>>>> c9446a3... All of changes from SVR Day 2
 const double LIFT_INCREMENT = .5; //POTENTIALLY CHANGE TO .0001
 const double LIFT_INCREMENT_RATCHET = LIFT_INCREMENT / 20;
 const double STRNOCLIPMIN = -.4;
