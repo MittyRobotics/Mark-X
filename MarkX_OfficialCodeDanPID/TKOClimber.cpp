@@ -323,71 +323,18 @@ void TKOClimber::winchMove(double SP) //
 	{
 		printf("CURRENT POSITION IS: %f", winchEncoder.PIDGet());
 		printf("SETPOINT IS: %f \n", oldSetpoint);
-		//loopTime.Reset();
 		oldSetpoint = oldSetpoint - deltaSetPoint;
-		//winch1PID.SetSetpoint(oldSetpoint);
-		//winch2PID.SetSetpoint(oldSetpoint);
-		//alreadyRan = true;
-		//Wait(LOOPTIME - loopTime.Get());
 	}
 
 	if((int) oldSetpoint > (int) SP and alreadyRan == false)
 	{
 		printf("CURRENT POSITION IS: %f", winchEncoder.PIDGet());
 		printf("SETPOINT IS: %f \n", oldSetpoint);
-		//loopTime.Reset();
 		oldSetpoint = oldSetpoint + deltaSetPoint;
-		//winch1PID.SetSetpoint(oldSetpoint);
-		//winch2PID.SetSetpoint(oldSetpoint);
-		//Wait(LOOPTIME - loopTime.Get());
 	}
 	//Wait(.25);
 	return;
 }
-
-//void TKOClimber::winchMove(double SP, double deltaSetPoint) //
-//{
-//	loopTime.Start();
-//	double oldSetpoint = winchEncoder.PIDGet();
-//	boolean alreadyRan = false;
-//	winch1PID.Enable();
-//	winch2PID.Enable();
-//	//printf("Beginning winchMove Test");
-//	//Wait(1.);
-//	if (SP < winch1PID.GetSetpoint())
-//	{
-//		RatchetBack();
-//	}
-//	if (SP > SETPOINT_TOP)
-//	{
-//		SP = SETPOINT_TOP;
-//	}
-//	if (SP < SETPOINT_BOTTOM)
-//	{
-//		SP = SETPOINT_BOTTOM;
-//	}
-//	while(oldSetpoint < SP)  //MOVING UP
-//	{
-//		loopTime.Reset();
-//		oldSetpoint = oldSetpoint + deltaSetPoint;
-//		winch1PID.SetSetpoint(oldSetpoint);
-//		winch2PID.SetSetpoint(oldSetpoint);
-//		alreadyRan = true;
-//		Wait(LOOPTIME - loopTime.Get());
-//	}
-//
-//	while(oldSetpoint > SP and alreadyRan == false)
-//	{
-//		loopTime.Reset();
-//		oldSetpoint = oldSetpoint - deltaSetPoint;
-//		winch1PID.SetSetpoint(oldSetpoint);
-//		winch2PID.SetSetpoint(oldSetpoint);
-//		wait(LOOPTIME - loopTime.Get());
-//	}
-//	Wait(.25);
-//	return;
-//}
-
 
 void TKOClimber::LevelOneClimb()
 {
