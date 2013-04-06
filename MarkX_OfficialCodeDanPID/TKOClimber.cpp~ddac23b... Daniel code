@@ -100,7 +100,7 @@ void TKOClimber::calibrateWinch()
 				winch1.Set(0);
 				winch2.Set(0);
 				winchEncoder.Reset();
-				SETPOINT_TOP = winchEncoder.PIDGet() + TOLERANCE;
+				SETPOINT_TOP = winchEncoder.Get() + TOLERANCE;
 				//winch1PID.SetSetpoint(SETPOINT_TOP);
 				//winch2PID.SetSetpoint(SETPOINT_TOP);
 				writeMD(1, 3.0);
@@ -111,7 +111,7 @@ void TKOClimber::calibrateWinch()
 
 	while (true)
 	{
-		//printf("Encoder Location: %f", winchEncoder.PIDGet());
+		//printf("Encoder Location: %f", winchEncoder.Get());
 		winch1.Set((1) * MAXSPEED); //go down
 		winch2.Set((1) * MAXSPEED);
 		//RatchetBack();
@@ -119,7 +119,7 @@ void TKOClimber::calibrateWinch()
 		{
 			winch1.Set(0);
 			winch2.Set(0);
-			SETPOINT_BOTTOM = winchEncoder.PIDGet() - TOLERANCE;
+			SETPOINT_BOTTOM = winchEncoder.Get() - TOLERANCE;
 			break;
 		}
 	}
@@ -132,7 +132,7 @@ void TKOClimber::calibrateWinch()
 	winch1.Set(0);
 	winch2.Set(0);
 	Wait(1.);
-	oldSetpoint = winchEncoder.PIDGet();
+	oldSetpoint = winchEncoder.Get();
 	//winchEncoder.Reset();
 	SETPOINT_RATCHET_RETRACT = SETPOINT_BOTTOM + 2.0;
 	SETPOINT_LAST = SETPOINT_TOP - 2.0;
@@ -153,7 +153,7 @@ void TKOClimber::calibrateWinch()
 
 void TKOClimber::print()
 {
-	//printf("Winch 1 pos: %f \n", winchEncoder.PIDGet());
+	//printf("Winch 1 pos: %f \n", winchEncoder.Get());
 	printf("HookLeft %d \n", hookLeft.Get());
 	printf("HookRight %d \n", hookRight.Get());
 	printf("Clip left %d \n", clipLeft.Get());
@@ -204,11 +204,14 @@ void TKOClimber::MoveWinchWithStick()
 	//DSLog(6, "Bottom: %i", armBottom.Get());
 	DSLog(1, "Top Setpoint: %f", SETPOINT_TOP);
 	DSLog(2, "Bottom Setpoint: %f", SETPOINT_BOTTOM);	
-	DSLog(3, "SETP: %f", oldSetpoint);
-	DSLog(4, "Winch L: %f", winchEncoder.PIDGet());
-	//printf("CURRENT POSITION IS: %i     ", winchEncoder.PIDGet());
+	DSLog(3, "SETPOINT IS %f", oldSetpoint);
+	DSLog(4, "Encoder Location: %i", winchEncoder.Get());
+	//printf("CURRENT POSITION IS: %i     ", winchEncoder.Get());
 	printf("SETPOINT IS: %f \n", oldSetpoint);
-	//printf("Encoder Location: %f", winchEncoder.PIDGet());
+	//printf("Encoder Location: %f", winchEncoder.Get());
+	DSLog(5, "You have %f until you hit the top", SETPOINT_TOP - winchEncoder.Get());
+	DSLog(6, "You have %f until you hit the bottom", winchEncoder.Get() - SETPOINT_BOTTOM);
+
 	if (not armBottom.Get())
 	{
 		winch1.Disable();
@@ -228,17 +231,17 @@ void TKOClimber::MoveWinchWithStick()
 	}
 	else
 	{
-		if(_stick1.GetY() < -STICK_DEADZONE and (oldSetpoint - (-_stick1.GetY() * deltaSetpoint)) < SETPOINT_BOTTOM)
-		{
-			oldSetpoint = oldSetpoint - (-_stick1.GetY() * deltaSetpoint);
-		}
+//		if(_stick1.GetY() < -STICK_DEADZONE)
+//		{
+//			oldSetpoint = oldSetpoint - (-_stick1.GetY() * deltaSetpoint);
+//		}
+//
+//		if(_stick1.GetY() > STICK_DEADZONE)
+//		{
+//			oldSetpoint = oldSetpoint + (-_stick1.GetY() * deltaSetpoint);
+//		}
 
-		if(_stick1.GetY() > STICK_DEADZONE and (oldSetpoint - (-_stick1.GetY() * deltaSetpoint)) > SETPOINT_TOP)
-		{
-			oldSetpoint = oldSetpoint - (-_stick1.GetY() * deltaSetpoint);
-		}
-
-//		if (_stick1.GetY() < -STICK_DEADZONE or _stick1.GetY() > STICK_DEADZONE/* and winchEncoder.PIDGet() < SETPOINT_TOP and winchEncoder.PIDGet() > SETPOINT_BOTTOM*/) //moving down
+//		if (_stick1.GetY() < -STICK_DEADZONE or _stick1.GetY() > STICK_DEADZONE/* and winchEncoder.Get() < SETPOINT_TOP and winchEncoder.Get() > SETPOINT_BOTTOM*/) //moving down
 //				{
 //					winch1.Set(_stick1.GetY() * -MANSPEED);
 //					winch2.Set(_stick1.GetY() * -MANSPEED);
@@ -246,19 +249,19 @@ void TKOClimber::MoveWinchWithStick()
 
 		 //+ is up
 //
-//		if (winchEncoder.PIDGet() >= SETPOINT_TOP and _stick1.GetY() < -STICK_DEADZONE and not armTop.Get())
+//		if (winchEncoder.Get() >= SETPOINT_TOP and _stick1.GetY() < -STICK_DEADZONE and not armTop.Get())
 //		{
 //			winch1.Set(_stick1.GetY() * -MANSPEED);
 //			winch2.Set(_stick1.GetY() * -MANSPEED);
 //		}
 //
-//		else if (winchEncoder.PIDGet() <= SETPOINT_BOTTOM and _stick1.GetY() > STICK_DEADZONE and not armBottom.Get()) //at or below setpoint bottom, and you push joystick up, move up
+//		else if (winchEncoder.Get() <= SETPOINT_BOTTOM and _stick1.GetY() > STICK_DEADZONE and not armBottom.Get()) //at or below setpoint bottom, and you push joystick up, move up
 //		{
 //			winch1.Set(_stick1.GetY() * -MANSPEED);
 //			winch2.Set(_stick1.GetY() * -MANSPEED);
 //		}
 //
-//				else if (_stick1.GetY() > 0.1 /*and winchEncoder.PIDGet() < SETPOINT_TOP*/)  //moving up
+//				else if (_stick1.GetY() > 0.1 /*and winchEncoder.Get() < SETPOINT_TOP*/)  //moving up
 //				{
 //		            winch1.Set(_stick1.GetY() * MANSPEED);
 //		            winch2.Set(_stick1.GetY() * MANSPEED);
@@ -294,7 +297,7 @@ void TKOClimber::winchMove(double SP) //
 {
 	printf("IN WINCH MOVE ----------------------------------------------------------, %f", SP);
 	loopTime.Start();
-	//double oldSetpoint = winchEncoder.PIDGet();
+	//double oldSetpoint = winchEncoder.Get();
 	double deltaSetPoint = LOOPTIME * (SETPOINT_TOP - SETPOINT_BOTTOM) / TIME_BW_SP;
 	bool alreadyRan = false;
 	winch1PID.Enable();
@@ -305,38 +308,38 @@ void TKOClimber::winchMove(double SP) //
 	{
 		RatchetBack();
 	}
-	if (SP < SETPOINT_TOP)
+	if (SP > SETPOINT_TOP)
 	{
 		SP = SETPOINT_TOP;
 	}
-	if (SP > SETPOINT_BOTTOM)
+	if (SP < SETPOINT_BOTTOM)
 	{
 		SP = SETPOINT_BOTTOM;
 	}
 	
-	if ((int) oldSetpoint == (int) SP) {return;}
+	if (oldSetpoint == SP) {return;}
 	
-	if((int) oldSetpoint < (int) SP)  //MOVING DOWN
+	while(oldSetpoint < SP)  //MOVING DOWN
 	{
-		printf("CURRENT POSITION IS: %f", winchEncoder.PIDGet());
+		printf("CURRENT POSITION IS: %i", winchEncoder.Get());
 		printf("SETPOINT IS: %f \n", oldSetpoint);
-		//loopTime.Reset();
+		loopTime.Reset();
 		oldSetpoint = oldSetpoint - deltaSetPoint;
-		//winch1PID.SetSetpoint(oldSetpoint);
-		//winch2PID.SetSetpoint(oldSetpoint);
-		//alreadyRan = true;
-		//Wait(LOOPTIME - loopTime.Get());
+		winch1PID.SetSetpoint(oldSetpoint);
+		winch2PID.SetSetpoint(oldSetpoint);
+		alreadyRan = true;
+		Wait(LOOPTIME - loopTime.Get());
 	}
 
-	if((int) oldSetpoint > (int) SP and alreadyRan == false)
+	while(oldSetpoint > SP and alreadyRan == false)
 	{
-		printf("CURRENT POSITION IS: %f", winchEncoder.PIDGet());
+		printf("CURRENT POSITION IS: %i", winchEncoder.Get());
 		printf("SETPOINT IS: %f \n", oldSetpoint);
-		//loopTime.Reset();
+		loopTime.Reset();
 		oldSetpoint = oldSetpoint + deltaSetPoint;
-		//winch1PID.SetSetpoint(oldSetpoint);
-		//winch2PID.SetSetpoint(oldSetpoint);
-		//Wait(LOOPTIME - loopTime.Get());
+		winch1PID.SetSetpoint(oldSetpoint);
+		winch2PID.SetSetpoint(oldSetpoint);
+		Wait(LOOPTIME - loopTime.Get());
 	}
 	Wait(.25);
 	return;
@@ -345,7 +348,7 @@ void TKOClimber::winchMove(double SP) //
 //void TKOClimber::winchMove(double SP, double deltaSetPoint) //
 //{
 //	loopTime.Start();
-//	double oldSetpoint = winchEncoder.PIDGet();
+//	double oldSetpoint = winchEncoder.Get();
 //	boolean alreadyRan = false;
 //	winch1PID.Enable();
 //	winch2PID.Enable();
@@ -412,7 +415,7 @@ void TKOClimber::LevelOneClimb()
 				return;
 			}
 		}
-		if (winchEncoder.PIDGet() <= SETPOINT_RATCHET_RETRACT) //if we missed the bar
+		if (winchEncoder.Get() <= SETPOINT_RATCHET_RETRACT) //if we missed the bar
 		{
 			armBack();
 			Wait(1);
@@ -439,7 +442,7 @@ void TKOClimber::LevelOneClimb()
 		}
 	}
 
-	while (hookLeft.Get() and hookRight.Get() and winchEncoder.PIDGet() > SETPOINT_BOTTOM and ratchet.Get()) //MOVE MOTORS
+	while (hookLeft.Get() and hookRight.Get() and winchEncoder.Get() > SETPOINT_BOTTOM and ratchet.Get()) //MOVE MOTORS
 	{
 		//winch1PID.SetOutputRange(STRYESCLIPMIN, STRMAX);
 		//winch2PID.SetOutputRange(STRYESCLIPMIN, STRMAX);
@@ -485,7 +488,7 @@ int TKOClimber::Decide(int s)
 //	{
 //		winch1.Set(SETPOINT_RATCHET_RETRACT);
 //		winch2.Set(winch1.GetOutputVoltage() / winch1.GetBusVoltage());
-//		if (winchEncoder.PIDGet() <= SETPOINT_RATCHET_RETRACT)
+//		if (winchEncoder.Get() <= SETPOINT_RATCHET_RETRACT)
 //		{
 //			winch1.Set(SETPOINT_TOP);
 //			armBack();
@@ -510,7 +513,7 @@ int TKOClimber::Decide(int s)
 //	{
 //		while (level < PYRAMID_SIZE)
 //		{
-//			DSLog(1, "Winch1 pos: %f", winchEncoder.PIDGet());
+//			DSLog(1, "Winch1 pos: %f", winchEncoder.Get());
 //			if (!ds->IsEnabled())
 //				return;
 //			//Wait(.1); //FOR TESTING
@@ -525,14 +528,14 @@ int TKOClimber::Decide(int s)
 //			{ //state 2
 //				//begin pulling up robot
 //				armBack();
-//				if (winchEncoder.PIDGet() > SETPOINT_RATCHET_RETRACT) //MOVE MOTORS
+//				if (winchEncoder.Get() > SETPOINT_RATCHET_RETRACT) //MOVE MOTORS
 //				{
 //					winch1.Set(SETPOINT_RATCHET_RETRACT);
 //				}
 //
 //				//CONTINGENCIES
 //
-//				if (winchEncoder.PIDGet() <= SETPOINT_RATCHET_RETRACT - TOLERANCE) //if PID says hooks are at their setpoint - some amount
+//				if (winchEncoder.Get() <= SETPOINT_RATCHET_RETRACT - TOLERANCE) //if PID says hooks are at their setpoint - some amount
 //				{
 //					printf("---------------REACHED SETPOINT, MOVE TO RATCHET RETRACTING. YOU HAVE 1 SECOND. GO.----------------- \n");
 //					writeMD(50 + state, 1.0);
@@ -559,7 +562,7 @@ int TKOClimber::Decide(int s)
 //
 //				if (armTop.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 //				{
-//					winch1.Set(winchEncoder.PIDGet() - 1.0);
+//					winch1.Set(winchEncoder.Get() - 1.0);
 //					printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
 //					writeMD(50 + state, 4.0);
 //					state = OH_SHIT;
@@ -568,7 +571,7 @@ int TKOClimber::Decide(int s)
 //
 //				if (armBottom.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 //				{
-//					winch1.Set(winchEncoder.PIDGet() + 1.0);
+//					winch1.Set(winchEncoder.Get() + 1.0);
 //					printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
 //					writeMD(50 + state, 4.0);
 //					state = OH_SHIT;
@@ -577,7 +580,7 @@ int TKOClimber::Decide(int s)
 //
 //				if (not ratchet.Get()) //If ratchet is disabled
 //				{
-//					winch1.Set(winchEncoder.PIDGet());
+//					winch1.Set(winchEncoder.Get());
 //					ratchetForward(); //push down ratchet
 //					printf("---------------RATCHET IS DISABLED. WE TRIED AGAIN. WAITING HALF SECOND TO CHECK AGAIN----------------- \n");
 //					writeMD(50 + state, 5.0);
@@ -605,11 +608,11 @@ int TKOClimber::Decide(int s)
 //			{ //state 3
 //				//retract ratchet
 //				//arm is back
-//				if (winchEncoder.PIDGet() > SETPOINT_BOTTOM and ratchet.Get()) //MOVE MOTORS
+//				if (winchEncoder.Get() > SETPOINT_BOTTOM and ratchet.Get()) //MOVE MOTORS
 //				{
 //					ratchetBack();
-//					winch1.Set(winchEncoder.PIDGet() - LIFT_INCREMENT_RATCHET);
-//					if (winchEncoder.PIDGet() < SETPOINT_BOTTOM)
+//					winch1.Set(winchEncoder.Get() - LIFT_INCREMENT_RATCHET);
+//					if (winchEncoder.Get() < SETPOINT_BOTTOM)
 //						winch1.Set(SETPOINT_BOTTOM);
 //				}
 //
@@ -640,7 +643,7 @@ int TKOClimber::Decide(int s)
 //
 //				if (armTop.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 //				{
-//					winch1.Set(winchEncoder.PIDGet() - 1.0);
+//					winch1.Set(winchEncoder.Get() - 1.0);
 //					printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
 //					writeMD(50 + state, 4.0);
 //					state = OH_SHIT;
@@ -649,14 +652,14 @@ int TKOClimber::Decide(int s)
 //
 //				if (armBottom.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 //				{
-//					winch1.Set(winchEncoder.PIDGet() + 1.0);
+//					winch1.Set(winchEncoder.Get() + 1.0);
 //					printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
 //					writeMD(50 + state, 4.0);
 //					state = OH_SHIT;
 //					continue;
 //				}
 //
-//				if (winchEncoder.PIDGet() < (SETPOINT_BOTTOM - TOLERANCE) or time.Get() > TIMEOUT3) //if the ratchet does not go down in 1 second
+//				if (winchEncoder.Get() < (SETPOINT_BOTTOM - TOLERANCE) or time.Get() > TIMEOUT3) //if the ratchet does not go down in 1 second
 //				{
 //					printf("--------------You took too long. oh NO.-------------- \n");
 //					writeMD(50 + state, 6.0);
@@ -669,12 +672,12 @@ int TKOClimber::Decide(int s)
 //			//change setpoint to very bottom, keep moving hooks
 //			//arm is back
 //			{
-//				if (winchEncoder.PIDGet() > SETPOINT_BOTTOM - TOLERANCE and not armBottom.Get())
+//				if (winchEncoder.Get() > SETPOINT_BOTTOM - TOLERANCE and not armBottom.Get())
 //				{
-//					winch1.Set(winchEncoder.PIDGet() - LIFT_INCREMENT);
+//					winch1.Set(winchEncoder.Get() - LIFT_INCREMENT);
 //				}
 //
-//				if (winchEncoder.PIDGet() <= SETPOINT_BOTTOM - TOLERANCE) //if PID says hook reaches bottom of its movement
+//				if (winchEncoder.Get() <= SETPOINT_BOTTOM - TOLERANCE) //if PID says hook reaches bottom of its movement
 //				{
 //					printf("--------------You reached your setpoint. Move on to deploying clips-------------- \n");
 //					writeMD(50 + state, 1.0);
@@ -701,7 +704,7 @@ int TKOClimber::Decide(int s)
 //
 //				if (armTop.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 //				{
-//					winch1.Set(winchEncoder.PIDGet() - 1.0);
+//					winch1.Set(winchEncoder.Get() - 1.0);
 //					printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
 //					writeMD(50 + state, 4.0);
 //					state = OH_SHIT;
@@ -710,7 +713,7 @@ int TKOClimber::Decide(int s)
 //
 //				if (armBottom.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 //				{
-//					winch1.Set(winchEncoder.PIDGet() + 1.0);
+//					winch1.Set(winchEncoder.Get() + 1.0);
 //					printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
 //					writeMD(50 + state, 4.0);
 //					state = OH_SHIT;
@@ -760,7 +763,7 @@ int TKOClimber::Decide(int s)
 //
 //				if (armTop.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 //				{
-//					winch1.Set(winchEncoder.PIDGet() - 1.0);
+//					winch1.Set(winchEncoder.Get() - 1.0);
 //					printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
 //					writeMD(50 + state, 4.0);
 //					state = OH_SHIT;
@@ -769,7 +772,7 @@ int TKOClimber::Decide(int s)
 //
 //				if (armBottom.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 //				{
-//					winch1.Set(winchEncoder.PIDGet() + 1.0);
+//					winch1.Set(winchEncoder.Get() + 1.0);
 //					printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
 //					writeMD(50 + state, 4.0);
 //					state = OH_SHIT;
@@ -804,11 +807,11 @@ int TKOClimber::Decide(int s)
 //			{ //state 6
 //				//Hooks begin moving up
 //				//arm is back
-//				if (winchEncoder.PIDGet() < SETPOINT_TOP - TOLERANCE)
+//				if (winchEncoder.Get() < SETPOINT_TOP - TOLERANCE)
 //				{
 //					TKOClimber::winchMove(SETPOINT_TOP);
 //				}
-//				if (winchEncoder.PIDGet() > SETPOINT_TOP and (not hookLeft.Get() and not hookRight.Get()))
+//				if (winchEncoder.Get() > SETPOINT_TOP and (not hookLeft.Get() and not hookRight.Get()))
 //				{
 //					printf("---------------hooks reached top of their motion. Move on to next state ------------ \n");
 //					writeMD(50 + state, 1.0);
@@ -835,7 +838,7 @@ int TKOClimber::Decide(int s)
 //
 //				if (armTop.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 //				{
-//					winch1.Set(winchEncoder.PIDGet() - 1.0);
+//					winch1.Set(winchEncoder.Get() - 1.0);
 //					printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
 //					writeMD(50 + state, 4.0);
 //					state = OH_SHIT;
@@ -844,7 +847,7 @@ int TKOClimber::Decide(int s)
 //
 //				if (armBottom.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 //				{
-//					winch1.Set(winchEncoder.PIDGet() + 1.0);
+//					winch1.Set(winchEncoder.Get() + 1.0);
 //					printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
 //					writeMD(50 + state, 4.0);
 //					state = OH_SHIT;
@@ -892,7 +895,7 @@ int TKOClimber::Decide(int s)
 //					}
 //					if (armTop.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 //					{
-//						winch1.Set(winchEncoder.PIDGet() - 1.0);
+//						winch1.Set(winchEncoder.Get() - 1.0);
 //						printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
 //						writeMD(50 + state, 4.0);
 //						state = OH_SHIT;
@@ -901,7 +904,7 @@ int TKOClimber::Decide(int s)
 //
 //					if (armBottom.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 //					{
-//						winch1.Set(winchEncoder.PIDGet() + 1.0);
+//						winch1.Set(winchEncoder.Get() + 1.0);
 //						printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
 //						writeMD(50 + state, 4.0);
 //						state = OH_SHIT;
@@ -958,7 +961,7 @@ int TKOClimber::Decide(int s)
 //
 //				if (armTop.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 //				{
-//					winch1.Set(winchEncoder.PIDGet() - 1.0);
+//					winch1.Set(winchEncoder.Get() - 1.0);
 //					printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
 //					writeMD(50 + state, 4.0);
 //					state = OH_SHIT;
@@ -967,14 +970,14 @@ int TKOClimber::Decide(int s)
 //
 //				if (armBottom.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 //				{
-//					winch1.Set(winchEncoder.PIDGet() + 1.0);
+//					winch1.Set(winchEncoder.Get() + 1.0);
 //					printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
 //					writeMD(50 + state, 4.0);
 //					state = OH_SHIT;
 //					continue;
 //				}
 //
-//				if (winchEncoder.PIDGet() < SETPOINT_RATCHET_RETRACT)
+//				if (winchEncoder.Get() < SETPOINT_RATCHET_RETRACT)
 //				{
 //					state = OH_SHIT;
 //					printf("--------Winch is way too low, means something is wrong----------\n");
@@ -1041,7 +1044,7 @@ int TKOClimber::Decide(int s)
 //
 //				if (armTop.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 //				{
-//					winch1.Set(winchEncoder.PIDGet() - 1.0);
+//					winch1.Set(winchEncoder.Get() - 1.0);
 //					printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
 //					writeMD(50 + state, 4.0);
 //					state = OH_SHIT;
@@ -1050,14 +1053,14 @@ int TKOClimber::Decide(int s)
 //
 //				if (armBottom.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 //				{
-//					winch1.Set(winchEncoder.PIDGet() + 1.0);
+//					winch1.Set(winchEncoder.Get() + 1.0);
 //					printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
 //					writeMD(50 + state, 4.0);
 //					state = OH_SHIT;
 //					continue;
 //				}
 //
-//				if (winchEncoder.PIDGet() <= SETPOINT_BOTTOM)
+//				if (winchEncoder.Get() <= SETPOINT_BOTTOM)
 //				{
 //					armBack();
 //					Wait(.5);
@@ -1089,7 +1092,7 @@ int TKOClimber::Decide(int s)
 //				//retract clips
 //				//hook motors are stopped
 //				//arm is forward
-//				winch1.Set(winchEncoder.PIDGet());
+//				winch1.Set(winchEncoder.Get());
 //				ClipBack();
 //
 //				if (!clipLeft.Get() && !clipRight.Get())
@@ -1105,7 +1108,7 @@ int TKOClimber::Decide(int s)
 //					}
 //					else if (level == PYRAMID_SIZE)
 //					{
-//						while (winchEncoder.PIDGet() < SETPOINT_LAST)
+//						while (winchEncoder.Get() < SETPOINT_LAST)
 //						{
 //							winch1.Set(SETPOINT_LAST);
 //						}writeMD(50 + state, 1.1);
@@ -1121,7 +1124,7 @@ int TKOClimber::Decide(int s)
 //				}
 //				if (armTop.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 //				{
-//					winch1.Set(winchEncoder.PIDGet() - 1.0);
+//					winch1.Set(winchEncoder.Get() - 1.0);
 //					printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
 //					writeMD(50 + state, 4.0);
 //					state = OH_SHIT;
@@ -1130,7 +1133,7 @@ int TKOClimber::Decide(int s)
 //
 //				if (armBottom.Get()) //if hooks reach very bottom, it's too late to remove ratchet. If top limit switch, WTF
 //				{
-//					winch1.Set(winchEncoder.PIDGet() + 1.0);
+//					winch1.Set(winchEncoder.Get() + 1.0);
 //					printf("---------------HOOKS REACHED BOTTOM, oh NO----------------- \n");
 //					writeMD(50 + state, 4.0);
 //					state = OH_SHIT;
