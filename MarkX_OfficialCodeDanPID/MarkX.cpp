@@ -194,7 +194,7 @@ void MarkX::OperatorControl()
 		loopTimer.Reset();
 		if(climber.ranCalibration)
 		{
-			//climber.winchMove(climber.oldSetpoint);
+			climber.winchMove(climber.setpoint);
 			climber.winch1PID.SetSetpoint(climber.oldSetpoint);
 			climber.winch2PID.SetSetpoint(climber.oldSetpoint);
 		}

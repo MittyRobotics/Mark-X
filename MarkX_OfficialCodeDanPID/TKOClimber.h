@@ -48,6 +48,7 @@ class TKOClimber
 		double SETPOINT_RATCHET_RETRACT;
 		double SETPOINT_CENTER;
 		double oldSetpoint;
+		double setpoint;
 		double deltaSetpoint;
 		//double SETPOINT_CENTER;
 		bool ranCalibration;
@@ -72,7 +73,7 @@ class TKOClimber
 		TKOClimber(int port1, int port2);
 
 		void MoveWinchWithStick();
-		
+
 		void winchStop();
 
 		void LevelOneClimb();
@@ -106,9 +107,9 @@ class TKOClimber
 		void Climb();
 
 		void winchMove(double SP);
-		
+
 		void winchMove(double SP, double deltaSetPoint);
-		
+
 		///The test method for TKOClimber class
 		/*!
 		 Tests pneumatics and winch positions.

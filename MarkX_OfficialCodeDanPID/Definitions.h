@@ -129,6 +129,9 @@ const float PI = 3.14159265;
 const float DEGREES_PER_RADIAN = 180 / PI;
 
 //WINCH CONSTANTS
+const double SETPOINT_BEGINNING = 500;
+const double SETPOINT_ARM_BACK = 500;
+const double SETPOINT_CLIP_BACK = 500;
 const double TOLERANCE = 15.;
 const double MAXSPEED = .3;
 const double MANSPEED = 1.0;

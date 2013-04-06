@@ -133,6 +133,7 @@ void TKOClimber::calibrateWinch()
 	winch2.Set(0);
 	Wait(1.);
 	oldSetpoint = winchEncoder.PIDGet();
+	setpoint = winchEncoder.PIDGet();
 	//winchEncoder.Reset();
 	SETPOINT_RATCHET_RETRACT = SETPOINT_BOTTOM + 2.0;
 	SETPOINT_LAST = SETPOINT_TOP - 2.0;
@@ -203,7 +204,7 @@ void TKOClimber::MoveWinchWithStick()
 	//DSLog(5, "Top: %i", armTop.Get());
 	//DSLog(6, "Bottom: %i", armBottom.Get());
 	DSLog(1, "Top Setpoint: %f", SETPOINT_TOP);
-	DSLog(2, "Bottom Setpoint: %f", SETPOINT_BOTTOM);	
+	DSLog(2, "Bottom Setpoint: %f", SETPOINT_BOTTOM);
 	DSLog(3, "SETP: %f", oldSetpoint);
 	DSLog(4, "Winch L: %f", winchEncoder.PIDGet());
 	//printf("CURRENT POSITION IS: %i     ", winchEncoder.PIDGet());
@@ -290,8 +291,10 @@ void TKOClimber::Test() //pneumatics test
 {
 }
 
+
 void TKOClimber::winchMove(double SP) //
 {
+    setpoint = SP;
 	printf("IN WINCH MOVE ----------------------------------------------------------, %f", SP);
 	loopTime.Start();
 	//double oldSetpoint = winchEncoder.PIDGet();
@@ -313,9 +316,9 @@ void TKOClimber::winchMove(double SP) //
 	{
 		SP = SETPOINT_BOTTOM;
 	}
-	
+
 	if ((int) oldSetpoint == (int) SP) {return;}
-	
+
 	if((int) oldSetpoint < (int) SP)  //MOVING DOWN
 	{
 		printf("CURRENT POSITION IS: %f", winchEncoder.PIDGet());
@@ -338,7 +341,7 @@ void TKOClimber::winchMove(double SP) //
 		//winch2PID.SetSetpoint(oldSetpoint);
 		//Wait(LOOPTIME - loopTime.Get());
 	}
-	Wait(.25);
+	//Wait(.25);
 	return;
 }
 
@@ -394,12 +397,58 @@ void TKOClimber::LevelOneClimb()
 	}
 	winch1PID.Enable();
 	winch2PID.Enable();
+
+	ClipForward();
+
+	Wait(1.);
+
+
+    setpoint = SETPOINT_BEGINNING;
+    while(setpoint > oldSetpoint){  //while where you want it to go is below than its ramping setpoint
+	    time2.Reset();
+        winchMove(SETPOINT_BEGINNING);  //sets setpoint to argument, increments oldsetpoint
+        winch1PID.SetSetpoint(oldSetpoint);
+        winch2PID.SetSetpoint(oldSetpoint);
+        Wait(LOOPTIME - time2.Get());
+	}
+
+	//--------------WINCH SHOULD NOW BE AT STARTING POSITION-------------
+
+	Wait(2.);  //FOR TESTING
+
 	ArmForward();
 	RatchetForward();
-	//winch1PID.SetOutputRange(STRNOCLIPMIN, STRMAX);
-	//winch2PID.SetOutputRange(STRNOCLIPMIN, STRMAX);
-	time2.Reset();
-	winchMove(SETPOINT_RATCHET_RETRACT);
+
+	Wait(2.)
+
+    setpoint = SETPOINT_ARM_BACK;
+	while(setpoint > oldSetpoint){  //while where you want it to go is below than its ramping setpoint
+	    time2.Reset();
+        winchMove(SETPOINT_ARM_BACK);  //sets setpoint to argument, increments oldsetpoint
+        //!!!!!!!!!!!!!!THE SETPOINT SHOULD BE SLIGHTLY BELOW THE BAR LOCATION!!!!!
+        winch1PID.SetSetpoint(oldSetpoint);
+        winch2PID.SetSetpoint(oldSetpoint);
+        Wait(LOOPTIME - time2.Get());
+	}
+
+    ArmBack();
+
+    Wait(2.);
+
+    setpoint = SETPOINT_CLIP_BACK;
+	while(setpoint > oldSetpoint){  //while where you want it to go is below than its ramping setpoint
+	    time2.Reset();
+        winchMove(SETPOINT_CLIP_BACK);  //sets setpoint to argument, increments oldsetpoint
+        //!!!!!!!!!!!!!!THE SETPOINT SHOULD BE SLIGHTLY BELOW THE BAR LOCATION!!!!!
+        winch1PID.SetSetpoint(oldSetpoint);
+        winch2PID.SetSetpoint(oldSetpoint);
+        Wait(LOOPTIME - time2.Get());
+	}
+
+	Wait(2.);
+
+	//time2.Reset();
+	setpoint = (SETPOINT_RATCHET_RETRACT);
 	while (not hookLeft.Get() or not hookRight.Get())
 	{
 		if (time2.Get() > 5 and not hookLeft.Get() and not hookRight.Get())
