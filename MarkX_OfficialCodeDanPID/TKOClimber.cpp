@@ -336,6 +336,18 @@ void TKOClimber::winchMove(double SP) //
 	return;
 }
 
+void TKOClimber::testMoveWinch()
+{
+    setpoint = SETPOINT_CENTER;
+    while(setpoint > oldSetpoint){  //while where you want it to go is below than its ramping setpoint
+	    time2.Reset();
+        winchMove(SETPOINT_CENTER);  //sets setpoint to argument, increments oldsetpoint
+        winch1PID.SetSetpoint(oldSetpoint);
+        winch2PID.SetSetpoint(oldSetpoint);
+        Wait(LOOPTIME - time2.Get());
+	}
+}
+
 void TKOClimber::LevelOneClimb()
 {
 	if (ranCalibration == false)
@@ -392,55 +404,55 @@ void TKOClimber::LevelOneClimb()
         Wait(LOOPTIME - time2.Get());
 	}
 
-	Wait(2.);
+	Wait(120.);
 
 	//time2.Reset();
-	setpoint = (SETPOINT_RATCHET_RETRACT);
-	while (not hookLeft.Get() or not hookRight.Get())
-	{
-		if (time2.Get() > 5 and not hookLeft.Get() and not hookRight.Get())
-		{
-			armBack();
-			Wait(.5);
-			if (not hookLeft.Get() or not hookRight.Get())
-			{
-				winchMove(SETPOINT_TOP);
-				return;
-			}
-		}
-		if (winchEncoder.PIDGet() <= SETPOINT_RATCHET_RETRACT) //if we missed the bar
-		{
-			armBack();
-			Wait(1);
-			winchMove(SETPOINT_TOP);
-			return;
-		}
-
-		//neither hook for a second, move the arm back
-		if (hookLeft.Get() and hookRight.Get())
-		{
-			break;
-		}
-		if ((hookLeft.Get() and not hookRight.Get()) or (not hookLeft.Get() and hookRight.Get())) //If only one HOOK is on,
-		{
-			Wait(.2);
-			if ((hookLeft.Get() and not hookRight.Get()) or (not hookLeft.Get() and hookRight.Get())) //If only one HOOK is on,
-			{
-				winchMove(SETPOINT_TOP);
-				armBack();
-				return;
-			}
-			else
-				continue;
-		}
-	}
-
-	while (hookLeft.Get() and hookRight.Get() and winchEncoder.PIDGet() > SETPOINT_BOTTOM and ratchet.Get()) //MOVE MOTORS
-	{
-		//winch1PID.SetOutputRange(STRYESCLIPMIN, STRMAX);
-		//winch2PID.SetOutputRange(STRYESCLIPMIN, STRMAX);
-		winchMove(SETPOINT_BOTTOM);
-	}
+	//setpoint = (SETPOINT_RATCHET_RETRACT);
+//	while (not hookLeft.Get() or not hookRight.Get())
+//	{
+//		if (time2.Get() > 5 and not hookLeft.Get() and not hookRight.Get())
+//		{
+//			armBack();
+//			Wait(.5);
+//			if (not hookLeft.Get() or not hookRight.Get())
+//			{
+//				winchMove(SETPOINT_TOP);
+//				return;
+//			}
+//		}
+//		if (winchEncoder.PIDGet() <= SETPOINT_RATCHET_RETRACT) //if we missed the bar
+//		{
+//			armBack();
+//			Wait(1);
+//			winchMove(SETPOINT_TOP);
+//			return;
+//		}
+//
+//		//neither hook for a second, move the arm back
+//		if (hookLeft.Get() and hookRight.Get())
+//		{
+//			break;
+//		}
+//		if ((hookLeft.Get() and not hookRight.Get()) or (not hookLeft.Get() and hookRight.Get())) //If only one HOOK is on,
+//		{
+//			Wait(.2);
+//			if ((hookLeft.Get() and not hookRight.Get()) or (not hookLeft.Get() and hookRight.Get())) //If only one HOOK is on,
+//			{
+//				winchMove(SETPOINT_TOP);
+//				armBack();
+//				return;
+//			}
+//			else
+//				continue;
+//		}
+//	}
+//
+//	while (hookLeft.Get() and hookRight.Get() and winchEncoder.PIDGet() > SETPOINT_BOTTOM and ratchet.Get()) //MOVE MOTORS
+//	{
+//		//winch1PID.SetOutputRange(STRYESCLIPMIN, STRMAX);
+//		//winch2PID.SetOutputRange(STRYESCLIPMIN, STRMAX);
+//		winchMove(SETPOINT_BOTTOM);
+//	}
 
 }
 

@@ -76,6 +76,8 @@ class TKOClimber
 
 		void winchStop();
 
+		void testMoveWinch();
+
 		void LevelOneClimb();
 		///Destructor for the TKOClimber class
 		/*!
