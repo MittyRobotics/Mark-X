@@ -16,6 +16,8 @@
  *
  * Test new PID winch drive
  * Autocalibrate at start of match?
+ * 
+ * ADD CHECKS IN THE NEW AUTO CLIMB THING for switches and stuff
  */
 
 class MarkX: public SimpleRobot
@@ -145,8 +147,9 @@ void MarkX::TankDrive()
  */
 void MarkX::Autonomous(void) //Choose autonomous mode between 4 options though DS
 {
-//	Wait(3);
-//	climber.calibrateWinch();
+	Wait(1);
+	climber.RatchetBack();
+	climber.calibrateWinch();
 	//	printf("Starting Autonomous \n");
 	//	auton.initAutonomous();
 	//	auton.setDrivePID(DRIVE_kP, DRIVE_kP, DRIVE_kI);
@@ -192,7 +195,7 @@ void MarkX::OperatorControl()
 	while (IsOperatorControl() && ds->IsEnabled())
 	{
 		loopTimer.Reset();
-		if(climber.ranCalibration)
+		if (climber.ranCalibration)
 		{
 			climber.winch1PID.SetSetpoint(climber.oldSetpoint);
 			climber.winch2PID.SetSetpoint(climber.oldSetpoint);
@@ -236,8 +239,13 @@ void MarkX::Operator()
 	//		climber.RetractDump();
 	//END OF TEST STATEMENT
 
+
 	if (stick2.GetRawButton(3))
 	{
+		if (stick1.GetRawButton(6))
+			climber.Dump();
+		if (stick1.GetRawButton(7))
+			climber.RetractDump();
 		//printf("In moveWithStick \n");
 		climber.MoveWinchWithStick();
 		if (!stick2.GetRawButton(3))
@@ -245,33 +253,34 @@ void MarkX::Operator()
 			climber.winchStop();
 		}
 	}
-    else {
-        climber.winchStop();
+	else
+	{
+		climber.winchStop();
 
-        if (stick2.GetRawButton(6))
-            controllerDrive = not controllerDrive;
-        if (stick3.GetRawButton(3))
-            auton.rsFrontLoaderLift.SetOn(1);
-        else if (stick3.GetRawButton(2))
-            auton.rsFrontLoaderLift.SetOn(0);
+		if (stick2.GetRawButton(6))
+			controllerDrive = not controllerDrive;
+		if (stick3.GetRawButton(3))
+			auton.rsFrontLoaderLift.SetOn(1);
+		else if (stick3.GetRawButton(2))
+			auton.rsFrontLoaderLift.SetOn(0);
 
-        if (stick3.GetRawButton(5))
-            auton.rsFrontLoaderWrist.SetOn(1);
-        else if (stick3.GetRawButton(4))
-            auton.rsFrontLoaderWrist.SetOn(0);
+		if (stick3.GetRawButton(5))
+			auton.rsFrontLoaderWrist.SetOn(1);
+		else if (stick3.GetRawButton(4))
+			auton.rsFrontLoaderWrist.SetOn(0);
 
-        if (stick3.GetRawButton(10) and stick3.GetX() > 0)
-            cameraServo.SetRaw(cameraServo.GetRaw() + CAMERA_PWM_INCREMENT);
+		if (stick3.GetRawButton(10) and stick3.GetX() > 0)
+			cameraServo.SetRaw(cameraServo.GetRaw() + CAMERA_PWM_INCREMENT);
 
-        if (stick3.GetRawButton(10) and stick3.GetX() < 0)
-            cameraServo.SetRaw(cameraServo.GetRaw() - CAMERA_PWM_INCREMENT);
-        if (stick3.GetRawButton(9) and stick4.GetRawButton(9))
-        {
-            climber.ArmForward();
-            climber.LevelOneClimb();
-            DSLog(6, "Autoclimbing");
-        }
-    }
+		if (stick3.GetRawButton(10) and stick3.GetX() < 0)
+			cameraServo.SetRaw(cameraServo.GetRaw() - CAMERA_PWM_INCREMENT);
+		if (stick3.GetRawButton(9) and stick4.GetRawButton(9))
+		{
+			climber.ArmForward();
+			climber.LevelOneClimb();
+			DSLog(6, "Autoclimbing");
+		}
+	}
 }
 
 void MarkX::writeLog()
@@ -286,7 +295,7 @@ void MarkX::writeLog()
 		switch (message[i])
 		{
 
-		    case 1:  //WINCH CALIBRATION
+			case 1: //WINCH CALIBRATION
 				if (logFile.is_open())
 				{
 					if (ds->IsOperatorControl())
@@ -302,15 +311,14 @@ void MarkX::writeLog()
 					}
 					if (data[i] == 3.0)
 					{
-					    logFile << "Winch hit top limitswitch" << endl;
+						logFile << "Winch hit top limitswitch" << endl;
 					}
-                    if (data[i] == 4.0)
+					if (data[i] == 4.0)
 					{
 						logFile << "Successfully autocalibrated" << endl;
 					}
 				}
 				break;
-
 
 			case 2:
 				if (logFile.is_open())
@@ -321,7 +329,7 @@ void MarkX::writeLog()
 					logFile << "Data: " << data[i] << endl;
 				}
 				break;
-			case 3:  //MANUAL MOVE ERRORS
+			case 3: //MANUAL MOVE ERRORS
 				if (logFile.is_open())
 				{
 					if (ds->IsOperatorControl())
@@ -338,7 +346,7 @@ void MarkX::writeLog()
 				}
 				break;
 
-            case 4:  //MANUAL MOVE ERRORS
+			case 4: //MANUAL MOVE ERRORS
 				if (logFile.is_open())
 				{
 					if (ds->IsOperatorControl())

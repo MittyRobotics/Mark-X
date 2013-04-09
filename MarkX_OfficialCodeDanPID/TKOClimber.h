@@ -109,6 +109,8 @@ class TKOClimber
 		void Climb();
 
 		void winchMove(double SP);
+		
+		void winchMoveSlow(double SP, double factor);
 
 		void winchMove(double SP, double deltaSetPoint);
 
@@ -117,6 +119,8 @@ class TKOClimber
 		 Tests pneumatics and winch positions.
 		 */
 		void Test();
+		
+		void ohGod();
 
 		///The dumper pneumatic extend method for TKOClimber class
 		/*!

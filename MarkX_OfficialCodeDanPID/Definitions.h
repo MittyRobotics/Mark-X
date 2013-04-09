@@ -123,16 +123,16 @@ const int PN_S4E_ID = 1; //Arm Extend
 // Camera Constants
 const int BORDER_SIZE = 3;
 const int CAMERA_SERVO_PORT = 1;
-const int CAMERA_PWM_INCREMENT = 1;
+const int CAMERA_PWM_INCREMENT = 1;	
 
 const float PI = 3.14159265;
 const float DEGREES_PER_RADIAN = 180 / PI;
 
 //WINCH CONSTANTS
-const double SETPOINT_BEGINNING = 500;
-const double SETPOINT_ARM_BACK = 500;
-const double SETPOINT_CLIP_BACK = 500;
-const double TOLERANCE = 15.;
+const double SETPOINT_BEGINNING = 1260.;
+const double SETPOINT_ARM_BACK = 2000;
+const double SETPOINT_CLIP_BACK = 2200;
+const double TOLERANCE = 0.;
 const double MAXSPEED = .3;
 const double MANSPEED = 1.0;
 const double LOOPTIME = .01;
