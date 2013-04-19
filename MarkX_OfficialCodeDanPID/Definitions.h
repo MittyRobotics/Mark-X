@@ -129,7 +129,7 @@ const float PI = 3.14159265;
 const float DEGREES_PER_RADIAN = 180 / PI;
 
 //WINCH CONSTANTS
-const double SETPOINT_BEGINNING = 1260.;
+const double SETPOINT_BEGINNING = 1000.;
 const double SETPOINT_ARM_BACK = 2000;
 const double SETPOINT_CLIP_BACK = 2200;
 const double TOLERANCE = 0.;
