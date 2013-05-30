@@ -17,7 +17,7 @@
  * Test new PID winch drive
  * Autocalibrate at start of match?
  * 
- * ADD CHECKS IN THE NEW AUTO CLIMB THING for switches and stuff
+ * ADD CHECKS IN THE NEW AUTO CLIMB THING for switches and stuff !!!!
  */
 
 class MarkX: public SimpleRobot

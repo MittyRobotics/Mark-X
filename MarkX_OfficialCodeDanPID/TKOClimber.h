@@ -49,6 +49,7 @@ class TKOClimber
 		double SETPOINT_CENTER;
 		double oldSetpoint;
 		double setpoint;
+		int climbCount;
 		double deltaSetpoint;
 		//double SETPOINT_CENTER;
 		bool ranCalibration;
@@ -79,6 +80,7 @@ class TKOClimber
 		void testMoveWinch();
 
 		void LevelOneClimb();
+		void LevelTwoOrMoreClimb();
 		///Destructor for the TKOClimber class
 		/*!
 		 */

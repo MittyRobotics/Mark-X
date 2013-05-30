@@ -21,6 +21,7 @@ TKOClimber::TKOClimber(int port1, int port2) :
 	//winch1PID.Disable();
 	//winch2PID.Disable();
 	ranCalibration = false;
+	climbCount = 0;
 	clipBack()
 	armBack()
 	ratchetBack()
@@ -201,6 +202,7 @@ void TKOClimber::MoveWinchWithStick()
 	//DSLog(6, "Bottom: %i", armBottom.Get());
 	//	DSLog(1, "Top Setpoint: %f", SETPOINT_TOP);
 	//	DSLog(2, "Bottom Setpoint: %f", SETPOINT_BOTTOM);
+
 	if (not clipLeft.Get())
 		DSLog(1, "Left Clip Engaged");
 	if (not clipRight.Get())
@@ -211,70 +213,17 @@ void TKOClimber::MoveWinchWithStick()
 		DSLog(4, "Right Hook Engaged");
 	DSLog(5, "SETP: %f", oldSetpoint);
 	DSLog(6, "Winch L: %f", winchEncoder.PIDGet());
-	//printf("CURRENT POSITION IS: %i     ", winchEncoder.PIDGet());
-	//printf("SETPOINT IS: %f \n", oldSetpoint);
-	//printf("Encoder Location: %f", winchEncoder.PIDGet());
-	//	if (not armBottom.Get())
-	//	{
-	//		winch1.Disable();
-	//		winch2.Disable();
-	//		writeMD(3, 1.0);
-	//		//DSLog(5, "RUH-ROH");
-	//
-	//		//printf("DISABLING WINCHES");
-	//	}
-	//	else if (not armTop.Get())
-	//	{
-	//		winch1.Disable();
-	//		winch2.Disable();
-	//		writeMD(3, 2.0);
-	//		//DSLog(5, "RUH-ROH");
-	//		//printf("DISABLING WINCHES");
-	//	}
-	//	else
+
+	if (_stick1.GetY() < -STICK_DEADZONE and (oldSetpoint - (-_stick1.GetY() * deltaSetpoint)) < SETPOINT_BOTTOM)
 	{
-		if (_stick1.GetY() < -STICK_DEADZONE and (oldSetpoint - (-_stick1.GetY() * deltaSetpoint)) < SETPOINT_BOTTOM)
-		{
-			oldSetpoint = oldSetpoint - (-_stick1.GetY() * deltaSetpoint);
-		}
-
-		if (_stick1.GetY() > STICK_DEADZONE and (oldSetpoint - (-_stick1.GetY() * deltaSetpoint)) > SETPOINT_TOP)
-		{
-			oldSetpoint = oldSetpoint - (-_stick1.GetY() * deltaSetpoint);
-		}
-
-		//		if (_stick1.GetY() < -STICK_DEADZONE or _stick1.GetY() > STICK_DEADZONE/* and winchEncoder.PIDGet() < SETPOINT_TOP and winchEncoder.PIDGet() > SETPOINT_BOTTOM*/) //moving down
-		//				{
-		//					winch1.Set(_stick1.GetY() * -MANSPEED);
-		//					winch2.Set(_stick1.GetY() * -MANSPEED);
-		//				}
-
-		//+ is up
-		//
-		//		if (winchEncoder.PIDGet() >= SETPOINT_TOP and _stick1.GetY() < -STICK_DEADZONE and not armTop.Get())
-		//		{
-		//			winch1.Set(_stick1.GetY() * -MANSPEED);
-		//			winch2.Set(_stick1.GetY() * -MANSPEED);
-		//		}
-		//
-		//		else if (winchEncoder.PIDGet() <= SETPOINT_BOTTOM and _stick1.GetY() > STICK_DEADZONE and not armBottom.Get()) //at or below setpoint bottom, and you push joystick up, move up
-		//		{
-		//			winch1.Set(_stick1.GetY() * -MANSPEED);
-		//			winch2.Set(_stick1.GetY() * -MANSPEED);
-		//		}
-		//
-		//				else if (_stick1.GetY() > 0.1 /*and winchEncoder.PIDGet() < SETPOINT_TOP*/)  //moving up
-		//				{
-		//		            winch1.Set(_stick1.GetY() * MANSPEED);
-		//		            winch2.Set(_stick1.GetY() * MANSPEED);
-		//				}
-		//		else
-		//		{
-		//			winchStop();
-		//			printf("WINCH STOP");
-		//		}
+		oldSetpoint = oldSetpoint - (-_stick1.GetY() * deltaSetpoint);
 	}
-	//Wait(0.005);
+
+	if (_stick1.GetY() > STICK_DEADZONE and (oldSetpoint - (-_stick1.GetY() * deltaSetpoint)) > SETPOINT_TOP)
+	{
+		oldSetpoint = oldSetpoint - (-_stick1.GetY() * deltaSetpoint);
+	}
+
 }
 
 void TKOClimber::winchStop()
@@ -430,6 +379,7 @@ void TKOClimber::ohGod()
 
 void TKOClimber::LevelOneClimb()
 {
+	climbCount = 0;
 	if (ranCalibration == false)
 	{
 		calibrateWinch();
@@ -443,39 +393,33 @@ void TKOClimber::LevelOneClimb()
 
 	Wait(1.);
 
-	if (oldSetpoint > SETPOINT_BEGINNING)
+	setpoint = SETPOINT_BEGINNING;
+	while (setpoint > oldSetpoint + 10 and ds->IsEnabled())
 	{
-		setpoint = SETPOINT_BEGINNING;
-		while (setpoint > oldSetpoint + 10 and ds->IsEnabled())
-		{
-			time2.Reset();
-			winchMoveSlow(SETPOINT_BEGINNING, 2); //sets setpoint to argument, increments oldsetpoint
-			winch1PID.SetSetpoint(oldSetpoint);
-			winch2PID.SetSetpoint(oldSetpoint);
-			Wait(LOOPTIME - time2.Get());
-		}
+		time2.Reset();
+		winchMoveSlow(SETPOINT_BEGINNING, 2); //sets setpoint to argument, increments oldsetpoint
+		winch1PID.SetSetpoint(oldSetpoint);
+		winch2PID.SetSetpoint(oldSetpoint);
+		Wait(LOOPTIME - time2.Get());
 	}
-	else
-	{
-		setpoint = SETPOINT_BEGINNING;
-		while (setpoint > oldSetpoint + 10 and ds->IsEnabled())
-		{ //while where you want it to go is below than its ramping setpoint
-			printf("@@@@@@@@@@@@@@@@@@@@MOVING WINCH TO SETPOINT \n");
-			//disableIfOutOfRange()
-			time2.Reset();
-			winchMoveSlow(SETPOINT_BEGINNING, 2); //sets setpoint to argument, increments oldsetpoint
-			winch1PID.SetSetpoint(oldSetpoint);
-			winch2PID.SetSetpoint(oldSetpoint);
-			Wait(LOOPTIME - time2.Get());
-		}
+	setpoint = SETPOINT_BEGINNING;
+	while (setpoint < oldSetpoint - 10 and ds->IsEnabled()) ///MAYBE THIS > SIGN NEEDS TO BE <
+	{ //while where you want it to go is below than its ramping setpoint
+		printf("@@@@@@@@@@@@@@@@@@@@MOVING WINCH TO SETPOINT \n");
+		//disableIfOutOfRange()
+		time2.Reset();
+		winchMoveSlow(SETPOINT_BEGINNING, 2); //sets setpoint to argument, increments oldsetpoint
+		winch1PID.SetSetpoint(oldSetpoint);
+		winch2PID.SetSetpoint(oldSetpoint);
+		Wait(LOOPTIME - time2.Get());
 	}
 
 	//--------------WINCH SHOULD NOW BE AT STARTING POSITION-------------
 
-//	Wait(5.); //FOR TESTING
+	//	Wait(5.); //FOR TESTING
 
 	ArmForward();
-	Wait(2.);
+	Wait(4.);
 	RatchetForward();
 
 	Wait(1.);
@@ -529,6 +473,8 @@ void TKOClimber::LevelOneClimb()
 			DSLog(4, "Right Hook Engaged");
 		disableIfOutOfRange()
 		time2.Reset();
+		if (setpoint < oldSetpoint + 30)
+			ratchetBack();
 		winchMoveSlow(SETPOINT_BOTTOM, 4); //sets setpoint to argument, increments oldsetpoint
 		//!!!!!!!!!!!!!!THE SETPOINT SHOULD BE SLIGHTLY BELOW THE BAR LOCATION!!!!!
 		winch1PID.SetSetpoint(oldSetpoint);
@@ -567,7 +513,7 @@ void TKOClimber::LevelOneClimb()
 
 	setpoint = SETPOINT_TOP + 30;
 
-	while (setpoint > oldSetpoint + 10 and ds->IsEnabled())
+	while (setpoint < oldSetpoint - 1 and ds->IsEnabled())
 	{ //while where you want it to go is below than its ramping setpoint
 		if (not clipLeft.Get())
 			DSLog(1, "Left Clip Engaged");
@@ -586,57 +532,153 @@ void TKOClimber::LevelOneClimb()
 		winch2PID.SetSetpoint(oldSetpoint);
 		Wait(LOOPTIME - time2.Get());
 	}
+	DSLog(3, "Done with autoclimb")
+	printf("Done with autoclimb");
+	climbCount++;
+	Wait(3); //TESTING CAN REMOVE
+	LevelTwoOrMoreClimb();
 
-	//	Wait(120.); ////////////////////////////////////////////////////MAKE SURE THIS IS UNCOMMENTED IN MATCH
+}
 
-	//time2.Reset();
-	//setpoint = (SETPOINT_RATCHET_RETRACT);
-	//	while (not hookLeft.Get() or not hookRight.Get())
+void TKOClimber::LevelTwoOrMoreClimb()
+{
+	winch1PID.Enable();
+	winch2PID.Enable();
+	ArmForward();
+	Wait(4.);
+	if (hookLeft.Get() or hookRight.Get())   //MAYBE REMOVE HOOK CHECK
+		ohGod();
+
+	RatchetForward();
+
+	Wait(1.);
+
+	setpoint = SETPOINT_ARM_BACK;
+	while (setpoint > oldSetpoint + 10 and ds->IsEnabled())
+	{ //while where you want it to go is below than its ramping setpoint
+		disableIfOutOfRange()
+		time2.Reset();
+		winchMoveSlow(SETPOINT_ARM_BACK, 2); //sets setpoint to argument, increments oldsetpoint
+		//!!!!!!!!!!!!!!THE SETPOINT SHOULD BE SLIGHTLY BELOW THE BAR LOCATION!!!!!
+		winch1PID.SetSetpoint(oldSetpoint);
+		winch2PID.SetSetpoint(oldSetpoint);
+		Wait(LOOPTIME - time2.Get());
+	}
+
+	//	if((not hookLeft.Get() or not hookRight.Get()))
 	//	{
-	//		if (time2.Get() > 5 and not hookLeft.Get() and not hookRight.Get())
-	//		{
-	//			armBack();
-	//			Wait(.5);
-	//			if (not hookLeft.Get() or not hookRight.Get())
-	//			{
-	//				winchMove(SETPOINT_TOP);
-	//				return;
-	//			}
-	//		}
-	//		if (winchEncoder.PIDGet() <= SETPOINT_RATCHET_RETRACT) //if we missed the bar
-	//		{
-	//			armBack();
-	//			Wait(1);
-	//			winchMove(SETPOINT_TOP);
-	//			return;
-	//		}
-	//
-	//		//neither hook for a second, move the arm back
-	//		if (hookLeft.Get() and hookRight.Get())
-	//		{
-	//			break;
-	//		}
-	//		if ((hookLeft.Get() and not hookRight.Get()) or (not hookLeft.Get() and hookRight.Get())) //If only one HOOK is on,
-	//		{
-	//			Wait(.2);
-	//			if ((hookLeft.Get() and not hookRight.Get()) or (not hookLeft.Get() and hookRight.Get())) //If only one HOOK is on,
-	//			{
-	//				winchMove(SETPOINT_TOP);
-	//				armBack();
-	//				return;
-	//			}
-	//			else
-	//				continue;
-	//		}
-	//	}
-	//
-	//	while (hookLeft.Get() and hookRight.Get() and winchEncoder.PIDGet() > SETPOINT_BOTTOM and ratchet.Get()) //MOVE MOTORS
-	//	{
-	//		//winch1PID.SetOutputRange(STRYESCLIPMIN, STRMAX);
-	//		//winch2PID.SetOutputRange(STRYESCLIPMIN, STRMAX);
-	//		winchMove(SETPOINT_BOTTOM);
+	//		ohGod();
 	//	}
 
+	ArmBack();
+
+	Wait(2.);
+
+	setpoint = SETPOINT_CLIP_BACK;
+	while (setpoint > oldSetpoint + 10 and ds->IsEnabled())
+	{ //while where you want it to go is below than its ramping setpoint
+		disableIfOutOfRange()
+		time2.Reset();
+		winchMoveSlow(SETPOINT_CLIP_BACK, 2); //sets setpoint to argument, increments oldsetpoint
+		//!!!!!!!!!!!!!!THE SETPOINT SHOULD BE SLIGHTLY BELOW THE BAR LOCATION!!!!!
+		winch1PID.SetSetpoint(oldSetpoint);
+		winch2PID.SetSetpoint(oldSetpoint);
+		Wait(LOOPTIME - time2.Get());
+	}
+
+	ClipBack();
+	Wait(1);
+
+	setpoint = SETPOINT_BOTTOM;
+	while (setpoint > oldSetpoint + 10 and ds->IsEnabled())
+	{ //while where you want it to go is below than its ramping setpoint
+		if (not clipLeft.Get())
+			DSLog(1, "Left Clip Engaged");
+		if (not clipRight.Get())
+			DSLog(2, "Right Clip Engaged");
+		if (not hookLeft.Get())
+			DSLog(3, "Left Hook Engaged");
+		if (not hookRight.Get())
+			DSLog(4, "Right Hook Engaged");
+		disableIfOutOfRange()
+		time2.Reset();
+		if (setpoint < oldSetpoint + 30)
+			ratchetBack();
+		winchMoveSlow(SETPOINT_BOTTOM, 4); //sets setpoint to argument, increments oldsetpoint
+		//!!!!!!!!!!!!!!THE SETPOINT SHOULD BE SLIGHTLY BELOW THE BAR LOCATION!!!!!
+		winch1PID.SetSetpoint(oldSetpoint);
+		winch2PID.SetSetpoint(oldSetpoint);
+		Wait(LOOPTIME - time2.Get());
+	}
+
+	//RatchetForward();
+
+	ClipForward();
+
+	Wait(5.);
+
+	if (clipLeft.Get() or clipRight.Get())
+	{
+		DSClear();
+		if (not clipLeft.Get())
+			DSLog(1, "Left Clip Engaged");
+		if (not clipRight.Get())
+			DSLog(2, "Right Clip Engaged");
+		if (not hookLeft.Get())
+			DSLog(3, "Left Hook Engaged");
+		if (not hookRight.Get())
+			DSLog(4, "Right Hook Engaged");
+		while (ds->IsEnabled())
+		{
+			RatchetForward();
+			winchStop();
+			DSLog(6, "ERROR NO CLIP");
+		}
+	}
+
+	RatchetBack();
+
+	Wait(1.);
+
+	if (climbCount <= 1) //MAKES IT SO IF WE ARE AT LEVEL THREE, WE DONT BRING THE HOOKS TO THE TOP
+	{
+		setpoint = SETPOINT_TOP + 30;
+
+		while (setpoint < oldSetpoint - 1 and ds->IsEnabled())
+		{ //while where you want it to go is below than its ramping setpoint
+			if (not clipLeft.Get())
+				DSLog(1, "Left Clip Engaged");
+			if (not clipRight.Get())
+				DSLog(2, "Right Clip Engaged");
+			if (not hookLeft.Get())
+				DSLog(3, "Left Hook Engaged");
+			if (not hookRight.Get())
+				DSLog(4, "Right Hook Engaged");
+			disableIfOutOfRange()
+			DSLog(1, "LAST SETPOINT %f", setpoint);
+			time2.Reset();
+			winchMoveSlow(setpoint, 2); //sets setpoint to argument, increments oldsetpoint
+			//!!!!!!!!!!!!!!THE SETPOINT SHOULD BE SLIGHTLY BELOW THE BAR LOCATION!!!!!
+			winch1PID.SetSetpoint(oldSetpoint);
+			winch2PID.SetSetpoint(oldSetpoint);
+			Wait(LOOPTIME - time2.Get());
+		}
+	}
+	DSLog(3, "Done with autoclimb")
+	printf("Done with autoclimb");
+	climbCount++;
+
+	if (climbCount <= 2)
+	{
+		Wait(3);
+		LevelTwoOrMoreClimb();
+	}
+	if (climbCount == 3)
+	{
+		Dump();
+		Wait(3);
+		RetractDump();
+	}
 }
 
 int TKOClimber::Decide(int s)
