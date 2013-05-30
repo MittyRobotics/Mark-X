@@ -18,6 +18,7 @@
  * Autocalibrate at start of match?
  * 
  * ADD CHECKS IN THE NEW AUTO CLIMB THING for switches and stuff !!!!
+ * ADD BREAKS WHILE YOU ARE CLIMBING TO ABORT SOMEHOW?
  */
 
 class MarkX: public SimpleRobot
