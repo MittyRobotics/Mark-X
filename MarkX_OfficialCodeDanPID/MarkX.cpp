@@ -19,6 +19,7 @@
  * 
  * ADD CHECKS IN THE NEW AUTO CLIMB THING for switches and stuff !!!!
  * ADD BREAKS WHILE YOU ARE CLIMBING TO ABORT SOMEHOW?
+ * RIGHT CLIP ISSUES HOOKING ON
  */
 
 class MarkX: public SimpleRobot
@@ -243,9 +244,9 @@ void MarkX::Operator()
 
 	if (stick2.GetRawButton(3))
 	{
-		if (stick1.GetRawButton(6))
+		if (stick2.GetRawButton(6))
 			climber.Dump();
-		if (stick1.GetRawButton(7))
+		if (stick2.GetRawButton(7))
 			climber.RetractDump();
 		//printf("In moveWithStick \n");
 		climber.MoveWinchWithStick();
