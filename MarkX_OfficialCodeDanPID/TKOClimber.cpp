@@ -117,7 +117,7 @@ void TKOClimber::calibrateWinch()
 		{
 			winch1.Set(0);
 			winch2.Set(0);
-			SETPOINT_BOTTOM = winchEncoder.PIDGet() - (-30); ///USED TO BE 10
+			SETPOINT_BOTTOM = winchEncoder.PIDGet() - (-35); ///USED TO BE 10
 			break;
 		}
 	}

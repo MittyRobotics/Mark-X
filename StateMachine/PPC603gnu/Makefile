@@ -31,8 +31,8 @@ else
 MODE_DIR := NonDebug
 endif
 OBJ_DIR := .
-WS_ROOT_DIR := C:/WindRiver/workspace
-PRJ_ROOT_DIR := C:/Users/Admin/repos/mark-x/StateMachine
+WS_ROOT_DIR := C:/Users/Ben/Downloads/mark-x.git
+PRJ_ROOT_DIR := $(WS_ROOT_DIR)/StateMachine
 
 
 
